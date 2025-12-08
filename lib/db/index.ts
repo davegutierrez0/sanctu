@@ -6,7 +6,7 @@ export interface DailyReading {
   citation: string;
   label: string;
   content: string;
-  type: 'first' | 'psalm' | 'second' | 'gospel';
+  type: 'first' | 'psalm' | 'second' | 'gospel' | 'alleluia';
 }
 
 export interface DailyReadings {

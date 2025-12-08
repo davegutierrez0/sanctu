@@ -6,7 +6,7 @@
 
 ```bash
 # 1. Install Vercel CLI globally
-npm i -g vercel
+bun add -g vercel
 
 # 2. Navigate to project (if not already there)
 # cd /path/to/sanctu
@@ -103,7 +103,7 @@ This app has zero environment variables. Everything works out of the box.
 ### Enable Analytics (Optional)
 
 ```bash
-npm install @vercel/analytics
+bun add @vercel/analytics
 ```
 
 Add to [app/layout.tsx](app/layout.tsx):

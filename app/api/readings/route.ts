@@ -1,18 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from 'redis';
 import { fromLocalISODate, toLocalISODate } from '@/lib/date';
 
 /**
  * API Route: /api/readings
- * Fetches daily Mass readings from USCCB
+ * Fetches daily Mass readings from USCCB with server-side caching
  *
- * This runs on the server, avoiding CORS issues
- * and allowing Next.js to cache responses
+ * Cache Strategy (USCCB-friendly):
+ * - First request for a date: fetch from USCCB, store in Redis
+ * - All subsequent requests: served from Redis cache
+ * - TTL: 7 days (readings for a date never change)
+ * - Result: Only 1 request to USCCB per day, regardless of user count
  */
 
 const USCCB_BASE_URL = 'https://bible.usccb.org/bible/readings';
+const CACHE_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
-export const runtime = 'edge'; // Use edge runtime for faster response
-export const revalidate = 86400; // Cache for 24 hours
+// Note: Using Node.js runtime (not Edge) because redis client uses TCP
+export const runtime = 'nodejs';
+
+// Lazy-initialize Redis client
+let redisClient: ReturnType<typeof createClient> | null = null;
+
+async function getRedis() {
+  if (!redisClient) {
+    redisClient = createClient({ url: process.env.REDIS_URL });
+    redisClient.on('error', (err: Error) => console.error('Redis Client Error', err));
+    await redisClient.connect();
+  }
+  return redisClient;
+}
 
 function formatUSCCBDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -21,21 +38,46 @@ function formatUSCCBDate(date: Date): string {
   return `${month}${day}${year}`;
 }
 
+interface CachedReadings {
+  readings: any[];
+  liturgicalColor: string;
+  season: string;
+  cachedAt: number;
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const dateParam = searchParams.get('date');
 
-  // Parse date in local time to avoid UTC off-by-one errors
   const date = fromLocalISODate(dateParam);
-  const usccbDate = formatUSCCBDate(date);
-  const url = `${USCCB_BASE_URL}/${usccbDate}.cfm`;
+  const isoDate = toLocalISODate(date);
+  const cacheKey = `readings:${isoDate}`;
 
   try {
+    const redis = await getRedis();
+
+    // 1. Check cache first
+    const cachedStr = await redis.get(cacheKey);
+
+    if (cachedStr) {
+      // Cache hit - return immediately
+      const cached: CachedReadings = JSON.parse(cachedStr);
+      return NextResponse.json(cached, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
+          'X-Cache': 'HIT',
+        },
+      });
+    }
+
+    // 2. Cache miss - fetch from USCCB
+    const usccbDate = formatUSCCBDate(date);
+    const url = `${USCCB_BASE_URL}/${usccbDate}.cfm`;
+
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'SanctusApp/1.0 (Catholic Prayer App)',
+        'User-Agent': 'SanctusApp/1.0 (Catholic Prayer App; polite-caching)',
       },
-      next: { revalidate: 86400 }, // 24 hour cache
     });
 
     if (!response.ok) {
@@ -43,28 +85,35 @@ export async function GET(request: NextRequest) {
     }
 
     const html = await response.text();
+    const parsed = parseUSCCBHTML(html);
 
-    // Parse the HTML to extract readings
-    const readings = parseUSCCBHTML(html);
-
-    if (!readings.readings.length) {
+    if (!parsed.readings.length) {
       throw new Error('Parsed zero readings from USCCB');
     }
 
-    return NextResponse.json(readings, {
+    // 3. Store in cache
+    const dataToCache: CachedReadings = {
+      ...parsed,
+      cachedAt: Date.now(),
+    };
+
+    await redis.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(dataToCache));
+
+    return NextResponse.json(dataToCache, {
       headers: {
         'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
+        'X-Cache': 'MISS',
       },
     });
   } catch (error) {
-    console.error('Error fetching from USCCB:', error);
+    console.error('Error fetching readings:', error);
 
-    // Return fallback
+    // Return fallback (don't cache failures)
     return NextResponse.json(
       {
         readings: [
           {
-            date: toLocalISODate(date),
+            date: isoDate,
             citation: 'Psalm 23:1-6',
             label: 'Responsorial Psalm',
             content:
@@ -74,11 +123,13 @@ export async function GET(request: NextRequest) {
         ],
         liturgicalColor: 'green',
         season: 'Ordinary Time',
+        error: 'Failed to fetch readings',
       },
       {
         status: 200,
         headers: {
-          'Cache-Control': 'public, s-maxage=3600',
+          'Cache-Control': 'public, s-maxage=300', // Short cache for errors
+          'X-Cache': 'ERROR',
         },
       }
     );
@@ -91,48 +142,81 @@ export async function GET(request: NextRequest) {
 function parseUSCCBHTML(html: string) {
   const readings: any[] = [];
 
-  const blocks = Array.from(html.matchAll(/<div class="content-body">([\s\S]*?)<\/div>/gi));
+  const blockRegex = /<div class="innerblock">\s*<div class="content-header">([\s\S]*?)<\/div>\s*<div class="content-body">([\s\S]*?)<\/div>/gi;
+  const blocks = Array.from(html.matchAll(blockRegex));
 
   blocks.forEach((match) => {
-    const block = match[1];
-    const rawLabel = block.match(/<h4[^>]*>(.*?)<\/h4>/i)?.[1] || '';
-    const citation = block.match(/<h3[^>]*>(.*?)<\/h3>/i)?.[1] || '';
-    const content = block.match(/<div class="content[^"]*">([\s\S]*?)<\/div>/i)?.[1] || '';
+    const header = match[1];
+    const body = match[2];
 
-    if (!citation || !content) return;
+    const labelMatch = header.match(/<h3 class="name">\s*(.*?)\s*<\/h3>/i);
+    const rawLabel = labelMatch ? labelMatch[1].trim() : '';
+
+    const citationMatch = header.match(/<div class="address">[\s\S]*?<a[^>]*>(.*?)<\/a>/i);
+    const citation = citationMatch ? citationMatch[1].trim() : '';
+
+    const content = cleanHTML(body);
+
+    if (!content) return;
 
     const label = normalizeLabel(rawLabel);
     readings.push({
-      citation: cleanHTML(citation),
+      citation: citation || rawLabel,
       label,
-      content: cleanHTML(content),
-      type: mapLabelToType(label),
+      content,
+      type: mapLabelToType(rawLabel),
     });
   });
 
-  // Extract liturgical color (optional, might not be in HTML)
-  const colorMatch = html.match(/liturgical-color[^>]*>(.*?)</i);
-  const liturgicalColor = colorMatch ? colorMatch[1].toLowerCase() : 'green';
+  const titleMatch = html.match(/<div class="wr-block b-lectionary[\s\S]*?<h2>([\s\S]*?)<\/h2>/i);
+  const title = titleMatch ? cleanHTML(titleMatch[1]) : '';
+
+  const liturgicalColor = determineLiturgicalColor(title);
 
   return {
     readings,
     liturgicalColor,
-    season: 'Ordinary Time', // Would need calendar logic for accurate season
+    season: title || 'Ordinary Time',
   };
 }
 
-/**
- * Clean HTML tags and entities
- */
+function determineLiturgicalColor(title: string): string {
+  const lower = title.toLowerCase();
+
+  if (lower.includes('christmas') || lower.includes('easter') ||
+      lower.includes('mary') || lower.includes('immaculate') ||
+      lower.includes('assumption') || lower.includes('nativity') ||
+      lower.includes('epiphany') || lower.includes('ascension') ||
+      lower.includes('corpus christi') || lower.includes('sacred heart')) {
+    return 'white';
+  }
+
+  if (lower.includes('pentecost') || lower.includes('palm sunday') ||
+      lower.includes('good friday') || lower.includes('passion') ||
+      lower.includes('martyr')) {
+    return 'red';
+  }
+
+  if (lower.includes('advent') || lower.includes('lent')) {
+    return 'violet';
+  }
+
+  if (lower.includes('gaudete') || lower.includes('laetare')) {
+    return 'rose';
+  }
+
+  return 'green';
+}
+
 function cleanHTML(str: string): string {
   return str
-    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
-    .replace(/\s+/g, ' ') // Normalize whitespace
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
@@ -140,14 +224,17 @@ function normalizeLabel(label: string): string {
   const lower = label.toLowerCase();
   if (lower.includes('psalm')) return 'Responsorial Psalm';
   if (lower.includes('gospel')) return 'Gospel';
-  if (lower.includes('second') || lower.includes('ii') || lower.includes('2')) return 'Second Reading';
-  return 'First Reading';
+  if (lower.includes('alleluia')) return 'Alleluia';
+  if (lower.includes('second') || lower.includes('reading 2')) return 'Second Reading';
+  if (lower.includes('reading 1')) return 'First Reading';
+  return label.trim() || 'Reading';
 }
 
-function mapLabelToType(label: string): 'first' | 'psalm' | 'second' | 'gospel' {
+function mapLabelToType(label: string): 'first' | 'psalm' | 'second' | 'gospel' | 'alleluia' {
   const lower = label.toLowerCase();
   if (lower.includes('psalm')) return 'psalm';
   if (lower.includes('gospel')) return 'gospel';
-  if (lower.includes('second')) return 'second';
+  if (lower.includes('alleluia')) return 'alleluia';
+  if (lower.includes('second') || lower.includes('reading 2')) return 'second';
   return 'first';
 }

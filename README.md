@@ -26,16 +26,16 @@ A fast, minimal, offline-capable Catholic prayer app with daily Mass readings, i
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Run development server
-npm run dev
+bun run dev
 
 # Build for production
-npm run build
+bun run build
 
 # Start production server
-npm start
+bun start
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
@@ -46,7 +46,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ```bash
 # Install Vercel CLI
-npm i -g vercel
+bun add -g vercel
 
 # Deploy
 vercel
