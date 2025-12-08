@@ -1,65 +1,173 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { Book, Coffee, Heart, Moon, Printer, Sun } from 'lucide-react';
+import Link from 'next/link';
+import { useTheme } from '@/components/ThemeProvider';
+
+export default function HomePage() {
+  const { isDark, setTheme } = useTheme();
+
+  const toggleDarkMode = () => {
+    setTheme(isDark ? 'light' : 'dark');
+  };
+
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <>
+      {/* Print-only header */}
+      <div className="print-header">
+        <h1>Sanctus</h1>
+        <p>{today}</p>
+      </div>
+
+      {/* Top Navigation */}
+      <nav className="no-print sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
+        <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="font-semibold text-xl tracking-tight">
+            Sanctus
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleDarkMode}
+              className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Toggle theme"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
+            <button
+              onClick={() => window.print()}
+              className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Print"
             >
-              Learning
-            </a>{" "}
-            center.
+              <Printer size={20} />
+            </button>
+
+            <a
+              href="https://buymeacoffee.com/sanctusapp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-400 hover:bg-amber-500 text-black transition-colors text-sm font-medium shadow-sm"
+            >
+              <Coffee size={16} />
+              Support
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="max-w-3xl w-full mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="mb-16 text-center space-y-3">
+          <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            {today}
           </p>
+          <h1 className="text-4xl md:text-5xl font-light tracking-tight">
+            A Quiet Place to Pray
+          </h1>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Quick Access Cards */}
+        <div className="grid md:grid-cols-2 gap-6 mb-16">
+          <Link
+            href="/readings"
+            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Book className="text-purple-600 dark:text-purple-400 mb-4" size={28} />
+            <h2 className="text-2xl font-medium mb-2">Today's Readings</h2>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Daily Mass readings, Gospel, and Psalms
+            </p>
+          </Link>
+
+          <Link
+            href="/rosary"
+            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
           >
-            Documentation
-          </a>
+            <Heart className="text-rose-600 dark:text-rose-400 mb-4" size={28} />
+            <h2 className="text-2xl font-medium mb-2">Pray the Rosary</h2>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Interactive guide with mysteries and meditations
+            </p>
+          </Link>
         </div>
+
+        {/* Essential Prayers */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-light mb-8 tracking-tight">Essential Prayers</h2>
+          <div className="space-y-4">
+            {[
+              { id: 'our-father', title: 'Our Father', latin: 'Pater Noster' },
+              { id: 'hail-mary', title: 'Hail Mary', latin: 'Ave Maria' },
+              { id: 'glory-be', title: 'Glory Be', latin: 'Gloria Patri' },
+              { id: 'creed', title: "Apostles' Creed", latin: 'Symbolum Apostolorum' },
+            ].map((prayer) => (
+              <Link
+                key={prayer.id}
+                href={`/prayers/${prayer.id}`}
+                className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="font-medium text-lg">{prayer.title}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 italic">
+                      {prayer.latin}
+                    </div>
+                  </div>
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </Link>
+            ))}
+
+            <Link
+              href="/prayers"
+              className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors text-center text-gray-600 dark:text-gray-400"
+            >
+              View All Prayers →
+            </Link>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="no-print text-center text-sm text-gray-500 dark:text-gray-400 pt-12 border-t border-gray-200 dark:border-gray-800 space-y-3">
+          <p>Made with prayer for the faithful</p>
+          <p>
+            <a
+              href="https://buymeacoffee.com/sanctusapp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+            >
+              Support this free app
+            </a>
+          </p>
+        </footer>
       </main>
-    </div>
+
+      {/* Print-only footer */}
+      <div className="print-footer" data-date={today} style={{ display: 'none' }}>
+        Printed from Sanctus App - {today}
+      </div>
+    </>
   );
 }
