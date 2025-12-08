@@ -2,7 +2,8 @@
 
 import { getTodaysMystery, ROSARY_MYSTERIES, getLocalizedMystery, ROSARY_UI, type MysteryType } from '@/lib/data/rosary';
 import { useLanguage } from '@/components/ThemeProvider';
-import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { LanguageToggleCompact } from '@/components/LanguageToggle';
+import { ArrowLeft, Printer, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
@@ -56,13 +57,23 @@ export default function RosaryPage() {
             Home
           </Link>
 
-          <button
-            onClick={reset}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
-          >
-            <RotateCcw size={16} />
-            Reset
-          </button>
+          <div className="flex items-center gap-3">
+            <LanguageToggleCompact />
+            <button
+              onClick={() => window.print()}
+              className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Print"
+            >
+              <Printer size={18} />
+            </button>
+            <button
+              onClick={reset}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
+            >
+              <RotateCcw size={16} />
+              Reset
+            </button>
+          </div>
         </div>
       </nav>
 

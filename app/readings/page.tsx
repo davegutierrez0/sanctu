@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { toLocalISODate } from '@/lib/date';
@@ -89,7 +89,7 @@ export default function ReadingsPage() {
               onClick={() => window.print()}
               className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
             >
-              Print
+              <Printer size={18} />
             </button>
           </div>
         </div>

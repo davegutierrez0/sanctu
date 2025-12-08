@@ -61,14 +61,6 @@ export default function HomePage() {
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            <button
-              onClick={() => window.print()}
-              className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label={ui.print}
-            >
-              <Printer size={20} />
-            </button>
-
             <a
               href="https://buymeacoffee.com/davegutierrez0"
               target="_blank"
