@@ -2,21 +2,38 @@
 
 import { Book, Coffee, Heart, Moon, Printer, Sun } from 'lucide-react';
 import Link from 'next/link';
-import { useTheme } from '@/components/ThemeProvider';
+import { useTheme, useLanguage } from '@/components/ThemeProvider';
+import { LanguageToggleCompact } from '@/components/LanguageToggle';
+import { getUI, ESSENTIAL_PRAYER_IDS } from '@/lib/data/ui';
+import { COMMON_PRAYERS } from '@/lib/data/prayers';
 
 export default function HomePage() {
   const { isDark, setTheme } = useTheme();
+  const { language } = useLanguage();
+  const ui = getUI(language);
 
   const toggleDarkMode = () => {
     setTheme(isDark ? 'light' : 'dark');
   };
 
-  const today = new Date().toLocaleDateString('en-US', {
+  const today = new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
+
+  // Get essential prayers with translations
+  const essentialPrayers = ESSENTIAL_PRAYER_IDS.map((id) => {
+    const prayer = COMMON_PRAYERS.find((p) => p.id === id);
+    return prayer
+      ? {
+          id: prayer.id,
+          title: prayer.title[language],
+          latin: prayer.latin,
+        }
+      : null;
+  }).filter(Boolean);
 
   return (
     <>
@@ -34,6 +51,8 @@ export default function HomePage() {
           </Link>
 
           <div className="flex items-center gap-3">
+            <LanguageToggleCompact />
+
             <button
               onClick={toggleDarkMode}
               className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -45,19 +64,19 @@ export default function HomePage() {
             <button
               onClick={() => window.print()}
               className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Print"
+              aria-label={ui.print}
             >
               <Printer size={20} />
             </button>
 
             <a
-              href="https://buymeacoffee.com/sanctusapp"
+              href="https://buymeacoffee.com/davegutierrez0"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-400 hover:bg-amber-500 text-black transition-colors text-sm font-medium shadow-sm"
             >
               <Coffee size={16} />
-              Support
+              {ui.support}
             </a>
           </div>
         </div>
@@ -70,9 +89,7 @@ export default function HomePage() {
           <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400 small-caps">
             {today}
           </p>
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight">
-            A Quiet Place to Pray
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-light tracking-tight">{ui.tagline}</h1>
         </div>
 
         {/* Quick Access Cards */}
@@ -82,9 +99,9 @@ export default function HomePage() {
             className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
           >
             <Book className="text-purple-600 dark:text-purple-400 mb-4" size={28} />
-            <h2 className="text-2xl font-medium mb-2">Today's Readings</h2>
+            <h2 className="text-2xl font-medium mb-2">{ui.todaysReadings}</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Daily Mass readings, Gospel, and Psalms
+              {ui.todaysReadingsDesc}
             </p>
           </Link>
 
@@ -93,64 +110,64 @@ export default function HomePage() {
             className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
           >
             <Heart className="text-rose-600 dark:text-rose-400 mb-4" size={28} />
-            <h2 className="text-2xl font-medium mb-2">Pray the Rosary</h2>
+            <h2 className="text-2xl font-medium mb-2">{ui.prayRosary}</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              Interactive guide with mysteries and meditations
+              {ui.prayRosaryDesc}
             </p>
           </Link>
         </div>
 
         {/* Essential Prayers */}
         <section className="mb-16">
-          <h2 className="text-3xl font-light mb-8 tracking-tight">Essential Prayers</h2>
+          <h2 className="text-3xl font-light mb-8 tracking-tight">{ui.essentialPrayers}</h2>
           <div className="space-y-4">
-            {[
-              { id: 'our-father', title: 'Our Father', latin: 'Pater Noster' },
-              { id: 'hail-mary', title: 'Hail Mary', latin: 'Ave Maria' },
-              { id: 'glory-be', title: 'Glory Be', latin: 'Gloria Patri' },
-              { id: 'creed', title: "Apostles' Creed", latin: 'Symbolum Apostolorum' },
-            ].map((prayer) => (
-              <Link
-                key={prayer.id}
-                href={`/prayers/${prayer.id}`}
-                className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="font-medium text-lg">{prayer.title}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 italic">
-                      {prayer.latin}
-                    </div>
-                  </div>
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            {essentialPrayers.map(
+              (prayer) =>
+                prayer && (
+                  <Link
+                    key={prayer.id}
+                    href={`/prayers/${prayer.id}`}
+                    className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </Link>
-            ))}
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-medium text-lg">{prayer.title}</div>
+                        {prayer.latin && (
+                          <div className="text-sm text-gray-500 dark:text-gray-400 italic">
+                            {prayer.latin}
+                          </div>
+                        )}
+                      </div>
+                      <svg
+                        className="w-5 h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  </Link>
+                )
+            )}
 
             <Link
               href="/prayers"
               className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors text-center text-gray-600 dark:text-gray-400"
             >
-              View All Prayers →
+              {ui.viewAllPrayers} →
             </Link>
           </div>
         </section>
 
         {/* Footer */}
         <footer className="no-print text-center text-sm text-gray-500 dark:text-gray-400 pt-12 border-t border-gray-200 dark:border-gray-800 space-y-3">
-          <p>Made with prayer for the faithful</p>
+          <p>{ui.footer}</p>
           <p>
             <a
               href="https://buymeacoffee.com/davegutierrez0"
@@ -158,7 +175,7 @@ export default function HomePage() {
               rel="noopener noreferrer"
               className="underline hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
             >
-              Support this free app
+              {ui.supportApp}
             </a>
           </p>
         </footer>

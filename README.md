@@ -96,7 +96,7 @@ Free to use for Catholic communities and individuals.
 
 ## Support
 
-Buy me a coffee: [buymeacoffee.com/sanctusapp](https://buymeacoffee.com/sanctusapp)
+Buy me a coffee: [buymeacoffee.com/davegutierrez0](https://buymeacoffee.com/davegutierrez0)
 
 ---
 
