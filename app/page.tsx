@@ -29,7 +29,7 @@ export default function HomePage() {
       {/* Top Navigation */}
       <nav className="no-print sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
         <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="font-semibold text-xl tracking-tight">
+          <Link href="/" className="font-semibold text-xl tracking-tight small-caps">
             Sanctus
           </Link>
 
@@ -153,7 +153,7 @@ export default function HomePage() {
           <p>Made with prayer for the faithful</p>
           <p>
             <a
-              href="https://buymeacoffee.com/sanctusapp"
+              href="https://buymeacoffee.com/davegutierrez0"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
