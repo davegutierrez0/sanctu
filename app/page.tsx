@@ -67,7 +67,7 @@ export default function HomePage() {
       <main className="max-w-3xl w-full mx-auto px-6 py-12">
         {/* Hero Section */}
         <div className="mb-16 text-center space-y-3">
-          <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400 small-caps">
             {today}
           </p>
           <h1 className="text-4xl md:text-5xl font-light tracking-tight">
