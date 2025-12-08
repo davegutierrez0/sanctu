@@ -23,10 +23,17 @@ export const runtime = 'nodejs';
 let redisClient: ReturnType<typeof createClient> | null = null;
 
 async function getRedis() {
+  if (!process.env.REDIS_URL) return null;
+
   if (!redisClient) {
-    redisClient = createClient({ url: process.env.REDIS_URL });
-    redisClient.on('error', (err: Error) => console.error('Redis Client Error', err));
-    await redisClient.connect();
+    try {
+      redisClient = createClient({ url: process.env.REDIS_URL });
+      redisClient.on('error', (err: Error) => console.error('Redis Client Error', err));
+      await redisClient.connect();
+    } catch (err) {
+      console.error('Redis connection failed, continuing without cache:', err);
+      redisClient = null;
+    }
   }
   return redisClient;
 }
@@ -66,10 +73,12 @@ export async function GET(request: NextRequest) {
       const cacheKey = `readings:${lang}:${isoDate}`;
 
       // Check if already cached
-      const existing = await redis.get(cacheKey);
-      if (existing) {
-        results.push({ date: isoDate, lang, status: 'already_cached' });
-        continue;
+      if (redis) {
+        const existing = await redis.get(cacheKey);
+        if (existing) {
+          results.push({ date: isoDate, lang, status: 'already_cached' });
+          continue;
+        }
       }
 
       // Fetch from USCCB
@@ -103,8 +112,12 @@ export async function GET(request: NextRequest) {
           language: lang,
         };
 
-        await redis.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(dataToCache));
-        results.push({ date: isoDate, lang, status: 'cached' });
+        if (redis) {
+          await redis.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(dataToCache));
+          results.push({ date: isoDate, lang, status: 'cached' });
+        } else {
+          results.push({ date: isoDate, lang, status: 'cached_in_memory_only' });
+        }
       } catch (fetchError) {
         results.push({ date: isoDate, lang, status: 'fetch_exception' });
       }

@@ -15,26 +15,33 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+function getInitialTheme(): Theme {
+  if (typeof window === 'undefined') return 'system';
+  const saved = localStorage.getItem('theme') as Theme | null;
+  if (saved) return saved;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function getInitialLanguage(): Language {
+  if (typeof window === 'undefined') return 'en';
+  const saved = localStorage.getItem('language') as Language | null;
+  return saved ?? 'en';
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('system');
-  const [isDark, setIsDark] = useState(false);
-  const [language, setLanguageState] = useState<Language>('en');
+  const [theme, setThemeState] = useState<Theme>(() => getInitialTheme());
+  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const initialTheme = getInitialTheme();
+    if (initialTheme === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return initialTheme === 'dark';
+  });
 
   useEffect(() => {
-    // Load theme from localStorage
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-    }
-
-    // Load language from localStorage
-    const savedLanguage = localStorage.getItem('language') as Language | null;
-    if (savedLanguage) {
-      setLanguageState(savedLanguage);
-    }
-  }, []);
-
-  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const root = document.documentElement;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 

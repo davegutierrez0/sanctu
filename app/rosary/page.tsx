@@ -1,25 +1,28 @@
 'use client';
 
-import { getTodaysMystery, ROSARY_MYSTERIES, type MysteryType } from '@/lib/data/rosary';
+import { getTodaysMystery, ROSARY_MYSTERIES, getLocalizedMystery, ROSARY_UI, type MysteryType } from '@/lib/data/rosary';
+import { useLanguage } from '@/components/ThemeProvider';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function RosaryPage() {
-  const [mysteryType, setMysteryType] = useState<MysteryType>('joyful');
+  const { language } = useLanguage();
+  const ui = ROSARY_UI[language];
+  const [mysteryType, setMysteryType] = useState<MysteryType>(() => getTodaysMystery().type);
   const [currentDecade, setCurrentDecade] = useState(0);
   const [currentBead, setCurrentBead] = useState(0); // 0-9 for each decade
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const todaysMystery = getTodaysMystery();
-    setMysteryType(todaysMystery.type);
-  }, []);
+  const localizedMysterySets = useMemo(
+    () =>
+      Object.entries(ROSARY_MYSTERIES).reduce(
+        (acc, [key, set]) => ({ ...acc, [key]: getLocalizedMystery(set, language) }),
+        {} as Record<MysteryType, ReturnType<typeof getLocalizedMystery>>
+      ),
+    [language]
+  );
 
-  if (!mounted) return null;
-
-  const currentMysterySet = ROSARY_MYSTERIES[mysteryType];
+  const currentMysterySet = localizedMysterySets[mysteryType];
   const currentMystery = currentMysterySet.mysteries[currentDecade];
   const totalBeads = 10;
   const progress = ((currentDecade * 10 + currentBead) / 50) * 100;
@@ -71,7 +74,7 @@ export default function RosaryPage() {
 
           {/* Mystery Selector */}
           <div className="flex flex-wrap justify-center gap-2">
-            {Object.entries(ROSARY_MYSTERIES).map(([key, mysterySet]) => (
+            {Object.entries(localizedMysterySets).map(([key, mysterySet]) => (
               <button
                 key={key}
                 onClick={() => {

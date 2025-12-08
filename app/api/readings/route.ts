@@ -32,10 +32,17 @@ export const runtime = 'nodejs';
 let redisClient: ReturnType<typeof createClient> | null = null;
 
 async function getRedis() {
+  if (!process.env.REDIS_URL) return null;
+
   if (!redisClient) {
-    redisClient = createClient({ url: process.env.REDIS_URL });
-    redisClient.on('error', (err: Error) => console.error('Redis Client Error', err));
-    await redisClient.connect();
+    try {
+      redisClient = createClient({ url: process.env.REDIS_URL });
+      redisClient.on('error', (err: Error) => console.error('Redis Client Error', err));
+      await redisClient.connect();
+    } catch (err) {
+      console.error('Redis connection failed, continuing without cache:', err);
+      redisClient = null;
+    }
   }
   return redisClient;
 }
@@ -67,18 +74,20 @@ export async function GET(request: NextRequest) {
   try {
     const redis = await getRedis();
 
-    // 1. Check cache first
-    const cachedStr = await redis.get(cacheKey);
+    // 1. Check cache first (if redis available)
+    if (redis) {
+      const cachedStr = await redis.get(cacheKey);
 
-    if (cachedStr) {
-      // Cache hit - return immediately
-      const cached: CachedReadings = JSON.parse(cachedStr);
-      return NextResponse.json(cached, {
-        headers: {
-          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
-          'X-Cache': 'HIT',
-        },
-      });
+      if (cachedStr) {
+        // Cache hit - return immediately
+        const cached: CachedReadings = JSON.parse(cachedStr);
+        return NextResponse.json(cached, {
+          headers: {
+            'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
+            'X-Cache': 'HIT',
+          },
+        });
+      }
     }
 
     // 2. Cache miss - fetch from USCCB
@@ -110,7 +119,9 @@ export async function GET(request: NextRequest) {
       language: lang,
     };
 
-    await redis.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(dataToCache));
+    if (redis) {
+      await redis.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(dataToCache));
+    }
 
     return NextResponse.json(dataToCache, {
       headers: {

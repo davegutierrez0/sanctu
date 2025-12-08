@@ -2,8 +2,10 @@
 
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { toLocalISODate } from '@/lib/date';
+import { useLanguage } from '@/components/ThemeProvider';
+import { LanguageToggleCompact } from '@/components/LanguageToggle';
 
 interface Reading {
   citation: string;
@@ -20,38 +22,45 @@ interface ReadingsData {
 }
 
 export default function ReadingsPage() {
+  const { language } = useLanguage();
   const [readings, setReadings] = useState<ReadingsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTodaysReadings();
-  }, []);
+  const fetchTodaysReadings = useCallback(
+    async (lang: 'en' | 'es' = language) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const fetchTodaysReadings = async () => {
-    try {
-      const requestedDate = toLocalISODate();
-      const response = await fetch(`/api/readings?date=${requestedDate}`);
+        const requestedDate = toLocalISODate();
+        const response = await fetch(`/api/readings?date=${requestedDate}&lang=${lang}`);
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch readings');
+        if (!response.ok) {
+          throw new Error('Failed to fetch readings');
+        }
+
+        const data = await response.json();
+        setReadings(data);
+      } catch (err) {
+        setError("Unable to load today's readings. Please try again later.");
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
+    },
+    [language]
+  );
 
-      const data = await response.json();
-      setReadings(data);
-    } catch (err) {
-      setError('Unable to load today\'s readings. Please try again later.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    fetchTodaysReadings(language);
+  }, [language, fetchTodaysReadings]);
 
-  const today = new Date().toLocaleDateString('en-US', {
+  const today = new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
   return (
@@ -65,15 +74,17 @@ export default function ReadingsPage() {
       <div className="min-h-screen bg-white dark:bg-gray-950">
         {/* Navigation */}
         <nav className="no-print sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
-          <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            >
-              <ArrowLeft size={20} />
-              Home
-            </Link>
+        <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          >
+            <ArrowLeft size={20} />
+            Home
+          </Link>
 
+          <div className="flex items-center gap-3">
+            <LanguageToggleCompact />
             <button
               onClick={() => window.print()}
               className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
@@ -81,7 +92,8 @@ export default function ReadingsPage() {
               Print
             </button>
           </div>
-        </nav>
+        </div>
+      </nav>
 
         {/* Main Content */}
         <main className="max-w-3xl w-full mx-auto px-6 py-12">
@@ -116,7 +128,7 @@ export default function ReadingsPage() {
             <div className="p-6 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-center">
               <p className="text-red-800 dark:text-red-200">{error}</p>
               <button
-                onClick={fetchTodaysReadings}
+                onClick={() => fetchTodaysReadings()}
                 className="mt-4 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors"
               >
                 Try Again
@@ -163,7 +175,7 @@ export default function ReadingsPage() {
 
       {/* Print Footer */}
       <div className="print-footer" data-date={today} style={{ display: 'none' }}>
-        Printed from Sanctus App - {today}
+        Printed from Sanctu App - {today}
       </div>
     </>
   );

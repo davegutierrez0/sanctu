@@ -1,6 +1,7 @@
 'use client';
 
-import { COMMON_PRAYERS } from '@/lib/data/prayers';
+import { COMMON_PRAYERS, PRAYER_UI, getLocalizedPrayer } from '@/lib/data/prayers';
+import { useLanguage } from '@/components/ThemeProvider';
 import { ArrowLeft, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -8,24 +9,30 @@ import { use } from 'react';
 
 export default function PrayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const prayer = COMMON_PRAYERS.find((p) => p.id === id);
+  const { language } = useLanguage();
+  const ui = PRAYER_UI[language];
+  const basePrayer = COMMON_PRAYERS.find((p) => p.id === id);
 
-  if (!prayer) {
-    notFound();
+  if (!basePrayer) {
+    return notFound();
   }
 
-  const today = new Date().toLocaleDateString('en-US', {
+  const prayer = getLocalizedPrayer(basePrayer, language);
+  const title = prayer.title;
+  const text = prayer.text;
+
+  const today = new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
   return (
     <>
       {/* Print Header */}
       <div className="print-header">
-        <h1>{prayer.title}</h1>
+        <h1>{title}</h1>
         {prayer.latin && <p className="italic">{prayer.latin}</p>}
         <p>{today}</p>
       </div>
@@ -39,13 +46,13 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
               className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             >
               <ArrowLeft size={20} />
-              Back to Prayers
+              {ui.backToPrayers}
             </Link>
 
             <button
               onClick={() => window.print()}
               className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Print prayer"
+              aria-label={ui.print}
             >
               <Printer size={20} />
             </button>
@@ -56,19 +63,15 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
         <main className="max-w-2xl mx-auto px-6 py-16">
           {/* Prayer Header */}
           <header className="mb-12 text-center space-y-3">
-            <h1 className="text-4xl md:text-5xl font-light tracking-tight">
-              {prayer.title}
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-light tracking-tight">{title}</h1>
             {prayer.latin && (
-              <p className="text-lg text-gray-500 dark:text-gray-400 italic">
-                {prayer.latin}
-              </p>
+              <p className="text-lg text-gray-500 dark:text-gray-400 italic">{prayer.latin}</p>
             )}
           </header>
 
           {/* Prayer Text */}
           <div className="prayer-text text-gray-800 dark:text-gray-200 leading-relaxed space-y-6 max-w-xl mx-auto">
-            {prayer.text.split('\n\n').map((paragraph, index) => (
+            {text.split('\n\n').map((paragraph, index) => (
               <p key={index} className="text-justify">
                 {paragraph}
               </p>
@@ -82,7 +85,7 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
             >
               <ArrowLeft size={18} />
-              Back to All Prayers
+              {ui.backToPrayers}
             </Link>
           </div>
         </main>
@@ -90,7 +93,7 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
 
       {/* Print Footer */}
       <div className="print-footer" data-date={today} style={{ display: 'none' }}>
-        Printed from Sanctus App - {today}
+        Printed from Sanctu App - {today}
       </div>
     </>
   );

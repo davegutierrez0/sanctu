@@ -35,13 +35,13 @@ export interface RosaryProgress {
 }
 
 // Dexie database class
-export class SanctusDB extends Dexie {
+export class SanctuDB extends Dexie {
   dailyReadings!: Table<DailyReadings>;
   preferences!: Table<UserPreferences>;
   rosaryProgress!: Table<RosaryProgress>;
 
   constructor() {
-    super('SanctusDB');
+    super('SanctuDB');
 
     this.version(1).stores({
       dailyReadings: 'date, fetchedAt',
@@ -52,7 +52,7 @@ export class SanctusDB extends Dexie {
 }
 
 // Singleton instance
-export const db = new SanctusDB();
+export const db = new SanctuDB();
 
 // Helper functions
 export async function getCachedReadings(date: string): Promise<DailyReadings | undefined> {
