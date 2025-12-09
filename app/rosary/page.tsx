@@ -117,6 +117,13 @@ export default function RosaryPage() {
     setClosingStep(0);
   };
 
+  const skipToDecade = (decadeIndex: number) => {
+    setPhase('decade');
+    setCurrentDecade(decadeIndex);
+    setCurrentBead(0);
+    setDecadeEndStep(0);
+  };
+
   const nextStep = () => {
     if (phase === 'opening') {
       if (openingStep < OPENING_STEPS.length - 1) {
@@ -514,25 +521,29 @@ export default function RosaryPage() {
         <div className="mt-16 pt-12 border-t border-gray-200 dark:border-gray-800">
           <h3 className="text-2xl font-light mb-6 tracking-tight">{ui.allMysteries}</h3>
           <div className="grid gap-4">
-            {currentMysterySet.mysteries.map((mystery) => (
-              <div
-                key={mystery.number}
-                className={`p-6 rounded-xl border transition-colors ${
-                  (phase === 'decade' || phase === 'decadeEnd') && currentDecade === mystery.number - 1
-                    ? 'border-rose-600 dark:border-rose-400 bg-rose-50 dark:bg-rose-950/20'
-                    : 'border-gray-200 dark:border-gray-800'
-                }`}
-              >
-                <h4 className="font-medium mb-1">
-                  {mystery.number}. {mystery.title}
-                </h4>
-                {mystery.scripture && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                    {mystery.scripture}
-                  </p>
-                )}
-              </div>
-            ))}
+            {currentMysterySet.mysteries.map((mystery) => {
+              const isActive = (phase === 'decade' || phase === 'decadeEnd') && currentDecade === mystery.number - 1;
+              return (
+                <button
+                  key={mystery.number}
+                  onClick={() => skipToDecade(mystery.number - 1)}
+                  className={`p-6 rounded-xl border transition-colors text-left ${
+                    isActive
+                      ? 'border-rose-600 dark:border-rose-400 bg-rose-50 dark:bg-rose-950/20'
+                      : 'border-gray-200 dark:border-gray-800 hover:border-rose-300 dark:hover:border-rose-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/10'
+                  }`}
+                >
+                  <h4 className="font-medium mb-1">
+                    {mystery.number}. {mystery.title}
+                  </h4>
+                  {mystery.scripture && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                      {mystery.scripture}
+                    </p>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </main>
