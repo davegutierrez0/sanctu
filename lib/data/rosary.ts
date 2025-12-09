@@ -279,6 +279,102 @@ export function getLocalizedMystery(mysterySet: MysterySet, lang: Language) {
   };
 }
 
+// Rosary Prayers - Bilingual
+export const ROSARY_PRAYERS = {
+  signOfTheCross: {
+    en: {
+      title: 'Sign of the Cross',
+      text: 'In the name of the Father, and of the Son, and of the Holy Spirit. Amen.',
+    },
+    es: {
+      title: 'La Señal de la Cruz',
+      text: 'En el nombre del Padre, y del Hijo, y del Espíritu Santo. Amén.',
+    },
+  },
+  apostlesCreed: {
+    en: {
+      title: "Apostles' Creed",
+      text: 'I believe in God, the Father almighty, Creator of heaven and earth, and in Jesus Christ, His only Son, our Lord, who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died and was buried; He descended into hell; on the third day He rose again from the dead; He ascended into heaven, and is seated at the right hand of God the Father almighty; from there He will come to judge the living and the dead. I believe in the Holy Spirit, the holy catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and life everlasting. Amen.',
+    },
+    es: {
+      title: 'El Credo',
+      text: 'Creo en Dios, Padre todopoderoso, Creador del cielo y de la tierra. Creo en Jesucristo, su único Hijo, nuestro Señor, que fue concebido por obra y gracia del Espíritu Santo, nació de santa María Virgen, padeció bajo el poder de Poncio Pilato, fue crucificado, muerto y sepultado, descendió a los infiernos, al tercer día resucitó de entre los muertos, subió a los cielos y está sentado a la derecha de Dios, Padre todopoderoso. Desde allí ha de venir a juzgar a vivos y muertos. Creo en el Espíritu Santo, la santa Iglesia católica, la comunión de los santos, el perdón de los pecados, la resurrección de la carne y la vida eterna. Amén.',
+    },
+  },
+  ourFather: {
+    en: {
+      title: 'Our Father',
+      text: 'Our Father, who art in heaven, hallowed be Thy name; Thy kingdom come; Thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.',
+    },
+    es: {
+      title: 'Padre Nuestro',
+      text: 'Padre nuestro, que estás en el cielo, santificado sea tu Nombre; venga a nosotros tu reino; hágase tu voluntad en la tierra como en el cielo. Danos hoy nuestro pan de cada día; perdona nuestras ofensas, como también nosotros perdonamos a los que nos ofenden; no nos dejes caer en la tentación, y líbranos del mal. Amén.',
+    },
+  },
+  hailMary: {
+    en: {
+      title: 'Hail Mary',
+      text: 'Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.',
+    },
+    es: {
+      title: 'Ave María',
+      text: 'Dios te salve, María, llena eres de gracia, el Señor es contigo. Bendita tú eres entre todas las mujeres, y bendito es el fruto de tu vientre, Jesús. Santa María, Madre de Dios, ruega por nosotros, pecadores, ahora y en la hora de nuestra muerte. Amén.',
+    },
+  },
+  gloryBe: {
+    en: {
+      title: 'Glory Be',
+      text: 'Glory be to the Father, and to the Son, and to the Holy Spirit, as it was in the beginning, is now, and ever shall be, world without end. Amen.',
+    },
+    es: {
+      title: 'Gloria',
+      text: 'Gloria al Padre, y al Hijo, y al Espíritu Santo. Como era en el principio, ahora y siempre, por los siglos de los siglos. Amén.',
+    },
+  },
+  fatimaPrayer: {
+    en: {
+      title: 'Fatima Prayer',
+      text: 'O my Jesus, forgive us our sins, save us from the fires of hell; lead all souls to Heaven, especially those who have most need of your mercy.',
+    },
+    es: {
+      title: 'Oración de Fátima',
+      text: 'Oh Jesús mío, perdona nuestros pecados, líbranos del fuego del infierno; lleva al cielo a todas las almas, especialmente a las más necesitadas de tu misericordia.',
+    },
+  },
+  hailHolyQueen: {
+    en: {
+      title: 'Hail, Holy Queen',
+      text: 'Hail, Holy Queen, Mother of Mercy, our life, our sweetness and our hope. To thee do we cry, poor banished children of Eve. To thee do we send up our sighs, mourning and weeping in this valley of tears. Turn then, most gracious advocate, thine eyes of mercy toward us, and after this our exile, show unto us the blessed fruit of thy womb, Jesus. O clement, O loving, O sweet Virgin Mary.',
+    },
+    es: {
+      title: 'Salve Regina',
+      text: 'Dios te salve, Reina y Madre de misericordia, vida, dulzura y esperanza nuestra. Dios te salve. A ti clamamos los desterrados hijos de Eva; a ti suspiramos, gimiendo y llorando, en este valle de lágrimas. Ea, pues, Señora, abogada nuestra, vuelve a nosotros esos tus ojos misericordiosos, y después de este destierro muéstranos a Jesús, fruto bendito de tu vientre. ¡Oh clemente, oh piadosa, oh dulce Virgen María!',
+    },
+  },
+  closingDialogue: {
+    en: {
+      versicle: 'V. Pray for us, O holy Mother of God.',
+      response: 'R. That we may be made worthy of the promises of Christ.',
+    },
+    es: {
+      versicle: 'V. Ruega por nosotros, Santa Madre de Dios.',
+      response: 'R. Para que seamos dignos de alcanzar las promesas de Nuestro Señor Jesucristo.',
+    },
+  },
+  closingPrayer: {
+    en: {
+      title: 'Closing Prayer',
+      intro: 'Let us pray:',
+      text: 'O God, whose Only Begotten Son, by his life, Death, and Resurrection, has purchased for us the rewards of eternal life, grant, we beseech thee, that while meditating on these mysteries of the most holy Rosary of the Blessed Virgin Mary, we may imitate what they contain and obtain what they promise, through the same Christ our Lord. Amen.',
+    },
+    es: {
+      title: 'Oración Final',
+      intro: 'Oremos:',
+      text: 'Oh Dios, cuyo Unigénito, por su vida, Muerte y Resurrección, nos ha comprado el premio de la salvación eterna, concédenos, te suplicamos, que meditando estos misterios del Santísimo Rosario de la Bienaventurada Virgen María, imitemos lo que contienen y alcancemos lo que prometen. Por el mismo Jesucristo Nuestro Señor. Amén.',
+    },
+  },
+};
+
 // UI Labels for rosary page
 export const ROSARY_UI = {
   en: {
@@ -296,6 +392,20 @@ export const ROSARY_UI = {
     complete: 'Complete',
     todaysMystery: "Today's Mystery",
     instructions: 'Tap the bead counter to advance through each decade',
+    openingPrayers: 'Opening Prayers',
+    closingPrayers: 'Closing Prayers',
+    decadeComplete: 'Decade Complete',
+    rosaryComplete: 'Rosary Complete!',
+    prayAnother: 'Pray Another Rosary',
+    includeFatima: 'Include Fatima Prayer',
+    beginRosary: 'Begin Rosary',
+    nextPrayer: 'Next Prayer',
+    nextDecade: 'Next Decade',
+    nextBead: 'Next Bead',
+    finishRosary: 'Finish Rosary',
+    allMysteries: 'All Mysteries',
+    optional: '(optional)',
+    pray: 'Pray:',
   },
   es: {
     title: 'El Santo Rosario',
@@ -312,5 +422,19 @@ export const ROSARY_UI = {
     complete: 'Completar',
     todaysMystery: 'Misterio de Hoy',
     instructions: 'Toca el contador para avanzar en cada decena',
+    openingPrayers: 'Oraciones Iniciales',
+    closingPrayers: 'Oraciones Finales',
+    decadeComplete: 'Decena Completa',
+    rosaryComplete: '¡Rosario Completo!',
+    prayAnother: 'Rezar Otro Rosario',
+    includeFatima: 'Incluir Oración de Fátima',
+    beginRosary: 'Comenzar el Rosario',
+    nextPrayer: 'Siguiente Oración',
+    nextDecade: 'Siguiente Decena',
+    nextBead: 'Siguiente Cuenta',
+    finishRosary: 'Terminar el Rosario',
+    allMysteries: 'Todos los Misterios',
+    optional: '(opcional)',
+    pray: 'Reza:',
   },
 };
