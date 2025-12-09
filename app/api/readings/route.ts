@@ -353,8 +353,9 @@ function determineLiturgicalColor(title: string, lang: 'en' | 'es'): string {
 
 function cleanHTML(str: string): string {
   const withBreaks = str
-    .replace(/<\s*br\s*\/?>/gi, '\n')
-    .replace(/<\/p\s*>/gi, '\n\n')
+    .replace(/<\s*br\s*\/?>\s*<\s*br\s*\/?>/gi, '\n\n') // double <br><br> → paragraph break
+    .replace(/<\s*br\s*\/?>/gi, ' ') // single <br> → newline (will be flattened to space)
+    .replace(/<\/p\s*>/gi, '\n') // </p> → single newline (not paragraph break)
     .replace(/<\/div\s*>/gi, '\n')
     .replace(/<\/h\d\s*>/gi, '\n');
 

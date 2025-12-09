@@ -245,7 +245,7 @@ export default function ReadingsPage() {
         ? normalizeResponseContent(reading.content)
         : reading.content
             .replace(/\r\n/g, '\n')
-            .replace(/(?<!\n)\n(?!\n)/g, ' '); // flatten single <br>, keep double breaks
+            .replace(/(?<!\n)\n(?!\n)/g, ' '); // flatten single <br> to space, keep double breaks
 
       const paragraphs = content
         .split(/\n{2,}/)
@@ -305,28 +305,8 @@ export default function ReadingsPage() {
         return nodes;
       }
 
-      // For non-response readings (e.g., First/Second/Gospel), USCCB sometimes uses
-      // <br><br> between clauses which we convert to double newlines. When every
-      // paragraph is very short, treat it as line-wrapped text rather than separate
-      // stanzas to keep prose readable.
-      const normalizedParagraphs = paragraphs.map((p) => p.replace(/\s*\n\s*/g, ' ').trim());
-      const avgLength =
-        normalizedParagraphs.reduce((sum, p) => sum + p.length, 0) /
-        Math.max(normalizedParagraphs.length, 1);
-      const shouldMerge =
-        normalizedParagraphs.length > 1 &&
-        avgLength < 120 &&
-        (reading.type === 'first' || reading.type === 'second' || reading.type === 'gospel');
-
-      if (shouldMerge) {
-        return (
-          <p className="mb-4 last:mb-0">
-            {normalizedParagraphs.join(' ')}
-          </p>
-        );
-      }
-
-      return normalizedParagraphs.map((paragraph, i) => (
+      // Double line breaks create separate paragraphs
+      return paragraphs.map((paragraph, i) => (
         <p key={i} className="mb-4 last:mb-0">
           {paragraph}
         </p>
