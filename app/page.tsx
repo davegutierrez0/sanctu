@@ -6,6 +6,7 @@ import { useTheme, useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { getUI, ESSENTIAL_PRAYER_IDS } from '@/lib/data/ui';
 import { COMMON_PRAYERS } from '@/lib/data/prayers';
+import { clearAllData } from '@/lib/db';
 import { useState } from 'react';
 
 export default function HomePage() {
@@ -28,6 +29,9 @@ export default function HomePage() {
     setIsClearing(true);
 
     try {
+      // Clear IndexedDB (readings, preferences, rosary progress)
+      await clearAllData();
+
       // Clear localStorage
       localStorage.clear();
 

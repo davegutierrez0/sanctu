@@ -17,6 +17,7 @@ interface ReadingsData {
 }
 
 const RESPONSE_MARKER = /^(?:["“”']\s*)?(R\.|℟\.|R\/)\s*/i;
+const RESPONSE_MARKER_ANYWHERE = /(?:^|\s)(R\.|℟\.|R\/)\s*/i;
 const SENTENCE_BOUNDARY = /([.!?])\s+(?=["“”'‘’(]*[A-ZÁÉÍÓÚÜÑ¡¿])/g;
 
 const splitSentences = (text: string): string[] => {
@@ -237,7 +238,9 @@ export default function ReadingsPage() {
 
   const renderReadingContent = useCallback(
     (reading: DailyReading): ReactNode => {
-      const isResponseReading = reading.type === 'psalm' || reading.type === 'alleluia';
+      const hasResponseMarker = RESPONSE_MARKER_ANYWHERE.test(reading.content);
+      const isResponseReading =
+        (reading.type === 'psalm' || reading.type === 'alleluia') && hasResponseMarker;
       const content = isResponseReading
         ? normalizeResponseContent(reading.content)
         : reading.content;

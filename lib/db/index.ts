@@ -100,3 +100,13 @@ export async function getTodayRosary(): Promise<RosaryProgress | undefined> {
 export async function updateRosaryProgress(progress: RosaryProgress): Promise<void> {
   await db.rosaryProgress.put(progress);
 }
+
+export async function clearAllReadings(): Promise<void> {
+  await db.dailyReadings.clear();
+}
+
+export async function clearAllData(): Promise<void> {
+  await db.dailyReadings.clear();
+  await db.preferences.clear();
+  await db.rosaryProgress.clear();
+}

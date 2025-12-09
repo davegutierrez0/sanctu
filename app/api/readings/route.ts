@@ -379,8 +379,10 @@ function normalizeLabel(label: string, lang: 'en' | 'es'): string {
 
   if (lang === 'es') {
     if (lower.includes('salmo')) return 'Salmo Responsorial';
+    if (lower.includes('aleluya') || lower.includes('aclamacion') || lower.includes('aclamación')) {
+      return 'Aleluya';
+    }
     if (lower.includes('evangelio')) return 'Evangelio';
-    if (lower.includes('aleluya')) return 'Aleluya';
     if (lower.includes('segunda') || lower.includes('lectura 2')) return 'Segunda Lectura';
     if (lower.includes('primera') || lower.includes('lectura 1')) return 'Primera Lectura';
     return label.trim() || 'Lectura';
@@ -400,8 +402,10 @@ function mapLabelToType(label: string, lang: 'en' | 'es'): ReadingType {
 
   if (lang === 'es') {
     if (lower.includes('salmo')) return 'psalm';
+    if (lower.includes('aleluya') || lower.includes('aclamacion') || lower.includes('aclamación')) {
+      return 'alleluia';
+    }
     if (lower.includes('evangelio')) return 'gospel';
-    if (lower.includes('aleluya')) return 'alleluia';
     if (lower.includes('segunda') || lower.includes('lectura 2')) return 'second';
     return 'first';
   }
