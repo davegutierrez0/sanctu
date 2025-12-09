@@ -243,7 +243,9 @@ export default function ReadingsPage() {
         (reading.type === 'psalm' || reading.type === 'alleluia') && hasResponseMarker;
       const content = isResponseReading
         ? normalizeResponseContent(reading.content)
-        : reading.content.replace(/\n(?!\n)/g, ' '); // keep double breaks, flatten single <br>
+        : reading.content
+            .replace(/\r\n/g, '\n')
+            .replace(/(?<!\n)\n(?!\n)/g, ' '); // flatten single <br>, keep double breaks
 
       const paragraphs = content
         .split(/\n{2,}/)
