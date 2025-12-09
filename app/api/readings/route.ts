@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from 'redis';
+import { gzipSync, gunzipSync } from 'zlib';
 import { fromLocalISODate, toLocalISODate } from '@/lib/date';
 
 /**
@@ -13,11 +14,13 @@ import { fromLocalISODate, toLocalISODate } from '@/lib/date';
  * Cache Strategy (USCCB-friendly):
  * - First request for a date+lang: fetch from USCCB, store in Redis
  * - All subsequent requests: served from Redis cache
- * - TTL: 7 days (readings for a date never change)
+ * - TTL: 30 days (readings for a date never change)
  * - Result: Only 1 request to USCCB per day per language
  */
 
-const CACHE_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+const CACHE_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const NON_CACHED_LIMIT_PER_USER = 7;
+const NON_CACHED_WINDOW_SECONDS = 60 * 60 * 24; // per-day limit
 
 // URL patterns for each language
 const USCCB_URLS = {
@@ -25,11 +28,68 @@ const USCCB_URLS = {
   es: 'https://bible.usccb.org/es/bible/lecturas',
 };
 
+type ReadingType = 'first' | 'psalm' | 'second' | 'gospel' | 'alleluia';
+
+interface Reading {
+  citation: string;
+  label: string;
+  content: string;
+  type: ReadingType;
+}
+
 // Note: Using Node.js runtime (not Edge) because redis client uses TCP
 export const runtime = 'nodejs';
 
 // Lazy-initialize Redis client
 let redisClient: ReturnType<typeof createClient> | null = null;
+const inMemoryMissTracker = new Map<string, { count: number; resetAt: number }>();
+
+function getClientIdentifier(request: NextRequest): string {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const ip = forwardedFor.split(',')[0]?.trim();
+    if (ip) return ip;
+  }
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+
+  // Next.js exposes request.ip when available (may be undefined in dev)
+  if ((request as { ip?: string }).ip) {
+    return (request as { ip?: string }).ip as string;
+  }
+
+  return 'anonymous';
+}
+
+async function trackNonCachedMiss(
+  request: NextRequest,
+  lang: 'en' | 'es',
+  redis: ReturnType<typeof createClient> | null
+): Promise<{ count: number }> {
+  const clientId = getClientIdentifier(request);
+  const windowKey = `readings:misses:${clientId}:${lang}:${toLocalISODate()}`;
+
+  if (redis) {
+    const count = await redis.incr(windowKey);
+    if (count === 1) {
+      await redis.expire(windowKey, NON_CACHED_WINDOW_SECONDS);
+    }
+    return { count };
+  }
+
+  const now = Date.now();
+  const existing = inMemoryMissTracker.get(windowKey);
+
+  if (!existing || existing.resetAt <= now) {
+    inMemoryMissTracker.set(windowKey, { count: 1, resetAt: now + NON_CACHED_WINDOW_SECONDS * 1000 });
+    return { count: 1 };
+  }
+
+  const updatedCount = existing.count + 1;
+  inMemoryMissTracker.set(windowKey, { count: updatedCount, resetAt: existing.resetAt });
+  return { count: updatedCount };
+}
 
 async function getRedis() {
   if (!process.env.REDIS_URL) return null;
@@ -55,11 +115,31 @@ function formatUSCCBDate(date: Date): string {
 }
 
 interface CachedReadings {
-  readings: any[];
+  readings: Reading[];
   liturgicalColor: string;
   season: string;
   cachedAt: number;
   language: string;
+}
+
+function compressPayload(payload: CachedReadings): string {
+  try {
+    return gzipSync(JSON.stringify(payload)).toString('base64');
+  } catch (err) {
+    console.error('Failed to compress payload; storing uncompressed', err);
+    return JSON.stringify(payload);
+  }
+}
+
+function decompressPayload(serialized: string): CachedReadings {
+  try {
+    const buffer = Buffer.from(serialized, 'base64');
+    const json = gunzipSync(buffer).toString();
+    return JSON.parse(json) as CachedReadings;
+  } catch {
+    // Fallback for legacy uncompressed entries
+    return JSON.parse(serialized) as CachedReadings;
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -80,7 +160,7 @@ export async function GET(request: NextRequest) {
 
       if (cachedStr) {
         // Cache hit - return immediately
-        const cached: CachedReadings = JSON.parse(cachedStr);
+        const cached: CachedReadings = decompressPayload(cachedStr);
         return NextResponse.json(cached, {
           headers: {
             'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
@@ -91,6 +171,22 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Cache miss - fetch from USCCB
+    const { count } = await trackNonCachedMiss(request, lang, redis);
+    if (count > NON_CACHED_LIMIT_PER_USER) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit reached for uncached readings. Please try a cached day or come back tomorrow.',
+        },
+        {
+          status: 429,
+          headers: {
+            'Cache-Control': 'no-store',
+            'X-Cache': 'RATE_LIMIT',
+          },
+        }
+      );
+    }
+
     const usccbDate = formatUSCCBDate(date);
     const baseUrl = USCCB_URLS[lang];
     const url = `${baseUrl}/${usccbDate}.cfm`;
@@ -120,7 +216,7 @@ export async function GET(request: NextRequest) {
     };
 
     if (redis) {
-      await redis.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(dataToCache));
+      await redis.setEx(cacheKey, CACHE_TTL_SECONDS, compressPayload(dataToCache));
     }
 
     return NextResponse.json(dataToCache, {
@@ -171,7 +267,7 @@ export async function GET(request: NextRequest) {
  * Parse USCCB HTML structure
  */
 function parseUSCCBHTML(html: string, lang: 'en' | 'es') {
-  const readings: any[] = [];
+  const readings: Reading[] = [];
 
   const blockRegex = /<div class="innerblock">\s*<div class="content-header">([\s\S]*?)<\/div>\s*<div class="content-body">([\s\S]*?)<\/div>/gi;
   const blocks = Array.from(html.matchAll(blockRegex));
@@ -282,7 +378,7 @@ function normalizeLabel(label: string, lang: 'en' | 'es'): string {
   return label.trim() || 'Reading';
 }
 
-function mapLabelToType(label: string, lang: 'en' | 'es'): 'first' | 'psalm' | 'second' | 'gospel' | 'alleluia' {
+function mapLabelToType(label: string, lang: 'en' | 'es'): ReadingType {
   const lower = label.toLowerCase();
 
   if (lang === 'es') {

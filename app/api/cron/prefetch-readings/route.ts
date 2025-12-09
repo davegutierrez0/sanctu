@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from 'redis';
+import { gzipSync } from 'zlib';
 
 /**
  * Cron Job: Prefetch Daily Readings
@@ -15,7 +16,24 @@ const USCCB_URLS = {
   es: 'https://bible.usccb.org/es/bible/lecturas',
 };
 
-const CACHE_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+const CACHE_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+type ReadingType = 'first' | 'psalm' | 'second' | 'gospel' | 'alleluia';
+
+interface Reading {
+  citation: string;
+  label: string;
+  content: string;
+  type: ReadingType;
+}
+
+interface CachedReadings {
+  readings: Reading[];
+  liturgicalColor: string;
+  season: string;
+  cachedAt: number;
+  language: string;
+  saint?: string;
+}
 
 export const runtime = 'nodejs';
 
@@ -49,6 +67,15 @@ function toISODate(date: Date): string {
   return date.toISOString().split('T')[0];
 }
 
+function compressPayload(payload: CachedReadings): string {
+  try {
+    return gzipSync(JSON.stringify(payload)).toString('base64');
+  } catch (err) {
+    console.error('Failed to compress payload; storing uncompressed', err);
+    return JSON.stringify(payload);
+  }
+}
+
 export async function GET(request: NextRequest) {
   // Verify cron secret to prevent unauthorized access
   const authHeader = request.headers.get('authorization');
@@ -65,61 +92,67 @@ export async function GET(request: NextRequest) {
     const now = new Date();
     const estOffset = -5 * 60; // EST is UTC-5
     const estDate = new Date(now.getTime() + estOffset * 60 * 1000);
-    const isoDate = toISODate(estDate);
-    const usccbDate = formatUSCCBDate(estDate);
+    const targetOffsets = [0, 1]; // Today + tomorrow
 
     // Prefetch for both languages
     for (const lang of ['en', 'es'] as const) {
-      const cacheKey = `readings:${lang}:${isoDate}`;
+      for (const offset of targetOffsets) {
+        const targetDate = new Date(estDate);
+        targetDate.setDate(estDate.getDate() + offset);
+        const targetIso = toISODate(targetDate);
+        const targetUsccb = formatUSCCBDate(targetDate);
+        const cacheKey = `readings:${lang}:${targetIso}`;
 
-      // Check if already cached
-      if (redis) {
-        const existing = await redis.get(cacheKey);
-        if (existing) {
-          results.push({ date: isoDate, lang, status: 'already_cached' });
-          continue;
-        }
-      }
-
-      // Fetch from USCCB
-      const baseUrl = USCCB_URLS[lang];
-      const url = `${baseUrl}/${usccbDate}.cfm`;
-
-      try {
-        const response = await fetch(url, {
-          headers: {
-            'User-Agent': 'SanctusApp/1.0 (Catholic Prayer App; scheduled-prefetch)',
-          },
-        });
-
-        if (!response.ok) {
-          results.push({ date: isoDate, lang, status: `fetch_error_${response.status}` });
-          continue;
-        }
-
-        const html = await response.text();
-        const parsed = parseUSCCBHTML(html, lang);
-
-        if (!parsed.readings.length) {
-          results.push({ date: isoDate, lang, status: 'parse_error_no_readings' });
-          continue;
-        }
-
-        // Cache the result
-        const dataToCache = {
-          ...parsed,
-          cachedAt: Date.now(),
-          language: lang,
-        };
-
+        // Check if already cached
         if (redis) {
-          await redis.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(dataToCache));
-          results.push({ date: isoDate, lang, status: 'cached' });
-        } else {
-          results.push({ date: isoDate, lang, status: 'cached_in_memory_only' });
+          const existing = await redis.get(cacheKey);
+          if (existing) {
+            results.push({ date: targetIso, lang, status: 'already_cached' });
+            continue;
+          }
         }
-      } catch (fetchError) {
-        results.push({ date: isoDate, lang, status: 'fetch_exception' });
+
+        // Fetch from USCCB
+        const baseUrl = USCCB_URLS[lang];
+        const url = `${baseUrl}/${targetUsccb}.cfm`;
+
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'User-Agent': 'SanctusApp/1.0 (Catholic Prayer App; scheduled-prefetch)',
+            },
+          });
+
+          if (!response.ok) {
+            results.push({ date: targetIso, lang, status: `fetch_error_${response.status}` });
+            continue;
+          }
+
+          const html = await response.text();
+          const parsed = parseUSCCBHTML(html, lang);
+
+          if (!parsed.readings.length) {
+            results.push({ date: targetIso, lang, status: 'parse_error_no_readings' });
+            continue;
+          }
+
+          // Cache the result
+          const dataToCache = {
+            ...parsed,
+            cachedAt: Date.now(),
+            language: lang,
+          };
+
+          if (redis) {
+            await redis.setEx(cacheKey, CACHE_TTL_SECONDS, compressPayload(dataToCache));
+            results.push({ date: targetIso, lang, status: 'cached' });
+          } else {
+            results.push({ date: targetIso, lang, status: 'cached_in_memory_only' });
+          }
+        } catch (err) {
+          console.error('Prefetch fetch exception', { lang, date: targetIso, error: err });
+          results.push({ date: targetIso, lang, status: 'fetch_exception' });
+        }
       }
     }
 
@@ -139,7 +172,7 @@ export async function GET(request: NextRequest) {
 
 // Simplified parser (same as main route)
 function parseUSCCBHTML(html: string, lang: 'en' | 'es') {
-  const readings: any[] = [];
+  const readings: Reading[] = [];
 
   const blockRegex = /<div class="innerblock">\s*<div class="content-header">([\s\S]*?)<\/div>\s*<div class="content-body">([\s\S]*?)<\/div>/gi;
   const blocks = Array.from(html.matchAll(blockRegex));
@@ -187,7 +220,7 @@ function cleanHTML(str: string): string {
     .trim();
 }
 
-function mapLabelToType(label: string, lang: 'en' | 'es'): string {
+function mapLabelToType(label: string, lang: 'en' | 'es'): ReadingType {
   const lower = label.toLowerCase();
   if (lang === 'es') {
     if (lower.includes('salmo')) return 'psalm';

@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowLeft, Printer } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { toLocalISODate } from '@/lib/date';
 import { useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
+import { cacheReadings, getCachedReadings, DailyReadings } from '@/lib/db';
 
 interface Reading {
   citation: string;
@@ -19,56 +20,183 @@ interface ReadingsData {
   liturgicalColor: string;
   season: string;
   saint?: string;
+  cacheState?: 'HIT' | 'MISS' | 'ERROR' | 'FETCH';
 }
 
 export default function ReadingsPage() {
   const { language } = useLanguage();
-  const [readings, setReadings] = useState<ReadingsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState<string>(toLocalISODate());
+  const [readingsByDate, setReadingsByDate] = useState<Record<string, ReadingsData>>({});
+  const [loadingDate, setLoadingDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTodaysReadings = useCallback(
-    async (lang: 'en' | 'es' = language) => {
+  const formatDisplayDate = useCallback(
+    (isoDate: string) => {
+      const [year, month, day] = isoDate.split('-').map(Number);
+      const dateObj = new Date(year ?? 0, (month ?? 1) - 1, day ?? 1);
+      return dateObj.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
+    [language]
+  );
+
+  const getOffsetDate = useCallback((isoDate: string, offset: number) => {
+    const [year, month, day] = isoDate.split('-').map(Number);
+    const base = new Date(year ?? 0, (month ?? 1) - 1, day ?? 1);
+    base.setDate(base.getDate() + offset);
+    return toLocalISODate(base);
+  }, []);
+
+  const hydrateFromCache = useCallback(async (date: string) => {
+    try {
+      const cached = await getCachedReadings(date);
+      if (cached) {
+        setReadingsByDate((prev) => ({
+          ...prev,
+          [date]: {
+            readings: cached.readings,
+            liturgicalColor: cached.liturgicalColor,
+            season: cached.season,
+            saint: cached.saint,
+            cacheState: cached.cacheState || 'HIT',
+          },
+        }));
+        return cached;
+      }
+    } catch (err) {
+      console.error('Failed to read cached readings', err);
+    }
+    return undefined;
+  }, []);
+
+  const fetchReadingsForDate = useCallback(
+    async (date: string, lang: 'en' | 'es' = language, options: { silent?: boolean } = {}) => {
+      const { silent = false } = options;
+
       try {
-        setLoading(true);
-        setError(null);
-
-        const requestedDate = toLocalISODate();
-        const response = await fetch(`/api/readings?date=${requestedDate}&lang=${lang}`);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch readings');
+        if (!silent) {
+          setLoadingDate(date);
+          setError(null);
         }
 
-        const data = await response.json();
-        setReadings(data);
+        const response = await fetch(`/api/readings?date=${date}&lang=${lang}`);
+
+        if (!response.ok) {
+          let errorMessage = 'Failed to fetch readings';
+          try {
+            const errorBody = await response.json();
+            if (errorBody?.error) {
+              errorMessage = errorBody.error;
+            }
+          } catch {
+            // Ignore JSON parse errors and keep default message
+          }
+          throw new Error(errorMessage);
+        }
+
+        const data = (await response.json()) as ReadingsData;
+        const cacheState = (response.headers.get('X-Cache') as ReadingsData['cacheState']) || 'FETCH';
+        const hydrated: ReadingsData = { ...data, cacheState };
+        setReadingsByDate((prev) => ({ ...prev, [date]: hydrated }));
+
+        const payload: DailyReadings = {
+          date,
+          readings: data.readings,
+          liturgicalColor: data.liturgicalColor,
+          season: data.season,
+          saint: data.saint,
+          fetchedAt: Date.now(),
+          cacheState,
+        };
+
+        cacheReadings(payload).catch((err) =>
+          console.error('Failed to persist readings cache', err)
+        );
+        return data;
       } catch (err) {
-        setError("Unable to load today's readings. Please try again later.");
+        const message =
+          err instanceof Error
+            ? err.message
+            : 'Unable to load readings for this day. Please try again later.';
+
+        if (!silent) {
+          setError(message);
+        }
         console.error(err);
+        throw err;
       } finally {
-        setLoading(false);
+        if (!silent) {
+          setLoadingDate(null);
+        }
       }
     },
     [language]
   );
 
   useEffect(() => {
-    fetchTodaysReadings(language);
-  }, [language, fetchTodaysReadings]);
+    const todayIso = toLocalISODate();
+    setCurrentDate(todayIso);
+    setReadingsByDate({});
+    setError(null);
 
-  const today = new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+    const loadReadings = async () => {
+      await hydrateFromCache(todayIso);
+      await fetchReadingsForDate(todayIso, language);
+
+      const tomorrowIso = getOffsetDate(todayIso, 1);
+      await hydrateFromCache(tomorrowIso);
+      fetchReadingsForDate(tomorrowIso, language, { silent: true }).catch(console.error);
+    };
+
+    loadReadings();
+  }, [language, fetchReadingsForDate, getOffsetDate, hydrateFromCache]);
+
+  const currentReadings = readingsByDate[currentDate] || null;
+  const loading = loadingDate === currentDate;
+  const todayLabel = formatDisplayDate(currentDate);
+  const previousDate = getOffsetDate(currentDate, -1);
+  const nextDate = getOffsetDate(currentDate, 1);
+  const previousLabel = formatDisplayDate(previousDate);
+  const nextLabel = formatDisplayDate(nextDate);
+  const hasPrevCached = Boolean(readingsByDate[previousDate]);
+  const hasNextCached = Boolean(readingsByDate[nextDate]);
+
+  const handleNavigate = async (offset: number) => {
+    const targetDate = getOffsetDate(currentDate, offset);
+
+    try {
+      setCurrentDate(targetDate);
+
+      const cached = readingsByDate[targetDate] || (await hydrateFromCache(targetDate));
+
+      if (!cached) {
+        await fetchReadingsForDate(targetDate, language);
+      } else {
+        setError(null);
+      }
+
+      const prefetchDate = getOffsetDate(targetDate, offset > 0 ? 1 : -1);
+      if (!readingsByDate[prefetchDate]) {
+        hydrateFromCache(prefetchDate).catch(console.error);
+        fetchReadingsForDate(prefetchDate, language, { silent: true }).catch(console.error);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRetry = () => fetchReadingsForDate(currentDate, language);
 
   return (
     <>
       {/* Print Header */}
       <div className="print-header">
         <h1>Daily Mass Readings</h1>
-        <p>{today}</p>
+        <p>{todayLabel}</p>
       </div>
 
       <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
@@ -100,19 +228,51 @@ export default function ReadingsPage() {
           {/* Header */}
           <header className="mb-12 text-center space-y-3">
             <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              {today}
+              {todayLabel}
             </p>
             <h1 className="text-4xl md:text-5xl font-light tracking-tight">
               Daily Mass Readings
             </h1>
-            {readings?.season && (
-              <p className="text-gray-600 dark:text-gray-400">{readings.season}</p>
+            {currentReadings?.season && (
+              <p className="text-gray-600 dark:text-gray-400">{currentReadings.season}</p>
             )}
-            {readings?.saint && (
+            {currentReadings?.saint && (
               <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                {readings.saint}
+                {currentReadings.saint}
               </p>
             )}
+
+            <div className="no-print flex items-center justify-center gap-4 pt-2">
+              <button
+                onClick={() => handleNavigate(-1)}
+                disabled={loading}
+                title={hasPrevCached ? `Cached: ${previousLabel}` : `Fetch: ${previousLabel}`}
+                aria-label={`Previous day: ${previousLabel}`}
+                className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft size={16} />
+                Previous day
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                  {hasPrevCached ? 'Cached' : 'Fetch'}
+                </span>
+              </button>
+              <div className="text-xs text-gray-500 dark:text-gray-400 px-2">
+                Jump between cached days
+              </div>
+              <button
+                onClick={() => handleNavigate(1)}
+                disabled={loading}
+                title={hasNextCached ? `Cached: ${nextLabel}` : `Fetch: ${nextLabel}`}
+                aria-label={`Next day: ${nextLabel}`}
+                className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next day
+                <ChevronRight size={16} />
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                  {hasNextCached ? 'Cached' : 'Fetch'}
+                </span>
+              </button>
+            </div>
           </header>
 
           {/* Loading State */}
@@ -128,7 +288,7 @@ export default function ReadingsPage() {
             <div className="p-6 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-center">
               <p className="text-red-800 dark:text-red-200">{error}</p>
               <button
-                onClick={() => fetchTodaysReadings()}
+                onClick={handleRetry}
                 className="mt-4 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors"
               >
                 Try Again
@@ -137,9 +297,9 @@ export default function ReadingsPage() {
           )}
 
           {/* Readings */}
-          {readings && readings.readings.length > 0 && (
+          {currentReadings && currentReadings.readings.length > 0 && (
             <div className="space-y-12">
-              {readings.readings.map((reading, index) => (
+              {currentReadings.readings.map((reading, index) => (
                 <article
                   key={index}
                   className="reading p-8 rounded-2xl bg-stone-100 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-800"
@@ -165,17 +325,17 @@ export default function ReadingsPage() {
           )}
 
           {/* Empty State */}
-          {readings && readings.readings.length === 0 && !loading && !error && (
+          {currentReadings && currentReadings.readings.length === 0 && !loading && !error && (
             <div className="text-center py-12 text-gray-600 dark:text-gray-400">
-              <p>No readings available for today.</p>
+              <p>No readings available for this day.</p>
             </div>
           )}
         </main>
       </div>
 
       {/* Print Footer */}
-      <div className="print-footer" data-date={today} style={{ display: 'none' }}>
-        Printed from Sanctu App - {today}
+      <div className="print-footer" data-date={todayLabel} style={{ display: 'none' }}>
+        Printed from Sanctu App - {todayLabel}
       </div>
     </>
   );

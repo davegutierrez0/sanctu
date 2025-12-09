@@ -16,6 +16,7 @@ export interface DailyReadings {
   season: string;
   saint?: string;
   fetchedAt: number; // timestamp
+  cacheState?: 'HIT' | 'MISS' | 'ERROR';
 }
 
 export interface UserPreferences {
@@ -62,10 +63,10 @@ export async function getCachedReadings(date: string): Promise<DailyReadings | u
 export async function cacheReadings(readings: DailyReadings): Promise<void> {
   await db.dailyReadings.put(readings);
 
-  // Clean up old cached readings (keep last 7 days only)
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const cutoffTimestamp = sevenDaysAgo.getTime();
+  // Clean up old cached readings (keep last 30 days only)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const cutoffTimestamp = thirtyDaysAgo.getTime();
 
   await db.dailyReadings
     .where('fetchedAt')

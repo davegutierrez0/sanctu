@@ -1,6 +1,6 @@
 'use client';
 
-import { Book, Coffee, Heart, Moon, Printer, Sun } from 'lucide-react';
+import { Book, Coffee, Heart, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme, useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
