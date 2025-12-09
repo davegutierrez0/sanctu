@@ -6,21 +6,14 @@ import { useEffect, useState, useCallback } from 'react';
 import { toLocalISODate } from '@/lib/date';
 import { useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
-import { cacheReadings, getCachedReadings, DailyReadings } from '@/lib/db';
-
-interface Reading {
-  citation: string;
-  label: string;
-  content: string;
-  type: string;
-}
+import { cacheReadings, getCachedReadings, DailyReadings, DailyReading } from '@/lib/db';
 
 interface ReadingsData {
-  readings: Reading[];
+  readings: DailyReading[];
   liturgicalColor: string;
   season: string;
   saint?: string;
-  cacheState?: 'HIT' | 'MISS' | 'ERROR' | 'FETCH';
+  cacheState?: 'HIT' | 'MISS' | 'ERROR' | 'FETCH' | 'RATE_LIMIT';
 }
 
 export default function ReadingsPage() {

@@ -2,7 +2,7 @@ import Dexie, { Table } from 'dexie';
 
 // Types for our cached data
 export interface DailyReading {
-  date: string; // YYYY-MM-DD
+  date?: string; // YYYY-MM-DD (optional; stored alongside parent date)
   citation: string;
   label: string;
   content: string;
@@ -16,7 +16,7 @@ export interface DailyReadings {
   season: string;
   saint?: string;
   fetchedAt: number; // timestamp
-  cacheState?: 'HIT' | 'MISS' | 'ERROR';
+  cacheState?: 'HIT' | 'MISS' | 'ERROR' | 'FETCH' | 'RATE_LIMIT';
 }
 
 export interface UserPreferences {
