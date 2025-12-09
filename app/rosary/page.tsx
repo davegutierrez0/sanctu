@@ -5,14 +5,22 @@ import { useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { ArrowLeft, Printer, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+const OUR_FATHER =
+  "Our Father, who art in heaven, hallowed be Thy name; Thy kingdom come; Thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.";
+
+const HAIL_MARY =
+  "Hail Mary, full of grace, the Lord is with thee; blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.";
 
 export default function RosaryPage() {
   const { language } = useLanguage();
   const ui = ROSARY_UI[language];
   const [mysteryType, setMysteryType] = useState<MysteryType>(() => getTodaysMystery().type);
   const [currentDecade, setCurrentDecade] = useState(0);
-  const [currentBead, setCurrentBead] = useState(0); // 0-9 for each decade
+  const [currentBead, setCurrentBead] = useState(0); // 0-10 for each decade (Our Father + 10 Hail Mary)
+  const [showOurFather, setShowOurFather] = useState(false);
+  const [showHailMary, setShowHailMary] = useState(false);
 
   const localizedMysterySets = useMemo(
     () =>
@@ -25,8 +33,27 @@ export default function RosaryPage() {
 
   const currentMysterySet = localizedMysterySets[mysteryType];
   const currentMystery = currentMysterySet.mysteries[currentDecade];
-  const totalBeads = 10;
-  const progress = ((currentDecade * 10 + currentBead) / 50) * 100;
+  const totalBeads = 11; // 1 Our Father + 10 Hail Mary
+  const progress = ((currentDecade * totalBeads + currentBead) / (totalBeads * 5)) * 100;
+
+  // Persist user's expand preferences
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedOurFather = window.localStorage.getItem('rosary:ourFatherExpanded');
+    const storedHailMary = window.localStorage.getItem('rosary:hailMaryExpanded');
+    setShowOurFather(storedOurFather === 'true');
+    setShowHailMary(storedHailMary === 'true');
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('rosary:ourFatherExpanded', String(showOurFather));
+  }, [showOurFather]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('rosary:hailMaryExpanded', String(showHailMary));
+  }, [showHailMary]);
 
   const nextBead = () => {
     if (currentBead < totalBeads - 1) {
@@ -141,16 +168,25 @@ export default function RosaryPage() {
         {/* Bead Counter */}
         <div className="mb-12">
           <div className="flex justify-center gap-2 mb-6">
-            {Array.from({ length: totalBeads }).map((_, i) => (
-              <div
-                key={i}
-                className={`w-8 h-8 rounded-full border-2 transition-all ${
-                  i <= currentBead
-                    ? 'bg-rose-600 border-rose-600 dark:bg-rose-400 dark:border-rose-400'
-                    : 'border-gray-300 dark:border-gray-700'
-                }`}
-              />
-            ))}
+            {Array.from({ length: totalBeads }).map((_, i) => {
+              const isOurFather = i === 0;
+              const isActive = i <= currentBead;
+              const baseSize = isOurFather ? 'w-9 h-9' : 'w-8 h-8';
+              const activeColor = isOurFather
+                ? 'bg-amber-500 border-amber-500 dark:bg-amber-400 dark:border-amber-400'
+                : 'bg-rose-600 border-rose-600 dark:bg-rose-400 dark:border-rose-400';
+              const inactiveColor = isOurFather
+                ? 'border-amber-300 dark:border-amber-500'
+                : 'border-gray-300 dark:border-gray-700';
+
+              return (
+                <div
+                  key={i}
+                  className={`${baseSize} rounded-full border-2 transition-all ${isActive ? activeColor : inactiveColor}`}
+                  title={isOurFather ? 'Our Father bead' : 'Hail Mary bead'}
+                />
+              );
+            })}
           </div>
 
           {/* Prayer Text */}
@@ -158,13 +194,33 @@ export default function RosaryPage() {
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {currentBead === 0 && currentDecade > 0 ? 'Pray:' : 'Current Prayer:'}
             </p>
-            <p className="text-lg">
-              {currentBead === 0 && currentDecade === 0
-                ? "Our Father..."
-                : currentBead === 0
-                ? "Our Father..."
-                : "Hail Mary..."}
-            </p>
+            {currentBead === 0 ? (
+              <div className="space-y-2">
+                <button
+                  onClick={() => setShowOurFather((v) => !v)}
+                  className="inline-flex items-center gap-2 text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                  aria-expanded={showOurFather}
+                >
+                  {showOurFather ? '−' : '+'} Our Father...
+                </button>
+                {showOurFather && (
+                  <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">{OUR_FATHER}</p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <button
+                  onClick={() => setShowHailMary((v) => !v)}
+                  className="inline-flex items-center gap-2 text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                  aria-expanded={showHailMary}
+                >
+                  {showHailMary ? '−' : '+'} Hail Mary...
+                </button>
+                {showHailMary && (
+                  <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">{HAIL_MARY}</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Next Button */}

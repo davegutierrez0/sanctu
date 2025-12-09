@@ -22,6 +22,7 @@ export default function ReadingsPage() {
   const [readingsByDate, setReadingsByDate] = useState<Record<string, ReadingsData>>({});
   const [loadingDate, setLoadingDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const showCacheHints = process.env.NODE_ENV !== 'production';
 
   const formatDisplayDate = useCallback(
     (isoDate: string) => {
@@ -239,31 +240,49 @@ export default function ReadingsPage() {
               <button
                 onClick={() => handleNavigate(-1)}
                 disabled={loading}
-                title={hasPrevCached ? `Cached: ${previousLabel}` : `Fetch: ${previousLabel}`}
+                title={
+                  showCacheHints
+                    ? hasPrevCached
+                      ? `Cached: ${previousLabel}`
+                      : `Fetch: ${previousLabel}`
+                    : undefined
+                }
                 aria-label={`Previous day: ${previousLabel}`}
                 className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft size={16} />
                 Previous day
-                <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                  {hasPrevCached ? 'Cached' : 'Fetch'}
-                </span>
+                {showCacheHints && (
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {hasPrevCached ? 'Cached' : 'Fetch'}
+                  </span>
+                )}
               </button>
-              <div className="text-xs text-gray-500 dark:text-gray-400 px-2">
-                Jump between cached days
-              </div>
+              {showCacheHints && (
+                <div className="text-xs text-gray-500 dark:text-gray-400 px-2">
+                  Jump between days
+                </div>
+              )}
               <button
                 onClick={() => handleNavigate(1)}
                 disabled={loading}
-                title={hasNextCached ? `Cached: ${nextLabel}` : `Fetch: ${nextLabel}`}
+                title={
+                  showCacheHints
+                    ? hasNextCached
+                      ? `Cached: ${nextLabel}`
+                      : `Fetch: ${nextLabel}`
+                    : undefined
+                }
                 aria-label={`Next day: ${nextLabel}`}
                 className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next day
                 <ChevronRight size={16} />
-                <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                  {hasNextCached ? 'Cached' : 'Fetch'}
-                </span>
+                {showCacheHints && (
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {hasNextCached ? 'Cached' : 'Fetch'}
+                  </span>
+                )}
               </button>
             </div>
           </header>
