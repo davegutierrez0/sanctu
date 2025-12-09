@@ -2,7 +2,7 @@
 
 import { ArrowLeft, ChevronLeft, ChevronRight, Printer } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type ReactNode } from 'react';
 import { toLocalISODate } from '@/lib/date';
 import { useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
@@ -15,6 +15,56 @@ interface ReadingsData {
   saint?: string;
   cacheState?: 'HIT' | 'MISS' | 'ERROR' | 'FETCH' | 'RATE_LIMIT';
 }
+
+const RESPONSE_MARKER = /^(?:["“”']\s*)?(R\.|℟\.|R\/)\s*/i;
+const SENTENCE_BOUNDARY = /([.!?])\s+(?=["“”'‘’(]*[A-ZÁÉÍÓÚÜÑ¡¿])/g;
+
+const splitSentences = (text: string): string[] => {
+  if (!text) return [];
+
+  SENTENCE_BOUNDARY.lastIndex = 0;
+
+  const sentences: string[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = SENTENCE_BOUNDARY.exec(text)) !== null) {
+    const end = match.index + match[1].length;
+    sentences.push(text.slice(lastIndex, end).trim());
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    sentences.push(text.slice(lastIndex).trim());
+  }
+
+  return sentences.filter(Boolean);
+};
+
+const normalizeResponseContent = (content: string): string =>
+  content
+    .trim()
+    // Remove lines that are just > or "> at the start
+    .replace(/^[>"'""\s>]+\n/g, '')
+    // Remove leading quote markers and >
+    .replace(/^[>"'""\s>]+/, '')
+    // Remove lines that are just > or "> or quote characters (between content)
+    .replace(/\n[>"'""\s>]+\n/g, '\n')
+    // Remove > at start of lines
+    .replace(/\n[>"'""\s]*>\s*/g, '\n')
+    // Normalize response markers (R., ℟., R/)
+    .replace(/(?:^|\s+)(R\.|℟\.|R\/)\s*/gi, (_match, marker: string, offset: number) => {
+      const prefix = offset === 0 ? '' : '\n\n';
+      return `${prefix}${marker} `;
+    })
+    .trim();
+
+const splitVerseLines = (text: string): string[] =>
+  text
+    .replace(/;\s*/g, ';\n')
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 
 export default function ReadingsPage() {
   const { language } = useLanguage();
@@ -185,6 +235,80 @@ export default function ReadingsPage() {
 
   const handleRetry = () => fetchReadingsForDate(currentDate, language);
 
+  const renderReadingContent = useCallback(
+    (reading: DailyReading): ReactNode => {
+      const isResponseReading = reading.type === 'psalm' || reading.type === 'alleluia';
+      const content = isResponseReading
+        ? normalizeResponseContent(reading.content)
+        : reading.content;
+
+      const paragraphs = content
+        .split(/\n{2,}/)
+        .map((p) => p.trim())
+        .filter((p) => {
+          // Filter out empty paragraphs or those with only quote markers and >
+          if (p.length === 0) return false;
+          if (/^[>"'""\s>]+$/.test(p)) return false;
+          if (p === '>' || p === '">') return false;
+          return true;
+        });
+
+      if (isResponseReading) {
+        const nodes: ReactNode[] = [];
+
+        paragraphs.forEach((paragraph, idx) => {
+          const responseMatch = paragraph.match(RESPONSE_MARKER);
+
+          if (responseMatch) {
+            const remainder = paragraph.slice(responseMatch[0].length).trim();
+            const sentences = splitSentences(remainder);
+            const refrainText = [responseMatch[1], sentences[0] || ''].filter(Boolean).join(' ').trim();
+            const verseLines = sentences
+              .slice(1)
+              .flatMap((line) => splitVerseLines(line))
+              .filter(Boolean);
+
+            nodes.push(
+              <p
+                key={`refrain-${idx}`}
+                className="mb-2 font-semibold text-gray-900 dark:text-gray-100"
+              >
+                {refrainText || paragraph}
+              </p>
+            );
+
+            if (verseLines.length) {
+              verseLines.forEach((line, lineIdx) => {
+                nodes.push(
+                  <p key={`verse-${idx}-${lineIdx}`} className="mb-2 last:mb-0">
+                    {line}
+                  </p>
+                );
+              });
+            }
+
+            return;
+          }
+
+          nodes.push(
+            <p key={`paragraph-${idx}`} className="mb-2 last:mb-0">
+              {paragraph}
+            </p>
+          );
+        });
+
+        return nodes;
+      }
+
+      return paragraphs.map((paragraph, i) => (
+        <p key={i} className="mb-4 last:mb-0">
+          {paragraph}
+        </p>
+      ));
+    },
+    []
+  );
+
   return (
     <>
       {/* Print Header */}
@@ -325,11 +449,7 @@ export default function ReadingsPage() {
                     </h2>
                   </header>
                   <div className="prayer-text text-gray-800 dark:text-gray-200 leading-relaxed">
-                    {reading.content.split('\n\n').map((paragraph, i) => (
-                      <p key={i} className="mb-4 last:mb-0">
-                        {paragraph}
-                      </p>
-                    ))}
+                    {renderReadingContent(reading)}
                   </div>
                 </article>
               ))}

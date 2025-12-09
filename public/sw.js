@@ -1,8 +1,9 @@
 // Sanctu Service Worker
 // Provides offline functionality and caching for the Catholic prayer app
 
-const CACHE_NAME = 'Sanctu-v1';
-const READING_CACHE = 'Sanctu-readings-v1';
+const VERSION = 'v2';
+const CACHE_NAME = `Sanctu-static-${VERSION}`;
+const READING_CACHE = `Sanctu-readings-${VERSION}`;
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -44,6 +45,15 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  // Let Next.js manage its own build assets so we don't cache-bust ourselves
+  if (url.pathname.startsWith('/_next/') || url.pathname.startsWith('/__nextjs/')) {
+    return;
+  }
+
   // Handle API routes specially (readings from USCCB)
   if (url.pathname.startsWith('/api/readings')) {
     event.respondWith(
@@ -76,6 +86,24 @@ self.addEventListener('fetch', (event) => {
           throw error;
         }
       })
+    );
+    return;
+  }
+
+  // Always try network first for navigations to avoid serving stale HTML after deploys
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          return caches.match('/');
+        })
     );
     return;
   }

@@ -1,19 +1,57 @@
 'use client';
 
-import { Book, Coffee, Heart, Moon, Sun } from 'lucide-react';
+import { Book, Coffee, Heart, Moon, Sun, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme, useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { getUI, ESSENTIAL_PRAYER_IDS } from '@/lib/data/ui';
 import { COMMON_PRAYERS } from '@/lib/data/prayers';
+import { useState } from 'react';
 
 export default function HomePage() {
   const { isDark, setTheme } = useTheme();
   const { language } = useLanguage();
   const ui = getUI(language);
+  const [isClearing, setIsClearing] = useState(false);
 
   const toggleDarkMode = () => {
     setTheme(isDark ? 'light' : 'dark');
+  };
+
+  const clearAllCaches = async () => {
+    if (!confirm(language === 'es'
+      ? '¿Borrar todos los datos y caché? Esto restablecerá la aplicación.'
+      : 'Clear all data and caches? This will reset the app.')) {
+      return;
+    }
+
+    setIsClearing(true);
+
+    try {
+      // Clear localStorage
+      localStorage.clear();
+
+      // Clear all service worker caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+      }
+
+      // Unregister service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(reg => reg.unregister()));
+      }
+
+      // Force hard reload
+      window.location.reload();
+    } catch (error) {
+      console.error('Error clearing caches:', error);
+      setIsClearing(false);
+      alert(language === 'es'
+        ? 'Error al borrar el caché. Por favor, intenta borrar el caché del navegador manualmente.'
+        : 'Error clearing cache. Please try clearing your browser cache manually.');
+    }
   };
 
   const today = new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
@@ -170,6 +208,21 @@ export default function HomePage() {
               {ui.supportApp}
             </a>
           </p>
+
+          {/* Clear Cache Button */}
+          <div className="pt-4">
+            <button
+              onClick={clearAllCaches}
+              disabled={isClearing}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title={language === 'es' ? 'Borrar todos los datos y caché' : 'Clear all data and cache'}
+            >
+              <RefreshCw size={14} className={isClearing ? 'animate-spin' : ''} />
+              {isClearing
+                ? (language === 'es' ? 'Borrando...' : 'Clearing...')
+                : (language === 'es' ? 'Borrar caché' : 'Clear cache')}
+            </button>
+          </div>
         </footer>
       </main>
 
