@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from '@vercel/analytics/react';
 import PWAInstaller from "@/components/PWAInstaller";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
@@ -25,14 +26,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className="bg-[var(--background)] text-[var(--foreground)]"
+    >
+      <body className="antialiased text-gray-900 dark:text-gray-100 transition-colors">
         <ThemeProvider>
           <PWAInstaller />
           <div className="mx-auto w-full max-w-3xl lg:max-w-4xl px-4 sm:px-6">
             {children}
           </div>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

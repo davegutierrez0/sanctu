@@ -45,9 +45,9 @@ export default function RosaryPage() {
   const isCompleted = currentDecade === 4 && currentBead === totalBeads - 1;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
       {/* Navigation */}
-      <nav className="no-print sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
+      <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground) 12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
         <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
@@ -119,7 +119,7 @@ export default function RosaryPage() {
         </div>
 
         {/* Current Mystery */}
-        <div className="mb-12 p-8 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+        <div className="mb-12 p-8 rounded-2xl bg-stone-100 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-800">
           <div className={`text-sm font-medium mb-2 ${currentMysterySet.color}`}>
             {currentMysterySet.name}
           </div>

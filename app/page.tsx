@@ -44,7 +44,7 @@ export default function HomePage() {
       </div>
 
       {/* Top Navigation */}
-      <nav className="no-print sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-md">
+      <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground) 12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
         <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="font-semibold text-xl tracking-tight small-caps">
             Sanctus
@@ -119,7 +119,7 @@ export default function HomePage() {
                   <Link
                     key={prayer.id}
                     href={`/prayers/${prayer.id}`}
-                    className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors"
+                  className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-stone-100 dark:hover:bg-gray-800/60 transition-colors"
                   >
                     <div className="flex justify-between items-center">
                       <div>
@@ -150,7 +150,7 @@ export default function HomePage() {
 
             <Link
               href="/prayers"
-              className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors text-center text-gray-600 dark:text-gray-400"
+              className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-stone-100 dark:hover:bg-gray-800/60 transition-colors text-center text-gray-600 dark:text-gray-400"
             >
               {ui.viewAllPrayers} →
             </Link>

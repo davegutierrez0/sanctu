@@ -3,14 +3,14 @@
 
 :root {
   color-scheme: light;
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8f3eb; /* soft off-white */
+  --foreground: #1a1a1a; /* deep gray for contrast */
 }
 
 .dark {
   color-scheme: dark;
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0f172a; /* deep slate */
+  --foreground: #e5e7eb; /* light gray */
 }
 
 * {
