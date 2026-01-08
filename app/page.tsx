@@ -1,6 +1,6 @@
 'use client';
 
-import { Book, Coffee, Heart, Moon, Sun, RefreshCw } from 'lucide-react';
+import { Book, Coffee, Heart, Moon, Sun, RefreshCw, Sunrise } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme, useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
@@ -147,6 +147,17 @@ export default function HomePage() {
             <h2 className="text-2xl font-medium mb-2">{ui.prayRosary}</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
               {ui.prayRosaryDesc}
+            </p>
+          </Link>
+
+          <Link
+            href="/morning-prayer"
+            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
+          >
+            <Sunrise className="text-amber-600 dark:text-amber-400 mb-4" size={28} />
+            <h2 className="text-2xl font-medium mb-2">{ui.morningPrayer}</h2>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {ui.morningPrayerDesc}
             </p>
           </Link>
         </div>
