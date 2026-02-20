@@ -159,8 +159,8 @@ export async function GET(request: NextRequest) {
       const cachedStr = await redis.get(cacheKey);
 
       if (cachedStr) {
-        // Cache hit - return immediately
         const cached: CachedReadings = decompressPayload(cachedStr);
+        console.log(`[analytics] ${JSON.stringify({ event: 'readings_fetch', cache: 'HIT', date: isoDate, lang })}`);
         return NextResponse.json(cached, {
           headers: {
             'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
@@ -219,6 +219,8 @@ export async function GET(request: NextRequest) {
       await redis.setEx(cacheKey, CACHE_TTL_SECONDS, compressPayload(dataToCache));
     }
 
+    console.log(`[analytics] ${JSON.stringify({ event: 'readings_fetch', cache: 'MISS', date: isoDate, lang, readings: parsed.readings.length })}`);
+
     return NextResponse.json(dataToCache, {
       headers: {
         'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
@@ -226,6 +228,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    console.log(`[analytics] ${JSON.stringify({ event: 'readings_fetch', cache: 'ERROR', date: isoDate, lang, error: String(error) })}`);
     console.error('Error fetching readings:', error);
 
     // Return fallback (don't cache failures)

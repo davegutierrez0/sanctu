@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import PWAInstaller from "@/components/PWAInstaller";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
@@ -46,6 +47,7 @@ export default function RootLayout({
           </div>
         </ThemeProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

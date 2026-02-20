@@ -5,7 +5,9 @@ import { useLanguage } from '@/components/ThemeProvider';
 import { ArrowLeft, Printer } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { use } from 'react';
+import { use, useEffect } from 'react';
+import { analytics } from '@/lib/analytics';
+import { usePageEngagement } from '@/hooks/usePageEngagement';
 
 export default function PrayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -18,6 +20,12 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
   }
 
   const prayer = getLocalizedPrayer(basePrayer, language);
+  usePageEngagement(`prayer-${id}`);
+
+  useEffect(() => {
+    analytics.prayerViewed(id, language);
+  }, [id, language]);
+
   const title = prayer.title;
   const text = prayer.text;
 
@@ -50,7 +58,7 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
             </Link>
 
             <button
-              onClick={() => window.print()}
+              onClick={() => { analytics.printClicked(`prayer-${id}`); window.print(); }}
               className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label={ui.print}
             >

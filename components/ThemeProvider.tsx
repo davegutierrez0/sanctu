@@ -68,6 +68,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
     localStorage.setItem('language', newLanguage);
+    import('@/lib/analytics').then(({ analytics }) => analytics.languageToggled(newLanguage));
   };
 
   return (
