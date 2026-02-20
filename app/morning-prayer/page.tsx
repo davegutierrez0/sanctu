@@ -6,6 +6,8 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { getUI } from '@/lib/data/ui';
+import { analytics } from '@/lib/analytics';
+import { usePageEngagement } from '@/hooks/usePageEngagement';
 
 type SectionType = 'dialogue' | 'antiphon' | 'psalm-header' | 'verses' | 'doxology' | 'rubric' | 'heading' | 'hymn-title' | 'reading-ref' | 'prayer';
 
@@ -33,6 +35,7 @@ export default function MorningPrayerPage() {
   const [data, setData] = useState<MorningPrayerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  usePageEngagement('morning-prayer');
 
   const today = new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
     weekday: 'long',
@@ -55,8 +58,11 @@ export default function MorningPrayerPage() {
 
         const result = await response.json();
         setData(result);
+        analytics.morningPrayerViewed(new Date().toISOString().split('T')[0], language);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unable to load morning prayer');
+        const message = err instanceof Error ? err.message : 'Unable to load morning prayer';
+        setError(message);
+        analytics.apiError('/api/morning-prayer', 0, message);
         console.error(err);
       } finally {
         setLoading(false);
@@ -244,7 +250,7 @@ export default function MorningPrayerPage() {
             <div className="flex items-center gap-3">
               <LanguageToggleCompact />
               <button
-                onClick={() => window.print()}
+                onClick={() => { analytics.printClicked('morning-prayer'); window.print(); }}
                 className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
               >
                 <Printer size={18} />

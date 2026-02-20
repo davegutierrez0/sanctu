@@ -6,6 +6,8 @@ import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { ArrowLeft, Printer, RotateCcw, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { analytics } from '@/lib/analytics';
+import { usePageEngagement } from '@/hooks/usePageEngagement';
 
 type RosaryPhase = 'opening' | 'decade' | 'decadeEnd' | 'closing' | 'complete';
 
@@ -36,6 +38,8 @@ export default function RosaryPage() {
   const [currentBead, setCurrentBead] = useState(0); // 0 = Our Father, 1-10 = Hail Marys
   const [decadeEndStep, setDecadeEndStep] = useState<number>(0);
   const [closingStep, setClosingStep] = useState<number>(0);
+
+  usePageEngagement('rosary');
 
   // User preferences
   const [showFatimaPrayer, setShowFatimaPrayer] = useState(true);
@@ -109,6 +113,7 @@ export default function RosaryPage() {
   };
 
   const reset = () => {
+    analytics.rosaryReset();
     setPhase('opening');
     setOpeningStep(0);
     setCurrentDecade(0);
@@ -129,6 +134,7 @@ export default function RosaryPage() {
       if (openingStep < OPENING_STEPS.length - 1) {
         setOpeningStep(openingStep + 1);
       } else {
+        analytics.rosaryStarted(mysteryType, language);
         setPhase('decade');
         setCurrentBead(0);
       }
@@ -144,6 +150,7 @@ export default function RosaryPage() {
       if (decadeEndStep < maxStep) {
         setDecadeEndStep(decadeEndStep + 1);
       } else {
+        analytics.rosaryDecadeCompleted(currentDecade + 1, mysteryType);
         if (currentDecade < 4) {
           setCurrentDecade(currentDecade + 1);
           setCurrentBead(0);
@@ -157,6 +164,7 @@ export default function RosaryPage() {
       if (closingStep < CLOSING_STEPS.length - 1) {
         setClosingStep(closingStep + 1);
       } else {
+        analytics.rosaryCompleted(mysteryType, language);
         setPhase('complete');
       }
     }
@@ -272,7 +280,7 @@ export default function RosaryPage() {
           <div className="flex items-center gap-3">
             <LanguageToggleCompact />
             <button
-              onClick={() => window.print()}
+              onClick={() => { analytics.printClicked('rosary'); window.print(); }}
               className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               aria-label="Print"
             >
@@ -304,6 +312,7 @@ export default function RosaryPage() {
                   key={key}
                   onClick={() => {
                     setMysteryType(key as MysteryType);
+                    analytics.mysteryChanged(key);
                     reset();
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all relative ${
@@ -482,7 +491,7 @@ export default function RosaryPage() {
                   <input
                     type="checkbox"
                     checked={showFatimaPrayer}
-                    onChange={(e) => setShowFatimaPrayer(e.target.checked)}
+                    onChange={(e) => { setShowFatimaPrayer(e.target.checked); analytics.fatimaPrayerToggled(e.target.checked); }}
                     className="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500"
                   />
                   {ui.includeFatima}

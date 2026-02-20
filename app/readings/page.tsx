@@ -7,6 +7,8 @@ import { toLocalISODate } from '@/lib/date';
 import { useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { cacheReadings, getCachedReadings, DailyReadings, DailyReading } from '@/lib/db';
+import { analytics } from '@/lib/analytics';
+import { usePageEngagement } from '@/hooks/usePageEngagement';
 
 interface ReadingsData {
   readings: DailyReading[];
@@ -74,6 +76,7 @@ export default function ReadingsPage() {
   const [loadingDate, setLoadingDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const showCacheHints = process.env.NODE_ENV !== 'production';
+  usePageEngagement('readings');
 
   const formatDisplayDate = useCallback(
     (isoDate: string) => {
@@ -147,6 +150,7 @@ export default function ReadingsPage() {
         const cacheState = (response.headers.get('X-Cache') as ReadingsData['cacheState']) || 'FETCH';
         const hydrated: ReadingsData = { ...data, cacheState };
         setReadingsByDate((prev) => ({ ...prev, [date]: hydrated }));
+        if (!silent) analytics.readingsViewed(date, lang, cacheState);
 
         const payload: DailyReadings = {
           date,
@@ -170,6 +174,7 @@ export default function ReadingsPage() {
 
         if (!silent) {
           setError(message);
+          analytics.apiError('/api/readings', 0, message);
         }
         console.error(err);
         throw err;
@@ -212,6 +217,7 @@ export default function ReadingsPage() {
 
   const handleNavigate = async (offset: number) => {
     const targetDate = getOffsetDate(currentDate, offset);
+    analytics.readingsNavigated(offset > 0 ? 'next' : 'prev', targetDate);
 
     try {
       setCurrentDate(targetDate);
@@ -338,7 +344,7 @@ export default function ReadingsPage() {
           <div className="flex items-center gap-3">
             <LanguageToggleCompact />
             <button
-              onClick={() => window.print()}
+              onClick={() => { analytics.printClicked('readings'); window.print(); }}
               className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
             >
               <Printer size={18} />

@@ -4,10 +4,12 @@ import { COMMON_PRAYERS, PRAYER_UI } from '@/lib/data/prayers';
 import { useLanguage } from '@/components/ThemeProvider';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { usePageEngagement } from '@/hooks/usePageEngagement';
 
 export default function PrayersIndexPage() {
   const { language } = useLanguage();
   const ui = PRAYER_UI[language];
+  usePageEngagement('prayers');
 
   const essentialPrayers = COMMON_PRAYERS.filter((p) => p.category === 'essential');
   const marianPrayers = COMMON_PRAYERS.filter((p) => p.category === 'marian');

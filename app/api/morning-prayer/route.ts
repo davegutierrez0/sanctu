@@ -320,6 +320,7 @@ export async function GET() {
       const cachedStr = await redis.get(cacheKey);
       if (cachedStr) {
         const cached = decompressPayload(cachedStr);
+        console.log(`[analytics] ${JSON.stringify({ event: 'morning_prayer_fetch', cache: 'HIT', date: isoDate })}`);
         return NextResponse.json(cached, {
           headers: {
             'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
@@ -426,6 +427,8 @@ export async function GET() {
       await redis.setEx(cacheKey, CACHE_TTL_SECONDS, compressPayload(dataToCache));
     }
 
+    console.log(`[analytics] ${JSON.stringify({ event: 'morning_prayer_fetch', cache: 'MISS', date: isoDate, parts: parts.length })}`);
+
     return NextResponse.json(dataToCache, {
       headers: {
         'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
@@ -433,6 +436,7 @@ export async function GET() {
       },
     });
   } catch (error) {
+    console.log(`[analytics] ${JSON.stringify({ event: 'morning_prayer_fetch', cache: 'ERROR', date: isoDate, error: String(error) })}`);
     console.error('Error fetching morning prayer:', error);
 
     // Return fallback

@@ -8,15 +8,20 @@ import { getUI, ESSENTIAL_PRAYER_IDS } from '@/lib/data/ui';
 import { COMMON_PRAYERS } from '@/lib/data/prayers';
 import { clearAllData } from '@/lib/db';
 import { useState } from 'react';
+import { analytics } from '@/lib/analytics';
+import { usePageEngagement } from '@/hooks/usePageEngagement';
 
 export default function HomePage() {
   const { isDark, setTheme } = useTheme();
   const { language } = useLanguage();
   const ui = getUI(language);
   const [isClearing, setIsClearing] = useState(false);
+  usePageEngagement('home');
 
   const toggleDarkMode = () => {
-    setTheme(isDark ? 'light' : 'dark');
+    const next = isDark ? 'light' : 'dark';
+    setTheme(next);
+    analytics.themeToggled(next);
   };
 
   const clearAllCaches = async () => {
@@ -46,6 +51,8 @@ export default function HomePage() {
         const registrations = await navigator.serviceWorker.getRegistrations();
         await Promise.all(registrations.map(reg => reg.unregister()));
       }
+
+      analytics.cacheCleared();
 
       // Force hard reload
       window.location.reload();
@@ -107,6 +114,7 @@ export default function HomePage() {
               href="https://buymeacoffee.com/davegutierrez0"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => analytics.coffeeClicked()}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-400 hover:bg-amber-500 text-black transition-colors text-sm font-medium shadow-sm"
             >
               <Coffee size={16} />
