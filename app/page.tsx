@@ -1,6 +1,6 @@
 'use client';
 
-import { Book, Coffee, Heart, Moon, Sun, RefreshCw, Sunrise } from 'lucide-react';
+import { Book, Church, Coffee, Heart, Moon, Sun, RefreshCw, Sunrise } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme, useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
@@ -144,6 +144,17 @@ export default function HomePage() {
             <h2 className="text-2xl font-medium mb-2">{ui.todaysReadings}</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
               {ui.todaysReadingsDesc}
+            </p>
+          </Link>
+
+          <Link
+            href="/mass-guide"
+            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
+          >
+            <Church className="text-emerald-600 dark:text-emerald-400 mb-4" size={28} />
+            <h2 className="text-2xl font-medium mb-2">{ui.massGuide}</h2>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              {ui.massGuideDesc}
             </p>
           </Link>
 
