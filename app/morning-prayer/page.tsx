@@ -45,6 +45,8 @@ export default function MorningPrayerPage() {
   });
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchMorningPrayer = async () => {
       try {
         setLoading(true);
@@ -57,20 +59,30 @@ export default function MorningPrayerPage() {
         }
 
         const result = await response.json();
+        if (cancelled) return;
+
         setData(result);
         analytics.morningPrayerViewed(new Date().toISOString().split('T')[0], language);
       } catch (err) {
+        if (cancelled) return;
+
         const message = err instanceof Error ? err.message : 'Unable to load morning prayer';
         setError(message);
         analytics.apiError('/api/morning-prayer', 0, message);
         console.error(err);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchMorningPrayer();
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [language]);
 
   const handleRetry = () => {
     setLoading(true);

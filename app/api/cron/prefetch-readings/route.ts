@@ -17,6 +17,7 @@ const USCCB_URLS = {
 };
 
 const CACHE_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const CACHE_VERSION = 'v2';
 type ReadingType = 'first' | 'psalm' | 'second' | 'gospel' | 'alleluia';
 
 interface Reading {
@@ -101,7 +102,7 @@ export async function GET(request: NextRequest) {
         targetDate.setDate(estDate.getDate() + offset);
         const targetIso = toISODate(targetDate);
         const targetUsccb = formatUSCCBDate(targetDate);
-        const cacheKey = `readings:${lang}:${targetIso}`;
+        const cacheKey = `readings:${CACHE_VERSION}:${lang}:${targetIso}`;
 
         // Check if already cached
         if (redis) {
@@ -184,8 +185,10 @@ function parseUSCCBHTML(html: string, lang: 'en' | 'es') {
     const labelMatch = header.match(/<h3 class="name">\s*(.*?)\s*<\/h3>/i);
     const rawLabel = labelMatch ? labelMatch[1].trim() : '';
 
-    const citationMatch = header.match(/<div class="address">[\s\S]*?<a[^>]*>(.*?)<\/a>/i);
-    const citation = citationMatch ? citationMatch[1].trim() : '';
+    const addressMatch = header.match(/<div class="address">([\s\S]*?)<\/div>/i);
+    const linkCitationMatch = addressMatch?.[1].match(/<a[^>]*>([\s\S]*?)<\/a>/i);
+    const rawCitation = (linkCitationMatch?.[1] || addressMatch?.[1] || '').trim();
+    const citation = cleanHTML(rawCitation || rawLabel);
 
     const content = cleanHTML(body);
     if (!content) return;

@@ -14,17 +14,21 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
   const { language } = useLanguage();
   const ui = PRAYER_UI[language];
   const basePrayer = COMMON_PRAYERS.find((p) => p.id === id);
+  const prayerExists = Boolean(basePrayer);
+
+  usePageEngagement(`prayer-${id}`);
+
+  useEffect(() => {
+    if (prayerExists) {
+      analytics.prayerViewed(id, language);
+    }
+  }, [id, language, prayerExists]);
 
   if (!basePrayer) {
     return notFound();
   }
 
   const prayer = getLocalizedPrayer(basePrayer, language);
-  usePageEngagement(`prayer-${id}`);
-
-  useEffect(() => {
-    analytics.prayerViewed(id, language);
-  }, [id, language]);
 
   const title = prayer.title;
   const text = prayer.text;

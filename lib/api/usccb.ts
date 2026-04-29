@@ -21,6 +21,7 @@ export async function fetchUSCCBReadings(date: Date): Promise<DailyReadings> {
     return {
       date: isoDate,
       readings: data.readings,
+      language: 'en',
       liturgicalColor: data.liturgicalColor || 'green',
       season: data.season || 'Ordinary Time',
       saint: data.saint,
@@ -40,6 +41,7 @@ export async function fetchUSCCBReadings(date: Date): Promise<DailyReadings> {
           type: 'psalm',
         },
       ],
+      language: 'en',
       liturgicalColor: 'green',
       season: 'Ordinary Time',
       fetchedAt: Date.now(),

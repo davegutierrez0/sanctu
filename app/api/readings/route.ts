@@ -19,6 +19,7 @@ import { fromLocalISODate, toLocalISODate } from '@/lib/date';
  */
 
 const CACHE_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+const CACHE_VERSION = 'v2';
 const NON_CACHED_LIMIT_PER_USER = 7;
 const NON_CACHED_WINDOW_SECONDS = 60 * 60 * 24; // per-day limit
 
@@ -149,7 +150,7 @@ export async function GET(request: NextRequest) {
 
   const date = fromLocalISODate(dateParam);
   const isoDate = toLocalISODate(date);
-  const cacheKey = `readings:${lang}:${isoDate}`;
+  const cacheKey = `readings:${CACHE_VERSION}:${lang}:${isoDate}`;
 
   try {
     const redis = await getRedis();
@@ -282,8 +283,9 @@ function parseUSCCBHTML(html: string, lang: 'en' | 'es') {
     const labelMatch = header.match(/<h3 class="name">\s*(.*?)\s*<\/h3>/i);
     const rawLabel = labelMatch ? labelMatch[1].trim() : '';
 
-    const citationMatch = header.match(/<div class="address">[\s\S]*?<a[^>]*>(.*?)<\/a>/i);
-    const rawCitation = citationMatch ? citationMatch[1].trim() : '';
+    const addressMatch = header.match(/<div class="address">([\s\S]*?)<\/div>/i);
+    const linkCitationMatch = addressMatch?.[1].match(/<a[^>]*>([\s\S]*?)<\/a>/i);
+    const rawCitation = (linkCitationMatch?.[1] || addressMatch?.[1] || '').trim();
 
     const content = cleanHTML(body);
 

@@ -23,6 +23,36 @@ const COLLAPSED_BY_DEFAULT = ['ourFather', 'hailMary'];
 // Decade end prayers: Glory Be, optional Fatima Prayer
 const DECADE_END_STEPS = ['gloryBe', 'fatimaPrayer'] as const;
 
+function getStoredShowFatimaPrayer(): boolean {
+  if (typeof window === 'undefined') return true;
+
+  try {
+    return window.localStorage.getItem('rosary:showFatimaPrayer') !== 'false';
+  } catch {
+    return true;
+  }
+}
+
+function getStoredExpandedPrayers(): Record<string, boolean> {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    const storedExpanded = window.localStorage.getItem('rosary:expandedPrayers');
+    if (!storedExpanded) return {};
+
+    const parsed: unknown = JSON.parse(storedExpanded);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return {};
+    }
+
+    return Object.fromEntries(
+      Object.entries(parsed).filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean')
+    );
+  } catch {
+    return {};
+  }
+}
+
 export default function RosaryPage() {
   const { language } = useLanguage();
   const ui = ROSARY_UI[language];
@@ -45,29 +75,36 @@ export default function RosaryPage() {
   const [showFatimaPrayer, setShowFatimaPrayer] = useState(true);
   const [expandedPrayers, setExpandedPrayers] = useState<Record<string, boolean>>({});
 
-  // Persist user preferences
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const storedFatima = window.localStorage.getItem('rosary:showFatimaPrayer');
-    const storedExpanded = window.localStorage.getItem('rosary:expandedPrayers');
-    if (storedFatima !== null) setShowFatimaPrayer(storedFatima === 'true');
-    if (storedExpanded) {
-      try {
-        setExpandedPrayers(JSON.parse(storedExpanded));
-      } catch {
-        // Ignore invalid JSON
-      }
-    }
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setShowFatimaPrayer(getStoredShowFatimaPrayer());
+      setExpandedPrayers(getStoredExpandedPrayers());
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem('rosary:showFatimaPrayer', String(showFatimaPrayer));
+    try {
+      window.localStorage.setItem('rosary:showFatimaPrayer', String(showFatimaPrayer));
+    } catch {
+      return;
+    }
   }, [showFatimaPrayer]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem('rosary:expandedPrayers', JSON.stringify(expandedPrayers));
+    try {
+      window.localStorage.setItem('rosary:expandedPrayers', JSON.stringify(expandedPrayers));
+    } catch {
+      return;
+    }
   }, [expandedPrayers]);
 
   const localizedMysterySets = useMemo(

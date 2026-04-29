@@ -15,7 +15,7 @@ A fast, minimal, offline-capable Catholic prayer app with daily Mass readings, i
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 (App Router, Turbopack)
+- **Framework:** Next.js 16 (App Router, Turbopack)
 - **Styling:** Tailwind CSS with system fonts
 - **Storage:** IndexedDB (Dexie.js) for local caching
 - **PWA:** Custom Service Worker
@@ -26,19 +26,31 @@ A fast, minimal, offline-capable Catholic prayer app with daily Mass readings, i
 
 ```bash
 # Install dependencies
-bun install
+npm ci
 
 # Run development server
-bun run dev
+npm run dev
 
 # Build for production
-bun run build
+npm run build
 
 # Start production server
-bun start
+npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000)
+
+### Local Redis Cache
+
+`npm run dev` uses Redis when `REDIS_URL` is present in `.env.local`. To enable it locally:
+
+```bash
+cp .env.example .env.local
+# Start Redis separately, then run:
+npm run dev
+```
+
+For a default local Redis server, use `REDIS_URL=redis://localhost:6379`. Without `REDIS_URL`, API routes fall back to per-process memory tracking and direct USCCB fetches.
 
 ## Deployment to Vercel
 
@@ -46,7 +58,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ```bash
 # Install Vercel CLI
-bun add -g vercel
+npm install -g vercel
 
 # Deploy
 vercel
@@ -59,6 +71,11 @@ vercel
 3. Import your repository
 4. Deploy (zero config needed)
 
+### Optional Environment Variables
+
+- `REDIS_URL` enables the 30-day server-side readings cache.
+- `CRON_SECRET` secures the scheduled readings prefetch route in `vercel.json`.
+
 ### Custom Domain
 
 In Vercel dashboard:
@@ -70,9 +87,9 @@ In Vercel dashboard:
 Our caching approach minimizes API calls:
 
 1. **Service Worker** caches readings for 24 hours
-2. **IndexedDB** stores last 7 days of readings
-3. **Next.js** has server-side cache (24h revalidation)
-4. **Prefetch** next 3 days during idle time
+2. **IndexedDB** stores recent readings for offline use
+3. **Redis** caches readings server-side for 30 days when configured
+4. **Prefetch** warms tomorrow's readings in the background
 
 **Result:** Most users make ZERO API calls (served from cache)
 

@@ -84,10 +84,6 @@
     padding-top: 0.5em;
   }
 
-  .print-footer::after {
-    content: "Printed from Sanctus App - " attr(data-date);
-  }
-
   /* Print header with date */
   .print-header {
     display: block !important;

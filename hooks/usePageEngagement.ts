@@ -6,7 +6,7 @@ import { analytics } from '@/lib/analytics';
 const SCROLL_THRESHOLDS = [25, 50, 75, 100];
 
 export function usePageEngagement(page: string) {
-  const startTime = useRef(Date.now());
+  const startTime = useRef(0);
   const firedThresholds = useRef(new Set<number>());
 
   useEffect(() => {

@@ -6,11 +6,13 @@
 import type { Language } from '@/components/ThemeProvider';
 
 export type MassGuideLineType = 'action' | 'response' | 'text' | 'note';
+export type MassGuideReadingSlot = 'first' | 'psalm' | 'second' | 'alleluia' | 'gospel';
 
 export interface MassGuideLine {
   type: MassGuideLineType;
   en: string;
   es: string;
+  readingSlot?: MassGuideReadingSlot;
 }
 
 export interface MassGuideSection {
@@ -152,11 +154,25 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
         type: 'text',
         en: 'First reading: proclaimed by a lector or deacon.',
         es: 'Primera lectura: la proclama un lector o di\u00e1cono.',
+        readingSlot: 'first',
       },
       {
         type: 'note',
         en: 'When a responsorial psalm is used, sing or pray the refrain and meditate on the verses.',
         es: 'Cuando se use salmo responsorial, canta o reza el estribillo y medita los vers\u00edculos.',
+        readingSlot: 'psalm',
+      },
+      {
+        type: 'text',
+        en: 'Second reading: proclaimed on Sundays and solemnities when appointed.',
+        es: 'Segunda lectura: se proclama los domingos y solemnidades cuando corresponde.',
+        readingSlot: 'second',
+      },
+      {
+        type: 'text',
+        en: 'Gospel acclamation: the Alleluia or seasonal acclamation prepares the assembly for the Gospel.',
+        es: 'Aclamaci\u00f3n del Evangelio: el Aleluya o la aclamaci\u00f3n propia prepara a la asamblea para el Evangelio.',
+        readingSlot: 'alleluia',
       },
       {
         type: 'action',
@@ -165,8 +181,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'text',
-        en: 'Priest/Deacon: The Gospel of the Lord.',
-        es: 'Sacerdote/Di\u00e1cono: El Santo Evangelio de Nuestro Se\u00f1or Jesucristo.',
+        en: 'Priest/Deacon: A reading from the holy Gospel according to...',
+        es: 'Sacerdote/Di\u00e1cono: Lectura del santo Evangelio seg\u00fan...',
       },
       {
         type: 'response',
@@ -175,8 +191,19 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'text',
-        en: 'The Evangelio is proclaimed in its own place by the deacon or priest.',
+        en: 'The Gospel is proclaimed in its own place by the deacon or priest.',
         es: 'El Evangelio es proclamado en su lugar propio por el di\u00e1cono o sacerdote.',
+        readingSlot: 'gospel',
+      },
+      {
+        type: 'text',
+        en: 'Priest/Deacon: The Gospel of the Lord.',
+        es: 'Sacerdote/Di\u00e1cono: Palabra del Se\u00f1or.',
+      },
+      {
+        type: 'response',
+        en: 'Praise to you, Lord Jesus Christ.',
+        es: 'Gloria a ti, Se\u00f1or Jes\u00fas.',
       },
       {
         type: 'action',
@@ -190,43 +217,26 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'response',
-        en: 'I believe in one God, the Father almighty, maker of heaven and earth.',
-        es: 'Creo en un solo Dios, Padre todopoderoso, creador del cielo y de la tierra.',
-      },
-      {
-        type: 'response',
-        en: 'And in one Lord Jesus Christ, the Son of God, begotten of the Father before all ages.',
-        es: 'Y en un Se\u00f1or Jesucristo, Hijo de Dios, nacido del Padre antes de todos los siglos.',
-      },
-      {
-        type: 'response',
-        en: 'By him all things were made... For us men and for our salvation He came down from heaven.',
-        es: 'Por \u00e9l fueron hechas todas las cosas... Por nosotros los hombres y por nuestra salvaci\u00f3n baj\u00f3 del cielo.',
-      },
-      {
-        type: 'response',
-        en: 'For us and for our salvation He came down from heaven, was incarnate by the Holy Spirit and born of the Virgin Mary.',
-        es: 'Por nosotros, y por nuestra salvaci\u00f3n, baj\u00f3 del cielo; se encarn\u00f3 por obra del Esp\u00edritu Santo y naci\u00f3 de la Virgen Mar\u00eda.',
-      },
-      {
-        type: 'response',
-        en: 'He suffered under Pontius Pilate, was crucified, died and was buried; He rose again on the third day.',
-        es: 'Padeci\u00f3 bajo Poncio Pilato, fue crucificado, muri\u00f3 y fue sepultado; resucit\u00f3 al tercer d\u00eda.',
-      },
-      {
-        type: 'response',
-        en: 'He ascended into heaven and is seated at the right hand of the Father.',
-        es: 'Subi\u00f3 a los cielos y se sent\u00f3 a la derecha de Dios Padre.',
-      },
-      {
-        type: 'response',
-        en: 'From thence He shall come again with glory to judge the living and the dead.',
-        es: 'Desde all\u00ed volver\u00e1 con gloria para juzgar a vivos y muertos.',
-      },
-      {
-        type: 'response',
-        en: 'I believe in the Holy Spirit, the holy catholic Church, the communion of saints, forgiveness of sins, resurrection of the body and life everlasting. Amen.',
-        es: 'Creo en el Esp\u00edritu Santo, la santa Iglesia cat\u00f3lica, la comunicaci\u00f3n de los santos, el perd\u00f3n de los pecados, la resurrecci\u00f3n del cuerpo y la vida eterna. Am\u00e9n.',
+        en: [
+          'I believe in one God, the Father almighty, maker of heaven and earth.',
+          'And in one Lord Jesus Christ, the Son of God, begotten of the Father before all ages.',
+          'By him all things were made... For us men and for our salvation He came down from heaven.',
+          'For us and for our salvation He came down from heaven, was incarnate by the Holy Spirit and born of the Virgin Mary.',
+          'He suffered under Pontius Pilate, was crucified, died and was buried; He rose again on the third day.',
+          'He ascended into heaven and is seated at the right hand of the Father.',
+          'From thence He shall come again with glory to judge the living and the dead.',
+          'I believe in the Holy Spirit, the holy catholic Church, the communion of saints, forgiveness of sins, resurrection of the body and life everlasting. Amen.',
+        ].join('\n\n'),
+        es: [
+          'Creo en un solo Dios, Padre todopoderoso, creador del cielo y de la tierra.',
+          'Y en un Se\u00f1or Jesucristo, Hijo de Dios, nacido del Padre antes de todos los siglos.',
+          'Por \u00e9l fueron hechas todas las cosas... Por nosotros los hombres y por nuestra salvaci\u00f3n baj\u00f3 del cielo.',
+          'Por nosotros, y por nuestra salvaci\u00f3n, baj\u00f3 del cielo; se encarn\u00f3 por obra del Esp\u00edritu Santo y naci\u00f3 de la Virgen Mar\u00eda.',
+          'Padeci\u00f3 bajo Poncio Pilato, fue crucificado, muri\u00f3 y fue sepultado; resucit\u00f3 al tercer d\u00eda.',
+          'Subi\u00f3 a los cielos y se sent\u00f3 a la derecha de Dios Padre.',
+          'Desde all\u00ed volver\u00e1 con gloria para juzgar a vivos y muertos.',
+          'Creo en el Esp\u00edritu Santo, la santa Iglesia cat\u00f3lica, la comunicaci\u00f3n de los santos, el perd\u00f3n de los pecados, la resurrecci\u00f3n del cuerpo y la vida eterna. Am\u00e9n.',
+        ].join('\n\n'),
       },
       {
         type: 'note',

@@ -11,6 +11,7 @@ export interface DailyReading {
 
 export interface DailyReadings {
   date: string; // YYYY-MM-DD (primary key)
+  language?: 'en' | 'es';
   readings: DailyReading[];
   liturgicalColor: string;
   season: string;
@@ -56,8 +57,15 @@ export class SanctuDB extends Dexie {
 export const db = new SanctuDB();
 
 // Helper functions
-export async function getCachedReadings(date: string): Promise<DailyReadings | undefined> {
-  return await db.dailyReadings.get(date);
+export async function getCachedReadings(
+  date: string,
+  language?: DailyReadings['language']
+): Promise<DailyReadings | undefined> {
+  const cached = await db.dailyReadings.get(date);
+  if (language && cached?.language !== language) {
+    return undefined;
+  }
+  return cached;
 }
 
 export async function cacheReadings(readings: DailyReadings): Promise<void> {

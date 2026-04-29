@@ -6,7 +6,7 @@
 
 ```bash
 # 1. Install Vercel CLI globally
-bun add -g vercel
+npm install -g vercel
 
 # 2. Navigate to project (if not already there)
 # cd /path/to/sanctu
@@ -94,16 +94,21 @@ Check Vercel Analytics to ensure:
 - API route `/api/readings` isn't called excessively
 - Service Worker is working properly
 
-## Environment Variables (None Required!)
+## Environment Variables
 
-This app has zero environment variables. Everything works out of the box.
+The app works without environment variables, but server-side prefetching and shared caching need these:
+
+- `CRON_SECRET` - secures the scheduled `/api/cron/prefetch-readings` route.
+- `REDIS_URL` - enables the shared 30-day readings cache across users.
+
+For local development, copy `.env.example` to `.env.local`; Next.js loads `.env.local` automatically when running `npm run dev`.
 
 ## Performance Tips
 
 ### Enable Analytics (Optional)
 
 ```bash
-bun add @vercel/analytics
+npm install @vercel/analytics
 ```
 
 Add to [app/layout.tsx](app/layout.tsx):

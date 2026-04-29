@@ -152,7 +152,7 @@ function parseHTMLToSections(html: string): PrayerSection[] {
   const sections: PrayerSection[] = [];
 
   // Remove audio/video/script elements and ribbon placement instructions
-  let cleaned = html
+  const cleaned = html
     .replace(/<audio[\s\S]*?<\/audio>/gi, '')
     .replace(/<video[\s\S]*?<\/video>/gi, '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')

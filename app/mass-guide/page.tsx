@@ -2,10 +2,14 @@
 
 import { ArrowLeft, ExternalLink, Printer } from 'lucide-react';
 import Link from 'next/link';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '@/components/ThemeProvider';
 import { LanguageToggleCompact } from '@/components/LanguageToggle';
-import { getMassGuide, MassGuideLineType } from '@/lib/data/mass-guide';
+import { ReadingContent } from '@/components/ReadingContent';
+import { getMassGuide, MassGuideLineType, type MassGuideReadingSlot } from '@/lib/data/mass-guide';
 import { getUI } from '@/lib/data/ui';
+import { toLocalISODate } from '@/lib/date';
+import type { DailyReading } from '@/lib/db';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
 
 const LINE_STYLES: Record<MassGuideLineType, { wrapper: string; markerClass: string }> = {
@@ -46,11 +50,92 @@ const MARKERS: Record<MassGuideLineType, { en: string; es: string }> = {
   },
 };
 
+const READING_SLOT_LABELS: Record<MassGuideReadingSlot, { en: string; es: string }> = {
+  first: {
+    en: "Today's First Reading",
+    es: 'Primera lectura de hoy',
+  },
+  psalm: {
+    en: "Today's Responsorial Psalm",
+    es: 'Salmo responsorial de hoy',
+  },
+  second: {
+    en: "Today's Second Reading",
+    es: 'Segunda lectura de hoy',
+  },
+  alleluia: {
+    en: "Today's Gospel Acclamation",
+    es: 'Aclamación del Evangelio de hoy',
+  },
+  gospel: {
+    en: "Today's Gospel",
+    es: 'Evangelio de hoy',
+  },
+};
+
+interface ReadingsResponse {
+  readings?: DailyReading[];
+  error?: string;
+}
+
 export default function MassGuidePage() {
   const { language } = useLanguage();
   const ui = getUI(language);
   usePageEngagement('mass-guide');
   const guide = getMassGuide(language);
+  const [dailyReadings, setDailyReadings] = useState<DailyReading[]>([]);
+  const [readingsLoading, setReadingsLoading] = useState(true);
+  const [readingsError, setReadingsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchDailyReadings = async () => {
+      try {
+        setReadingsLoading(true);
+        setReadingsError(null);
+
+        const response = await fetch(`/api/readings?date=${toLocalISODate()}&lang=${language}`);
+        const data = (await response.json()) as ReadingsResponse;
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch daily readings');
+        }
+
+        if (!cancelled) {
+          setDailyReadings(Array.isArray(data.readings) ? data.readings : []);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setDailyReadings([]);
+          setReadingsError(
+            error instanceof Error ? error.message : 'Unable to load daily readings'
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setReadingsLoading(false);
+        }
+      }
+    };
+
+    fetchDailyReadings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [language]);
+
+  const readingsByType = useMemo(
+    () =>
+      dailyReadings.reduce<Partial<Record<MassGuideReadingSlot, DailyReading>>>((acc, reading) => {
+        if (!acc[reading.type]) {
+          acc[reading.type] = reading;
+        }
+        return acc;
+      }, {}),
+    [dailyReadings]
+  );
 
   const renderLine = (lineType: MassGuideLineType, text: string, index: number) => {
     const styles = LINE_STYLES[lineType];
@@ -59,7 +144,7 @@ export default function MassGuidePage() {
       return (
         <p
           key={`line-${index}`}
-          className="leading-relaxed text-gray-800 dark:text-gray-200"
+          className="whitespace-pre-line leading-relaxed text-gray-800 dark:text-gray-200"
         >
           {text}
         </p>
@@ -75,9 +160,51 @@ export default function MassGuidePage() {
           <span className={`font-semibold ${styles.markerClass}`}>
             {`${MARKERS[lineType][language]}: `}
           </span>
-          <p className="flex-1 leading-relaxed text-gray-800 dark:text-gray-200">{text}</p>
+          <p className="flex-1 whitespace-pre-line leading-relaxed text-gray-800 dark:text-gray-200">{text}</p>
         </div>
       </div>
+    );
+  };
+
+  const renderReadingSlot = (slot: MassGuideReadingSlot) => {
+    const reading = readingsByType[slot];
+
+    if (readingsLoading && slot === 'first') {
+      return (
+        <div className="rounded-xl border border-sky-200 dark:border-sky-900/70 bg-sky-50/70 dark:bg-sky-950/20 p-4 text-sm text-sky-800 dark:text-sky-200">
+          {language === 'es' ? 'Cargando las lecturas de hoy...' : "Loading today's readings..."}
+        </div>
+      );
+    }
+
+    if (readingsError && slot === 'first') {
+      return (
+        <div className="rounded-xl border border-red-200 dark:border-red-900/70 bg-red-50/70 dark:bg-red-950/20 p-4 text-sm text-red-800 dark:text-red-200">
+          {readingsError}
+        </div>
+      );
+    }
+
+    if (!reading) return null;
+
+    return (
+      <details
+        open
+        className="group rounded-xl border border-sky-200 dark:border-sky-900/70 bg-white/70 dark:bg-gray-950/30 p-4"
+      >
+        <summary className="list-none cursor-pointer space-y-1">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+            <span className="font-semibold text-sky-700 dark:text-sky-300">
+              {READING_SLOT_LABELS[slot][language]}
+            </span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">{reading.label}</span>
+          </div>
+          <p className="text-lg font-light text-gray-900 dark:text-gray-100">{reading.citation}</p>
+        </summary>
+        <div className="prayer-text mt-4 border-t border-gray-200 dark:border-gray-800 pt-4 text-gray-800 dark:text-gray-200">
+          <ReadingContent reading={reading} />
+        </div>
+      </details>
     );
   };
 
@@ -121,9 +248,12 @@ export default function MassGuidePage() {
             >
               <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mb-5">{section.title}</h2>
               <div className="space-y-3">
-                {section.lines.map((line, index) =>
-                  renderLine(line.type, language === 'en' ? line.en : line.es, index)
-                )}
+                {section.lines.map((line, index) => (
+                  <Fragment key={`${section.id}-${index}`}>
+                    {renderLine(line.type, language === 'en' ? line.en : line.es, index)}
+                    {line.readingSlot ? renderReadingSlot(line.readingSlot) : null}
+                  </Fragment>
+                ))}
               </div>
             </article>
           ))}

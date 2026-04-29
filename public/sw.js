@@ -1,7 +1,7 @@
 // Sanctu Service Worker
 // Provides offline functionality and caching for the Catholic prayer app
 
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE_NAME = `Sanctu-static-${VERSION}`;
 const READING_CACHE = `Sanctu-readings-${VERSION}`;
 

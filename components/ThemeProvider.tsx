@@ -15,30 +15,53 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'system';
-  const saved = localStorage.getItem('theme') as Theme | null;
-  if (saved) return saved;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+function isTheme(value: string | null): value is Theme {
+  return value === 'light' || value === 'dark' || value === 'system';
 }
 
-function getInitialLanguage(): Language {
+function isLanguage(value: string | null): value is Language {
+  return value === 'en' || value === 'es';
+}
+
+function getStoredTheme(): Theme {
+  if (typeof window === 'undefined') return 'system';
+
+  try {
+    const saved = localStorage.getItem('theme');
+    return isTheme(saved) ? saved : 'system';
+  } catch {
+    return 'system';
+  }
+}
+
+function getStoredLanguage(): Language {
   if (typeof window === 'undefined') return 'en';
-  const saved = localStorage.getItem('language') as Language | null;
-  return saved ?? 'en';
+
+  try {
+    const saved = localStorage.getItem('language');
+    return isLanguage(saved) ? saved : 'en';
+  } catch {
+    return 'en';
+  }
+}
+
+function saveStoredValue(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    return;
+  }
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => getInitialTheme());
-  const [language, setLanguageState] = useState<Language>(() => getInitialLanguage());
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    const initialTheme = getInitialTheme();
-    if (initialTheme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return initialTheme === 'dark';
-  });
+  const [theme, setThemeState] = useState<Theme>('system');
+  const [language, setLanguageState] = useState<Language>('en');
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setThemeState(getStoredTheme());
+    setLanguageState(getStoredLanguage());
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -62,12 +85,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem('theme', newTheme);
+    saveStoredValue('theme', newTheme);
   };
 
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
-    localStorage.setItem('language', newLanguage);
+    saveStoredValue('language', newLanguage);
     import('@/lib/analytics').then(({ analytics }) => analytics.languageToggled(newLanguage));
   };
 
