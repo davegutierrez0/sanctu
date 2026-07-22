@@ -1,6 +1,7 @@
 'use client';
 
-import { ExternalLink, Printer } from 'lucide-react';
+import { BookOpen, ChevronRight, ExternalLink, Printer } from 'lucide-react';
+import Link from 'next/link';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '@/components/ThemeProvider';
 import { ReadingContent } from '@/components/ReadingContent';
@@ -231,6 +232,15 @@ export default function MassGuidePage() {
           <h1>{guide.title}</h1>
           <p>{guide.subtitle}</p>
         </header>
+
+        <Link href="/readings" className="mass-readings-action stone-card no-print">
+          <span className="feature-icon sapphire"><BookOpen aria-hidden="true" size={21} /></span>
+          <span>
+            <strong>{language === 'es' ? 'Lecturas de hoy' : "Today's readings"}</strong>
+            <small>{language === 'es' ? 'Abre la página de lecturas para navegar por fecha.' : 'Open the reading companion to move between dates.'}</small>
+          </span>
+          <ChevronRight aria-hidden="true" size={20} />
+        </Link>
 
         <section className="space-y-6">
           {guide.sections.map((section) => (

@@ -59,9 +59,13 @@ export function PrayerLibrary() {
   const matchingPrayers = useMemo(() => {
     const category = filter === 'favorites' ? 'all' : filter;
     const matches = filterPrayers(COMMON_PRAYERS, language, query, category);
-    return filter === 'favorites'
-      ? matches.filter((prayer) => favoriteIds.includes(prayer.id))
-      : matches;
+    if (filter === 'favorites') {
+      return matches.filter((prayer) => favoriteIds.includes(prayer.id));
+    }
+
+    return [...matches].sort(
+      (first, second) => Number(favoriteIds.includes(second.id)) - Number(favoriteIds.includes(first.id)),
+    );
   }, [favoriteIds, filter, language, query]);
 
   const toggleFavorite = (id: string) => {
@@ -131,6 +135,7 @@ export function PrayerLibrary() {
                   className={isFavorite ? 'favorite-button is-favorite' : 'favorite-button'}
                   onClick={() => toggleFavorite(prayer.id)}
                   aria-label={isFavorite ? ui.unfavorite : ui.favorite}
+                  aria-pressed={isFavorite}
                   title={isFavorite ? ui.unfavorite : ui.favorite}
                 >
                   <Star aria-hidden="true" size={18} fill={isFavorite ? 'currentColor' : 'none'} />

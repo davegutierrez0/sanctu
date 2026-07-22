@@ -1,126 +1,139 @@
-// Sanctu Service Worker
-// Provides offline functionality and caching for the Catholic prayer app
+// Sanctus Service Worker
+// Keeps the liturgical companion usable when the network is unavailable.
 
-const VERSION = 'v3';
-const CACHE_NAME = `Sanctu-static-${VERSION}`;
-const READING_CACHE = `Sanctu-readings-${VERSION}`;
+const VERSION = 'v4';
+const STATIC_CACHE = `Sanctus-static-${VERSION}`;
+const DATA_CACHE = `Sanctus-data-${VERSION}`;
+const ASSET_CACHE = `Sanctus-assets-${VERSION}`;
 
-// Assets to cache on install
 const STATIC_ASSETS = [
   '/',
+  '/mass-guide',
+  '/morning-prayer',
   '/prayers',
-  '/rosary',
   '/readings',
+  '/rosary',
+  '/offline.html',
   '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/art/gothic-stone-glass.png',
+  '/prayers/our-father',
+  '/prayers/hail-mary',
+  '/prayers/glory-be',
+  '/prayers/creed',
+  '/prayers/hail-holy-queen',
+  '/prayers/fatima',
+  '/prayers/memorare',
+  '/prayers/angelus',
+  '/prayers/morning-offering',
+  '/prayers/angel-of-god',
+  '/prayers/eternal-rest',
+  '/prayers/grace-before-meals',
+  '/prayers/grace-after-meals',
+  '/prayers/act-of-contrition',
+  '/prayers/sign-of-the-cross',
+  '/prayers/saint-michael',
+  '/prayers/anima-christi',
+  '/prayers/spiritual-communion',
+  '/prayers/suscipe',
+  '/prayers/daily-examen',
+  '/prayers/before-mass',
+  '/prayers/after-communion',
 ];
 
-// Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
+    caches.open(STATIC_CACHE).then((cache) =>
+      Promise.allSettled(STATIC_ASSETS.map((asset) => cache.add(asset)))
+    )
   );
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  const currentCaches = new Set([STATIC_CACHE, DATA_CACHE, ASSET_CACHE]);
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== READING_CACHE) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames.map((cacheName) =>
+          currentCaches.has(cacheName) ? Promise.resolve(false) : caches.delete(cacheName)
+        )
+      )
+    )
   );
   self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+async function cacheFirst(request) {
+  const cache = await caches.open(ASSET_CACHE);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  if (response.ok) await cache.put(request, response.clone());
+  return response;
+}
+
+async function staleWhileRevalidate(request, event) {
+  const cache = await caches.open(DATA_CACHE);
+  const cached = await cache.match(request);
+  const update = fetch(request).then(async (response) => {
+    if (response.ok) await cache.put(request, response.clone());
+    return response;
+  });
+
+  if (cached) {
+    event.waitUntil(update.catch(() => undefined));
+    return cached;
+  }
+
+  return update;
+}
+
+async function handleNavigation(request) {
+  const cache = await caches.open(STATIC_CACHE);
+
+  try {
+    const response = await fetch(request);
+    if (response.ok) await cache.put(request, response.clone());
+    return response;
+  } catch {
+    const exact = await cache.match(request);
+    if (exact) return exact;
+
+    const home = await cache.match('/');
+    if (home) return home;
+
+    return cache.match('/offline.html');
+  }
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+  if (request.method !== 'GET') return;
+
   const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
 
-  if (request.method !== 'GET') {
+  if (
+    url.pathname.startsWith('/api/readings') ||
+    url.pathname.startsWith('/api/morning-prayer')
+  ) {
+    event.respondWith(staleWhileRevalidate(request, event));
     return;
   }
 
-  // Let Next.js manage its own build assets so we don't cache-bust ourselves
-  if (url.pathname.startsWith('/_next/') || url.pathname.startsWith('/__nextjs/')) {
-    return;
-  }
-
-  // Handle API routes specially (readings from USCCB)
-  if (url.pathname.startsWith('/api/readings')) {
-    event.respondWith(
-      caches.open(READING_CACHE).then(async (cache) => {
-        const cached = await cache.match(request);
-
-        // Return cached if available and less than 24 hours old
-        if (cached) {
-          const cachedDate = new Date(cached.headers.get('date'));
-          const now = new Date();
-          const hoursSinceCached = (now - cachedDate) / (1000 * 60 * 60);
-
-          if (hoursSinceCached < 24) {
-            return cached;
-          }
-        }
-
-        // Fetch fresh data
-        try {
-          const response = await fetch(request);
-          if (response.ok) {
-            cache.put(request, response.clone());
-          }
-          return response;
-        } catch (error) {
-          // Return cached version if network fails
-          if (cached) {
-            return cached;
-          }
-          throw error;
-        }
-      })
-    );
-    return;
-  }
-
-  // Always try network first for navigations to avoid serving stale HTML after deploys
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(async () => {
-          const cached = await caches.match(request);
-          if (cached) return cached;
-          return caches.match('/');
-        })
-    );
+    event.respondWith(handleNavigation(request));
     return;
   }
 
-  // For all other requests, use cache-first strategy
-  event.respondWith(
-    caches.match(request).then((response) => {
-      return response || fetch(request).then((fetchResponse) => {
-        // Cache successful GET requests
-        if (request.method === 'GET' && fetchResponse.ok) {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, fetchResponse.clone());
-            return fetchResponse;
-          });
-        }
-        return fetchResponse;
-      });
-    })
-  );
+  if (
+    url.pathname.startsWith('/_next/static/') ||
+    url.pathname.startsWith('/art/') ||
+    url.pathname.startsWith('/icon-')
+  ) {
+    event.respondWith(cacheFirst(request));
+  }
 });

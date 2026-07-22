@@ -770,6 +770,39 @@ h3 {
   padding: 23px 20px;
 }
 
+.mass-readings-action {
+  display: grid;
+  min-height: 94px;
+  margin: -10px 0 22px;
+  padding: 16px 18px;
+  align-items: center;
+  gap: 14px;
+  border-radius: 14px;
+  grid-template-columns: auto 1fr auto;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.mass-readings-action:hover {
+  transform: translateY(-2px);
+  border-color: var(--border);
+}
+
+.mass-readings-action strong,
+.mass-readings-action small {
+  display: block;
+}
+
+.mass-readings-action strong {
+  font-family: var(--serif);
+  font-size: 1.08rem;
+}
+
+.mass-readings-action small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
 .mass-section + .mass-section {
   margin-top: 16px;
 }
