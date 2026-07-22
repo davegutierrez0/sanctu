@@ -1,269 +1,173 @@
 'use client';
 
-import { Book, Church, Coffee, Heart, Moon, Sun, RefreshCw, Sunrise } from 'lucide-react';
-import Link from 'next/link';
-import { useTheme, useLanguage } from '@/components/ThemeProvider';
-import { LanguageToggleCompact } from '@/components/LanguageToggle';
-import { getUI, ESSENTIAL_PRAYER_IDS } from '@/lib/data/ui';
-import { COMMON_PRAYERS } from '@/lib/data/prayers';
-import { clearAllData } from '@/lib/db';
 import { useState } from 'react';
+import Link from 'next/link';
+import { BookHeart, BookOpen, ChevronRight, Church, Coffee, Heart, RefreshCw } from 'lucide-react';
+
+import { AppHeader } from '@/components/AppHeader';
+import { BottomNav } from '@/components/BottomNav';
+import { LiturgicalHero } from '@/components/LiturgicalHero';
+import { PrayerForNow } from '@/components/PrayerForNow';
+import { useLanguage } from '@/components/ThemeProvider';
 import { analytics } from '@/lib/analytics';
+import { clearAllData } from '@/lib/db';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
 
+const HOME_TEXT = {
+  en: {
+    massEyebrow: 'Today at Mass',
+    massTitle: 'Arrive ready to listen and respond',
+    readings: "Today's Mass readings",
+    readingsDescription: 'Read, pray, and cache the complete readings for the day.',
+    guide: 'Bilingual Mass guide',
+    guideDescription: 'The ordinary of the Mass with English and Spanish responses.',
+    continueEyebrow: 'Keep close',
+    continueTitle: 'Prayer for the rest of the day',
+    rosary: 'Pray the Rosary',
+    rosaryDescription: 'Mysteries, meditations, and saved progress.',
+    library: 'Prayer library',
+    libraryDescription: 'Searchable devotions for daily life and the Mass.',
+    footer: 'Made with prayer for the faithful.',
+    support: 'Support this free app',
+    settings: 'Offline data & settings',
+    clear: 'Clear offline data',
+    clearing: 'Clearing…',
+    clearPrompt: 'Clear all offline data and caches? This will reset the app.',
+    clearError: 'The cache could not be cleared. Please try again.',
+  },
+  es: {
+    massEyebrow: 'Hoy en la Misa',
+    massTitle: 'Llega preparado para escuchar y responder',
+    readings: 'Lecturas de la Misa de hoy',
+    readingsDescription: 'Lee, reza y guarda sin conexión las lecturas completas del día.',
+    guide: 'Guía bilingüe de la Misa',
+    guideDescription: 'El ordinario de la Misa con respuestas en inglés y español.',
+    continueEyebrow: 'Ten a mano',
+    continueTitle: 'Oración para el resto del día',
+    rosary: 'Rezar el Rosario',
+    rosaryDescription: 'Misterios, meditaciones y progreso guardado.',
+    library: 'Biblioteca de oraciones',
+    libraryDescription: 'Devociones para la vida diaria y la Misa.',
+    footer: 'Hecho con oración para los fieles.',
+    support: 'Apoya esta aplicación gratuita',
+    settings: 'Datos sin conexión y ajustes',
+    clear: 'Borrar datos sin conexión',
+    clearing: 'Borrando…',
+    clearPrompt: '¿Borrar todos los datos y cachés? Esto restablecerá la aplicación.',
+    clearError: 'No se pudo borrar el caché. Inténtalo de nuevo.',
+  },
+} as const;
+
 export default function HomePage() {
-  const { isDark, setTheme } = useTheme();
   const { language } = useLanguage();
-  const ui = getUI(language);
+  const text = HOME_TEXT[language];
   const [isClearing, setIsClearing] = useState(false);
   usePageEngagement('home');
 
-  const toggleDarkMode = () => {
-    const next = isDark ? 'light' : 'dark';
-    setTheme(next);
-    analytics.themeToggled(next);
-  };
-
   const clearAllCaches = async () => {
-    if (!confirm(language === 'es'
-      ? '¿Borrar todos los datos y caché? Esto restablecerá la aplicación.'
-      : 'Clear all data and caches? This will reset the app.')) {
-      return;
-    }
-
+    if (!window.confirm(text.clearPrompt)) return;
     setIsClearing(true);
 
     try {
-      // Clear IndexedDB (readings, preferences, rosary progress)
       await clearAllData();
-
-      // Clear localStorage
       localStorage.clear();
 
-      // Clear all service worker caches
       if ('caches' in window) {
         const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        await Promise.all(cacheNames.map((name) => caches.delete(name)));
       }
 
-      // Unregister service workers
       if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map(reg => reg.unregister()));
+        await Promise.all(registrations.map((registration) => registration.unregister()));
       }
 
       analytics.cacheCleared();
-
-      // Force hard reload
       window.location.reload();
-    } catch (error) {
-      console.error('Error clearing caches:', error);
+    } catch {
       setIsClearing(false);
-      alert(language === 'es'
-        ? 'Error al borrar el caché. Por favor, intenta borrar el caché del navegador manualmente.'
-        : 'Error clearing cache. Please try clearing your browser cache manually.');
+      window.alert(text.clearError);
     }
   };
 
-  const today = new Date().toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  // Get essential prayers with translations
-  const essentialPrayers = ESSENTIAL_PRAYER_IDS.map((id) => {
-    const prayer = COMMON_PRAYERS.find((p) => p.id === id);
-    return prayer
-      ? {
-          id: prayer.id,
-          title: prayer.title[language],
-          latin: prayer.latin,
-        }
-      : null;
-  }).filter(Boolean);
-
   return (
-    <>
-      {/* Print-only header */}
-      <div className="print-header">
-        <h1>Sanctus</h1>
-        <p>{today}</p>
-      </div>
+    <div className="sanctus-page home-page">
+      <AppHeader />
+      <main className="sanctus-content home-content">
+        <LiturgicalHero />
+        <PrayerForNow />
 
-      {/* Top Navigation */}
-      <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground) 12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
-        <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="font-semibold text-xl tracking-tight small-caps">
-            Sanctus
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <LanguageToggleCompact />
-
-            <button
-              onClick={toggleDarkMode}
-              className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            <a
-              href="https://buymeacoffee.com/davegutierrez0"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => analytics.coffeeClicked()}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-400 hover:bg-amber-500 text-black transition-colors text-sm font-medium shadow-sm"
-            >
-              <Coffee size={16} />
-              {ui.support}
-            </a>
+        <section className="home-section reveal-up">
+          <div className="section-intro">
+            <p className="eyebrow">{text.massEyebrow}</p>
+            <h2>{text.massTitle}</h2>
           </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="max-w-3xl w-full mx-auto px-6 py-12">
-        {/* Hero Section */}
-        <div className="mb-16 text-center space-y-3">
-          <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400 small-caps">
-            {today}
-          </p>
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight">{ui.tagline}</h1>
-        </div>
-
-        {/* Quick Access Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-16">
-          <Link
-            href="/readings"
-            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
-          >
-            <Book className="text-purple-600 dark:text-purple-400 mb-4" size={28} />
-            <h2 className="text-2xl font-medium mb-2">{ui.todaysReadings}</h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              {ui.todaysReadingsDesc}
-            </p>
-          </Link>
-
-          <Link
-            href="/mass-guide"
-            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
-          >
-            <Church className="text-emerald-600 dark:text-emerald-400 mb-4" size={28} />
-            <h2 className="text-2xl font-medium mb-2">{ui.massGuide}</h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              {ui.massGuideDesc}
-            </p>
-          </Link>
-
-          <Link
-            href="/rosary"
-            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
-          >
-            <Heart className="text-rose-600 dark:text-rose-400 mb-4" size={28} />
-            <h2 className="text-2xl font-medium mb-2">{ui.prayRosary}</h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              {ui.prayRosaryDesc}
-            </p>
-          </Link>
-
-          <Link
-            href="/morning-prayer"
-            className="group block p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-xl transition-all duration-200"
-          >
-            <Sunrise className="text-amber-600 dark:text-amber-400 mb-4" size={28} />
-            <h2 className="text-2xl font-medium mb-2">{ui.morningPrayer}</h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              {ui.morningPrayerDesc}
-            </p>
-          </Link>
-        </div>
-
-        {/* Essential Prayers */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-light mb-8 tracking-tight">{ui.essentialPrayers}</h2>
-          <div className="space-y-4">
-            {essentialPrayers.map(
-              (prayer) =>
-                prayer && (
-                  <Link
-                    key={prayer.id}
-                    href={`/prayers/${prayer.id}`}
-                  className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-stone-100 dark:hover:bg-gray-800/60 transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium text-lg">{prayer.title}</div>
-                        {prayer.latin && (
-                          <div className="text-sm text-gray-500 dark:text-gray-400 italic">
-                            {prayer.latin}
-                          </div>
-                        )}
-                      </div>
-                      <svg
-                        className="w-5 h-5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
-                  </Link>
-                )
-            )}
-
-            <Link
-              href="/prayers"
-              className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-stone-100 dark:hover:bg-gray-800/60 transition-colors text-center text-gray-600 dark:text-gray-400"
-            >
-              {ui.viewAllPrayers} →
+          <div className="feature-grid">
+            <Link href="/readings" className="feature-card stone-card">
+              <span className="feature-icon sapphire"><BookOpen aria-hidden="true" size={22} /></span>
+              <span>
+                <strong>{text.readings}</strong>
+                <small>{text.readingsDescription}</small>
+              </span>
+              <ChevronRight aria-hidden="true" size={20} />
+            </Link>
+            <Link href="/mass-guide" className="feature-card stone-card">
+              <span className="feature-icon amber"><Church aria-hidden="true" size={22} /></span>
+              <span>
+                <strong>{text.guide}</strong>
+                <small>{text.guideDescription}</small>
+              </span>
+              <ChevronRight aria-hidden="true" size={20} />
             </Link>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="no-print text-center text-sm text-gray-500 dark:text-gray-400 pt-12 border-t border-gray-200 dark:border-gray-800 space-y-3">
-          <p>{ui.footer}</p>
-          <p>
-            <a
-              href="https://buymeacoffee.com/davegutierrez0"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
-            >
-              {ui.supportApp}
-            </a>
-          </p>
-
-          {/* Clear Cache Button */}
-          <div className="pt-4">
-            <button
-              onClick={clearAllCaches}
-              disabled={isClearing}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title={language === 'es' ? 'Borrar todos los datos y caché' : 'Clear all data and cache'}
-            >
-              <RefreshCw size={14} className={isClearing ? 'animate-spin' : ''} />
-              {isClearing
-                ? (language === 'es' ? 'Borrando...' : 'Clearing...')
-                : (language === 'es' ? 'Borrar caché' : 'Clear cache')}
-            </button>
+        <section className="home-section reveal-up">
+          <div className="section-intro">
+            <p className="eyebrow">{text.continueEyebrow}</p>
+            <h2>{text.continueTitle}</h2>
           </div>
+          <div className="feature-grid compact">
+            <Link href="/rosary" className="feature-card stone-card">
+              <span className="feature-icon ruby"><Heart aria-hidden="true" size={22} /></span>
+              <span>
+                <strong>{text.rosary}</strong>
+                <small>{text.rosaryDescription}</small>
+              </span>
+              <ChevronRight aria-hidden="true" size={20} />
+            </Link>
+            <Link href="/prayers" className="feature-card stone-card">
+              <span className="feature-icon verdigris"><BookHeart aria-hidden="true" size={22} /></span>
+              <span>
+                <strong>{text.library}</strong>
+                <small>{text.libraryDescription}</small>
+              </span>
+              <ChevronRight aria-hidden="true" size={20} />
+            </Link>
+          </div>
+        </section>
+
+        <footer className="home-footer no-print">
+          <p>{text.footer}</p>
+          <a
+            href="https://buymeacoffee.com/davegutierrez0"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => analytics.coffeeClicked()}
+          >
+            <Coffee aria-hidden="true" size={16} />
+            {text.support}
+          </a>
+          <details>
+            <summary>{text.settings}</summary>
+            <button type="button" onClick={clearAllCaches} disabled={isClearing}>
+              <RefreshCw aria-hidden="true" size={15} className={isClearing ? 'spin' : ''} />
+              {isClearing ? text.clearing : text.clear}
+            </button>
+          </details>
         </footer>
       </main>
-
-      {/* Print-only footer */}
-      <div className="print-footer" data-date={today} style={{ display: 'none' }}>
-        Printed from Sanctus App - {today}
-      </div>
-    </>
+      <BottomNav />
+    </div>
   );
 }

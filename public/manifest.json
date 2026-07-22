@@ -1,11 +1,11 @@
 {
-  "name": "Sanctus - Catholic Prayer App",
+  "name": "Sanctus — Catholic Liturgical Companion",
   "short_name": "Sanctus",
-  "description": "Daily Mass readings, Rosary, and essential Catholic prayers. Fast, offline-capable, and ad-free.",
+  "description": "Liturgy of the Hours, daily Mass readings, bilingual Mass guide, Rosary, and Catholic prayers — fast and offline-capable.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#d8d1c5",
+  "theme_color": "#8b6a2e",
   "orientation": "portrait",
   "categories": ["lifestyle", "religion"],
   "icons": [

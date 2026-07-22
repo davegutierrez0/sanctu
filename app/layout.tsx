@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import PWAInstaller from "@/components/PWAInstaller";
@@ -7,8 +7,8 @@ import "./globals.css";
 import "./print.css";
 
 export const metadata: Metadata = {
-  title: "Sanctus - Catholic Prayer App",
-  description: "Daily Mass readings, Rosary, and essential Catholic prayers. Fast, offline-capable, and ad-free.",
+  title: "Sanctus — A Catholic Liturgical Companion",
+  description: "The Liturgy of the Hours, daily Mass readings, a bilingual Mass guide, Rosary, and Catholic prayers in a fast offline companion.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -21,12 +21,26 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0f172a",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#d8d1c5" },
+    { media: "(prefers-color-scheme: dark)", color: "#17191b" },
+  ],
 };
+
+const themeScript = `
+  (function () {
+    try {
+      var saved = localStorage.getItem('theme') || 'system';
+      var dark = saved === 'dark' || (saved === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+    } catch (_) {}
+  })();
+`;
 
 export default function RootLayout({
   children,
@@ -37,14 +51,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className="bg-[var(--background)] text-[var(--foreground)]"
     >
-      <body className="antialiased text-gray-900 dark:text-gray-100 transition-colors">
+      <body>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <ThemeProvider>
           <PWAInstaller />
-          <div className="mx-auto w-full max-w-3xl lg:max-w-4xl px-4 sm:px-6">
-            {children}
-          </div>
+          {children}
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
