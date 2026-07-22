@@ -13,6 +13,10 @@
 # testing
 /coverage
 
+# local agent workspaces and visual brainstorming artifacts
+/.worktrees/
+/.superpowers/
+
 # next.js
 /.next/
 /out/
