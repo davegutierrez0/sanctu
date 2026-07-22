@@ -35,9 +35,11 @@ const themeScript = `
   (function () {
     try {
       var saved = localStorage.getItem('theme') || 'system';
+      var language = localStorage.getItem('language');
       var dark = saved === 'dark' || (saved === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
       document.documentElement.classList.toggle('dark', dark);
       document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+      if (language === 'en' || language === 'es') document.documentElement.lang = language;
     } catch (_) {}
   })();
 `;

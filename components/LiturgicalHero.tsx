@@ -32,6 +32,7 @@ export function LiturgicalHero() {
 
   useEffect(() => {
     let isActive = true;
+    const controller = new AbortController();
 
     async function loadSummary() {
       const cached = await getCachedReadings(isoDate, language).catch(() => undefined);
@@ -40,7 +41,9 @@ export function LiturgicalHero() {
       }
 
       try {
-        const response = await fetch(`/api/readings?date=${isoDate}&lang=${language}`);
+        const response = await fetch(`/api/readings?date=${isoDate}&lang=${language}`, {
+          signal: controller.signal,
+        });
         if (!response.ok) return;
         const fresh = await response.json() as Omit<DailyReadings, 'date' | 'fetchedAt'>;
         if (isActive) setSummary(fresh);
@@ -51,7 +54,10 @@ export function LiturgicalHero() {
     }
 
     loadSummary();
-    return () => { isActive = false; };
+    return () => {
+      isActive = false;
+      controller.abort();
+    };
   }, [isoDate, language]);
 
   const text = language === 'es'

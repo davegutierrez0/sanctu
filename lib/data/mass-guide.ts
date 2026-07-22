@@ -80,8 +80,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'text',
-        en: 'Priest: Let us pray.',
-        es: 'Sacerdote: Oremos.',
+        en: 'The priest invites the assembly to acknowledge its sins and prepare to celebrate the sacred mysteries.',
+        es: 'El sacerdote invita a la asamblea a reconocer sus pecados y prepararse para celebrar los sagrados misterios.',
       },
       {
         type: 'note',
@@ -90,8 +90,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'action',
-        en: 'Stand, then kneel briefly for the initial act of humility, if this is your parish custom.',
-        es: 'Mant\u00e9nte de pie y, si es costumbre de la parroquia, arrod\u00edllate brevemente para el acto penitencial.',
+        en: 'Remain standing for the Penitential Act and Kyrie.',
+        es: 'Permanece de pie durante el Acto Penitencial y el Kyrie.',
       },
       {
         type: 'response',
@@ -115,17 +115,17 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'text',
-        en: 'Glory to God in the highest, and peace to His people on earth.',
+        en: 'Glory to God in the highest, and on earth peace to people of good will.',
         es: 'Gloria a Dios en el cielo, y en la tierra paz a los hombres que ama el Se\u00f1or.',
       },
       {
         type: 'action',
-        en: 'After the opening prayers, remain standing for the Collect, unless your custom is to kneel.',
-        es: 'Tras las oraciones iniciales, permanece de pie para el Colecta, salvo que en tu parroquia se arrodille.',
+        en: 'Remain standing as the priest invites the assembly to pray the Collect.',
+        es: 'Permanece de pie cuando el sacerdote invita a la asamblea a rezar la oración Colecta.',
       },
       {
         type: 'text',
-        en: 'Priest: Let us pray together. The Collect follows for the day.',
+        en: 'Priest: Let us pray. The Collect appointed for the day follows.',
         es: 'Sacerdote: Oremos. La Colecta corresponde al d\u00eda.',
       },
       {
@@ -147,8 +147,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'action',
-        en: 'Stand for the readings as your parish custom dictates, then sit briefly for brief prayers or silence.',
-        es: 'Ponte de pie para las lecturas, y luego si\u00e9ntate para los momentos de oraci\u00f3n o silencio.',
+        en: 'Sit for the first reading, responsorial psalm, and second reading when one is appointed.',
+        es: 'Siéntate para la primera lectura, el salmo responsorial y la segunda lectura cuando corresponda.',
       },
       {
         type: 'text',
@@ -187,7 +187,7 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       {
         type: 'response',
         en: 'Glory to you, O Lord.',
-        es: 'Alabado seas, Se\u00f1or.',
+        es: 'Gloria a ti, Se\u00f1or.',
       },
       {
         type: 'text',
@@ -207,36 +207,18 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'action',
-        en: 'Sit or kneel for the homily, depending on parish custom, and pray inwardly.',
-        es: 'Si\u00e9ntate o arrod\u00edllate para la homil\u00eda, seg\u00fan la costumbre local, y ora interiormente.',
+        en: 'Sit for the homily and listen prayerfully.',
+        es: 'Siéntate para la homilía y escucha con espíritu de oración.',
       },
       {
         type: 'action',
-        en: 'On Sundays, solemnities, and feasts, stand for the Profession of Faith (Credo).',
-        es: 'En domingos, solemnidades y fiestas, ponte de pie para la Profes\u00edn de Fe (Credo).',
+        en: 'On Sundays and solemnities, stand for the Profession of Faith (Creed).',
+        es: 'Los domingos y solemnidades, ponte de pie para la Profesión de Fe (Credo).',
       },
       {
-        type: 'response',
-        en: [
-          'I believe in one God, the Father almighty, maker of heaven and earth.',
-          'And in one Lord Jesus Christ, the Son of God, begotten of the Father before all ages.',
-          'By him all things were made... For us men and for our salvation He came down from heaven.',
-          'For us and for our salvation He came down from heaven, was incarnate by the Holy Spirit and born of the Virgin Mary.',
-          'He suffered under Pontius Pilate, was crucified, died and was buried; He rose again on the third day.',
-          'He ascended into heaven and is seated at the right hand of the Father.',
-          'From thence He shall come again with glory to judge the living and the dead.',
-          'I believe in the Holy Spirit, the holy catholic Church, the communion of saints, forgiveness of sins, resurrection of the body and life everlasting. Amen.',
-        ].join('\n\n'),
-        es: [
-          'Creo en un solo Dios, Padre todopoderoso, creador del cielo y de la tierra.',
-          'Y en un Se\u00f1or Jesucristo, Hijo de Dios, nacido del Padre antes de todos los siglos.',
-          'Por \u00e9l fueron hechas todas las cosas... Por nosotros los hombres y por nuestra salvaci\u00f3n baj\u00f3 del cielo.',
-          'Por nosotros, y por nuestra salvaci\u00f3n, baj\u00f3 del cielo; se encarn\u00f3 por obra del Esp\u00edritu Santo y naci\u00f3 de la Virgen Mar\u00eda.',
-          'Padeci\u00f3 bajo Poncio Pilato, fue crucificado, muri\u00f3 y fue sepultado; resucit\u00f3 al tercer d\u00eda.',
-          'Subi\u00f3 a los cielos y se sent\u00f3 a la derecha de Dios Padre.',
-          'Desde all\u00ed volver\u00e1 con gloria para juzgar a vivos y muertos.',
-          'Creo en el Esp\u00edritu Santo, la santa Iglesia cat\u00f3lica, la comunicaci\u00f3n de los santos, el perd\u00f3n de los pecados, la resurrecci\u00f3n del cuerpo y la vida eterna. Am\u00e9n.',
-        ].join('\n\n'),
+        type: 'note',
+        en: 'Use the parish worship aid for the complete Nicene Creed or Apostles’ Creed appointed for the celebration.',
+        es: 'Sigue el subsidio de la parroquia para el texto completo del Credo niceno-constantinopolitano o del Credo de los Apóstoles indicado para la celebración.',
       },
       {
         type: 'note',
@@ -262,8 +244,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'action',
-        en: 'Remain standing. Keep your hands gently folded while the gifts are presented.',
-        es: 'Permanece de pie y mant\u00e9n las manos recogidas mientras se presentan los dones.',
+        en: 'Sit while the altar is prepared and the gifts are presented, following local custom.',
+        es: 'Siéntate mientras se prepara el altar y se presentan los dones, según la costumbre local.',
       },
       {
         type: 'text',
@@ -271,14 +253,14 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
         es: 'El sacerdote reza una de las oraciones sobre los dones, por ejemplo: Bendito seas, Se\u00f1or Dios de toda criatura...',
       },
       {
-        type: 'text',
-        en: 'Bendido seas, se\u00f1or, Dios de toda creaci\u00f3n, porque por el santo sacrificio\nque ahora ofrecemos tu Hijo Jesucristo...',
-        es: 'Te damos gracias, Se\u00f1or, porque por la ofrenda de este pan y vino nos unes a tu sacrificio...',
+        type: 'note',
+        en: 'The wording of the prayers over the gifts and the Prayer over the Offerings changes with the celebration.',
+        es: 'El texto de las oraciones sobre los dones y la Oración sobre las Ofrendas cambia según la celebración.',
       },
       {
         type: 'action',
-        en: 'Stand for the Eucharistic Prayer. In many churches the whole assembly kneels at the start of it.',
-        es: 'Ponte de pie para la Oraci\u00f3n Eucar\u00edstica. En muchas iglesias toda la asamblea se arrodilla al iniciarla.',
+        en: 'Stand for the invitation to prayer, Prayer over the Offerings, and the Preface dialogue.',
+        es: 'Ponte de pie para la invitación a orar, la Oración sobre las Ofrendas y el diálogo del Prefacio.',
       },
       {
         type: 'text',
@@ -317,13 +299,13 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'response',
-        en: 'Holy, holy, holy Lord God of hosts. Heaven and earth are full of your glory. O Lord God, heavenly King, Holy God, God of power and might.',
-        es: 'Santo, santo, santo es el Se\u00f1or, Dios de los ej\u00e9rcitos. Lleno est\u00e1n el cielo y la tierra de tu gloria. Se\u00f1or Dios, trono del cielo, Dios todopoderoso y eterno.',
+        en: 'Holy, Holy, Holy Lord God of hosts. Heaven and earth are full of your glory. Hosanna in the highest. Blessed is he who comes in the name of the Lord. Hosanna in the highest.',
+        es: 'Santo, Santo, Santo es el Señor, Dios del universo. Llenos están el cielo y la tierra de tu gloria. Hosanna en el cielo. Bendito el que viene en nombre del Señor. Hosanna en el cielo.',
       },
       {
         type: 'action',
-        en: 'Kneel or bow at the consecratory words if this is normal in your parish.',
-        es: 'Arrod\u00edllate o inclina profundamente durante las palabras de la consagraci\u00f3n, seg\u00fan costumbre.',
+        en: 'Kneel after the Holy, Holy, Holy where that is the local norm; otherwise make a profound bow during the consecration.',
+        es: 'Arrodíllate después del Santo donde ésa sea la norma local; de lo contrario, haz una inclinación profunda durante la consagración.',
       },
       {
         type: 'note',
@@ -347,8 +329,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'action',
-        en: 'After the Great Amen, stand for the Memorial Acclamation.',
-        es: 'Despu\u00e9s del gran Am\u00e9n, ponte de pie para la Aclamaci\u00f3n mnemorizada.',
+        en: 'After the consecration, join the Memorial Acclamation when the priest invites it.',
+        es: 'Después de la consagración, únete a la Aclamación memorial cuando el sacerdote la invite.',
       },
       {
         type: 'text',
@@ -357,13 +339,13 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'response',
-        en: 'Christ has died. Christ is risen. Christ will come again.',
-        es: 'Cristo muri\u00f3, Cristo resucit\u00f3, Cristo vendr\u00e1 de nuevo.',
+        en: 'We proclaim your Death, O Lord, and profess your Resurrection until you come again.',
+        es: 'Anunciamos tu muerte, proclamamos tu resurrección. ¡Ven, Señor Jesús!',
       },
       {
         type: 'action',
-        en: 'Keep hands together and pray the Lord\u2019s Prayer together.',
-        es: 'Con manos unidas, rezad juntos la Oraci\u00f3n del Se\u00f1or.',
+        en: 'The Eucharistic Prayer ends with the doxology and Great Amen. Then stand and pray the Lord’s Prayer with the assembly, following local posture.',
+        es: 'La Plegaria Eucarística termina con la doxología y el gran Amén. Después, ponte de pie y reza el Padre Nuestro con la asamblea, siguiendo la postura local.',
       },
       {
         type: 'response',
@@ -382,8 +364,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'response',
-        en: 'Amen.',
-        es: 'Am\u00e9n.',
+        en: 'For the kingdom, the power and the glory are yours now and for ever.',
+        es: 'Tuyo es el reino, tuyo el poder y la gloria, por siempre, Señor.',
       },
       {
         type: 'action',
@@ -397,8 +379,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'action',
-        en: 'Stand for the Lamb of God (Agnus Dei) and pray it to God with the whole assembly.',
-        es: 'Ponte de pie para el "Cordero de Dios" y recítalo con toda la asamblea.',
+        en: 'Join the Lamb of God during the Fraction Rite; posture afterward follows the local norm.',
+        es: 'Únete al Cordero de Dios durante la fracción del pan; la postura posterior sigue la norma local.',
       },
       {
         type: 'response',
@@ -413,12 +395,12 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       {
         type: 'response',
         en: 'Lord, I am not worthy that you should enter under my roof, but only say the word and I shall be healed.',
-        es: 'Se\u00f1or, no soy digno de que entres en mi casa, pero di una sola palabra y ser\u00e9 sanado.',
+        es: 'Señor, no soy digno de que entres en mi casa, pero una palabra tuya bastará para sanarme.',
       },
       {
         type: 'action',
-        en: 'Extend your hands in humility while receiving communion if your parish uses that posture.',
-        es: 'Extiende las manos con humildad mientras recibes la comunión si en tu parroquia se usa ese gesto.',
+        en: 'Approach reverently and receive Holy Communion according to the norm of your diocese and parish.',
+        es: 'Acércate con reverencia y recibe la Sagrada Comunión según la norma de tu diócesis y parroquia.',
       },
       {
         type: 'response',
@@ -427,8 +409,8 @@ const MASS_GUIDE_SECTIONS: MassGuideSection[] = [
       },
       {
         type: 'action',
-        en: 'After Communion, remain still and pray with gratitude as the priest says a prayer after communion.',
-        es: 'Despu\u00e9s de la Comunio\u00f3n, queda en silencio y ora en gratitud mientras el sacerdote dice la oraci\u00f3n.',
+        en: 'After Communion, keep silence and pray with gratitude. Stand for the Prayer after Communion.',
+        es: 'Después de la Comunión, guarda silencio y ora con gratitud. Ponte de pie para la Oración después de la Comunión.',
       },
     ],
   },
@@ -511,8 +493,8 @@ const MASS_GUIDE_META = {
     es: 'Gu\u00eda de participaci\u00f3n del Rito Romano (Forma Ordinaria)',
   },
   version: {
-    en: 'Ordinary Form, Sunday/solemnity responses included',
-    es: 'Forma Ordinaria, con respuestas de domingos y solemnidades',
+    en: 'Ordinary Form · practical companion for Sundays and weekdays',
+    es: 'Forma Ordinaria · guía práctica para domingos y días feriales',
   },
   sources: [
     {
@@ -522,7 +504,8 @@ const MASS_GUIDE_META = {
     },
     {
       en: 'Roman Missal structure and common prayers',
-      es: 'Estructura y oraciones comunes del Misal Romano',
+      es: 'USCCB: Textos del Ordinario de la Misa',
+      url: 'https://www.usccb.org/es/committees/divine-worship/policies/textos-del-ordinario-de-la-misa',
     },
   ],
 };
