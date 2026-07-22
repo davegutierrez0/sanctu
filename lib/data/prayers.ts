@@ -9,7 +9,7 @@ export interface Prayer {
   title: { en: string; es: string };
   latin?: string | null;
   text: { en: string; es: string };
-  category?: 'essential' | 'marian' | 'devotional';
+  category?: 'essential' | 'marian' | 'devotional' | 'mass';
 }
 
 export const COMMON_PRAYERS: Prayer[] = [
@@ -153,6 +153,86 @@ export const COMMON_PRAYERS: Prayer[] = [
       es: "Señor mío Jesucristo, Dios y Hombre verdadero, me pesa de todo corazón haberte ofendido. Propongo firmemente, con tu gracia, enmendarme y alejarme de las ocasiones de pecado, confesarme y cumplir la penitencia. Confío me perdonarás por tu infinita misericordia. Amén.",
     },
   },
+  {
+    id: 'sign-of-the-cross',
+    title: { en: 'Sign of the Cross', es: 'Señal de la Cruz' },
+    latin: 'Signum Crucis',
+    category: 'essential',
+    text: {
+      en: 'In the name of the Father, and of the Son, and of the Holy Spirit. Amen.',
+      es: 'En el nombre del Padre, y del Hijo, y del Espíritu Santo. Amén.',
+    },
+  },
+  {
+    id: 'saint-michael',
+    title: { en: 'Prayer to Saint Michael', es: 'Oración a San Miguel' },
+    latin: 'Sancte Michael Archangele',
+    category: 'devotional',
+    text: {
+      en: 'Saint Michael the Archangel, defend us in battle. Be our protection against the wickedness and snares of the devil. May God rebuke him, we humbly pray; and do thou, O Prince of the heavenly host, by the power of God, cast into hell Satan and all the evil spirits who prowl about the world seeking the ruin of souls. Amen.',
+      es: 'San Miguel Arcángel, defiéndenos en la batalla. Sé nuestro amparo contra la perversidad y asechanzas del demonio. Reprímale Dios, pedimos suplicantes; y tú, Príncipe de la milicia celestial, arroja al infierno con el divino poder a Satanás y a los otros espíritus malignos que andan dispersos por el mundo para la perdición de las almas. Amén.',
+    },
+  },
+  {
+    id: 'anima-christi',
+    title: { en: 'Anima Christi', es: 'Alma de Cristo' },
+    latin: 'Anima Christi',
+    category: 'mass',
+    text: {
+      en: 'Soul of Christ, sanctify me. Body of Christ, save me. Blood of Christ, inebriate me. Water from the side of Christ, wash me. Passion of Christ, strengthen me. O good Jesus, hear me. Within Thy wounds hide me. Permit me not to be separated from Thee. From the wicked foe defend me. At the hour of my death call me, and bid me come to Thee, that with Thy saints I may praise Thee forever and ever. Amen.',
+      es: 'Alma de Cristo, santifícame. Cuerpo de Cristo, sálvame. Sangre de Cristo, embriágame. Agua del costado de Cristo, lávame. Pasión de Cristo, confórtame. ¡Oh buen Jesús!, óyeme. Dentro de tus llagas, escóndeme. No permitas que me aparte de Ti. Del maligno enemigo, defiéndeme. En la hora de mi muerte, llámame y mándame ir a Ti, para que con tus santos te alabe por los siglos de los siglos. Amén.',
+    },
+  },
+  {
+    id: 'spiritual-communion',
+    title: { en: 'Act of Spiritual Communion', es: 'Comunión Espiritual' },
+    latin: null,
+    category: 'mass',
+    text: {
+      en: 'My Jesus, I believe that You are present in the Most Holy Sacrament. I love You above all things, and I desire to receive You into my soul. Since I cannot at this moment receive You sacramentally, come at least spiritually into my heart. I embrace You as if You were already there and unite myself wholly to You. Never permit me to be separated from You. Amen.',
+      es: 'Creo, Jesús mío, que estás real y verdaderamente presente en el Santísimo Sacramento del altar. Te amo sobre todas las cosas y deseo recibirte en mi alma. Pero como ahora no puedo recibirte sacramentado, ven al menos espiritualmente a mi corazón. Y como si ya te hubiese recibido, te abrazo y me uno del todo a Ti. Señor, no permitas que jamás me aparte de Ti. Amén.',
+    },
+  },
+  {
+    id: 'suscipe',
+    title: { en: 'Suscipe', es: 'Tomad, Señor, y Recibid' },
+    latin: 'Suscipe',
+    category: 'devotional',
+    text: {
+      en: 'Take, Lord, and receive all my liberty, my memory, my understanding, and my entire will—all I have and call my own. You have given it all to me. To You, Lord, I return it. Everything is Yours; do with it what You will. Give me only Your love and Your grace. That is enough for me.',
+      es: 'Tomad, Señor, y recibid toda mi libertad, mi memoria, mi entendimiento y toda mi voluntad; todo mi haber y mi poseer. Vos me lo disteis; a Vos, Señor, lo torno. Todo es vuestro: disponed de ello según vuestra voluntad. Dadme vuestro amor y gracia, que ésta me basta.',
+    },
+  },
+  {
+    id: 'daily-examen',
+    title: { en: 'Daily Examen', es: 'Examen Diario' },
+    latin: null,
+    category: 'devotional',
+    text: {
+      en: 'Become aware of God’s presence.\n\nReview the day with gratitude. Notice the gifts, people, and moments for which you are thankful.\n\nPay attention to your emotions. Ask where you accepted grace and where you resisted it.\n\nChoose one moment of the day and pray from it. Ask forgiveness where needed and receive God’s mercy.\n\nLook toward tomorrow. Ask for the grace you most need, and entrust the coming day to God.',
+      es: 'Hazte consciente de la presencia de Dios.\n\nRepasa el día con gratitud. Reconoce los dones, las personas y los momentos por los que das gracias.\n\nPresta atención a tus emociones. Pregunta dónde acogiste la gracia y dónde te resististe a ella.\n\nElige un momento del día y reza desde él. Pide perdón donde sea necesario y recibe la misericordia de Dios.\n\nMira hacia mañana. Pide la gracia que más necesitas y confía el día que viene a Dios.',
+    },
+  },
+  {
+    id: 'before-mass',
+    title: { en: 'Prayer Before Mass', es: 'Oración Antes de la Misa' },
+    latin: null,
+    category: 'mass',
+    text: {
+      en: 'Almighty and ever-living God, I approach the sacrament of Your only-begotten Son, our Lord Jesus Christ. I come sick to the physician of life, unclean to the fountain of mercy, blind to the radiance of eternal light, and poor and needy to the Lord of heaven and earth. Lord, in Your great generosity, heal my sickness, wash away my defilement, enlighten my blindness, enrich my poverty, and clothe my nakedness. May I receive the Bread of Angels with reverence and humility, contrition and devotion, purity and faith, and with the purpose and intention that is for the good of my soul. Amen.',
+      es: 'Dios todopoderoso y eterno, me acerco al sacramento de tu Hijo unigénito, nuestro Señor Jesucristo. Acudo enfermo al médico de la vida, impuro a la fuente de misericordia, ciego a la luz eterna, pobre y necesitado al Señor del cielo y de la tierra. Señor, por tu infinita bondad, sana mi enfermedad, lava mis manchas, ilumina mi ceguera, enriquece mi pobreza y viste mi desnudez. Que reciba el Pan de los Ángeles con reverencia y humildad, con contrición y devoción, con pureza y fe, y con el propósito e intención que convienen al bien de mi alma. Amén.',
+    },
+  },
+  {
+    id: 'after-communion',
+    title: { en: 'Prayer After Communion', es: 'Oración Después de la Comunión' },
+    latin: null,
+    category: 'mass',
+    text: {
+      en: 'I give You thanks, Lord, holy Father, almighty and eternal God, for having fed me, a sinner and Your unworthy servant, with the precious Body and Blood of Your Son, our Lord Jesus Christ. Let this Holy Communion not bring me condemnation, but forgiveness and salvation. May it be a helmet of faith and a shield of good will, a cleansing from vice, a strengthening of charity and patience, humility and obedience, and every virtue. May it quiet all my evil impulses, increase my love for You and my neighbor, and bring me safely to Your heavenly banquet. Amen.',
+      es: 'Te doy gracias, Señor, Padre santo, Dios todopoderoso y eterno, porque a mí, pecador e indigno siervo tuyo, me has alimentado con el precioso Cuerpo y Sangre de tu Hijo, nuestro Señor Jesucristo. Que esta sagrada Comunión no sea para mí motivo de condenación, sino perdón y salvación. Sea armadura de fe y escudo de buena voluntad, purificación de los vicios, aumento de caridad y paciencia, de humildad y obediencia, y de toda virtud. Aumente mi amor a Ti y al prójimo, y me conduzca seguro al banquete del cielo. Amén.',
+    },
+  },
 ];
 
 /**
@@ -196,7 +276,14 @@ export const PRAYER_UI = {
       essential: 'Essential Prayers',
       marian: 'Marian Devotions',
       devotional: 'Daily Devotions',
+      mass: 'Before & After Mass',
     },
+    searchPlaceholder: 'Search prayers',
+    all: 'All',
+    favorites: 'Favorites',
+    noResults: 'No prayers match your search.',
+    favorite: 'Add to favorites',
+    unfavorite: 'Remove from favorites',
     backToHome: 'Back to Home',
     backToPrayers: 'Back to Prayers',
     print: 'Print',
@@ -208,7 +295,14 @@ export const PRAYER_UI = {
       essential: 'Oraciones Esenciales',
       marian: 'Devociones Marianas',
       devotional: 'Devociones Diarias',
+      mass: 'Antes y Después de la Misa',
     },
+    searchPlaceholder: 'Buscar oraciones',
+    all: 'Todas',
+    favorites: 'Favoritas',
+    noResults: 'Ninguna oración coincide con tu búsqueda.',
+    favorite: 'Añadir a favoritas',
+    unfavorite: 'Quitar de favoritas',
     backToHome: 'Volver al Inicio',
     backToPrayers: 'Volver a Oraciones',
     print: 'Imprimir',

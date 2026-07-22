@@ -1,45 +1,16 @@
 'use client';
 
-import { COMMON_PRAYERS, PRAYER_UI } from '@/lib/data/prayers';
+import { PRAYER_UI } from '@/lib/data/prayers';
 import { useLanguage } from '@/components/ThemeProvider';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
+import { PrayerLibrary } from '@/components/PrayerLibrary';
 
 export default function PrayersIndexPage() {
   const { language } = useLanguage();
   const ui = PRAYER_UI[language];
   usePageEngagement('prayers');
-
-  const essentialPrayers = COMMON_PRAYERS.filter((p) => p.category === 'essential');
-  const marianPrayers = COMMON_PRAYERS.filter((p) => p.category === 'marian');
-  const devotionalPrayers = COMMON_PRAYERS.filter((p) => p.category === 'devotional');
-
-  const PrayerLink = ({ prayer }: { prayer: (typeof COMMON_PRAYERS)[0] }) => (
-    <Link
-      href={`/prayers/${prayer.id}`}
-              className="block p-6 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-stone-100 dark:hover:bg-gray-800/60 transition-colors"
-    >
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="font-medium text-lg">{prayer.title[language]}</div>
-          {prayer.latin && (
-            <div className="text-sm text-gray-500 dark:text-gray-400 italic mt-1">
-              {prayer.latin}
-            </div>
-          )}
-        </div>
-        <svg
-          className="w-5 h-5 text-gray-400 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </div>
-    </Link>
-  );
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
@@ -64,39 +35,7 @@ export default function PrayersIndexPage() {
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{ui.subtitle}</p>
         </header>
 
-        {/* Essential Prayers */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-light mb-6 tracking-tight">
-            {ui.categories.essential}
-          </h2>
-          <div className="space-y-4">
-            {essentialPrayers.map((prayer) => (
-              <PrayerLink key={prayer.id} prayer={prayer} />
-            ))}
-          </div>
-        </section>
-
-        {/* Marian Prayers */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-light mb-6 tracking-tight">{ui.categories.marian}</h2>
-          <div className="space-y-4">
-            {marianPrayers.map((prayer) => (
-              <PrayerLink key={prayer.id} prayer={prayer} />
-            ))}
-          </div>
-        </section>
-
-        {/* Devotional Prayers */}
-        <section>
-          <h2 className="text-2xl font-light mb-6 tracking-tight">
-            {ui.categories.devotional}
-          </h2>
-          <div className="space-y-4">
-            {devotionalPrayers.map((prayer) => (
-              <PrayerLink key={prayer.id} prayer={prayer} />
-            ))}
-          </div>
-        </section>
+        <PrayerLibrary />
       </main>
     </div>
   );
