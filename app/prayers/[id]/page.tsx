@@ -8,6 +8,8 @@ import { notFound } from 'next/navigation';
 import { use, useEffect } from 'react';
 import { analytics } from '@/lib/analytics';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
+import { AppHeader } from '@/components/AppHeader';
+import { BottomNav } from '@/components/BottomNav';
 
 export default function PrayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -49,58 +51,50 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
         <p>{today}</p>
       </div>
 
-      <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
-        {/* Navigation */}
-        <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground) 12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
-          <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-            <Link
-              href="/prayers"
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-            >
-              <ArrowLeft size={20} />
-              {ui.backToPrayers}
-            </Link>
-
+      <div className="sanctus-page">
+        <AppHeader
+          backHref="/prayers"
+          backLabel={ui.backToPrayers}
+          action={(
             <button
               onClick={() => { analytics.printClicked(`prayer-${id}`); window.print(); }}
-              className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="header-control"
               aria-label={ui.print}
             >
-              <Printer size={20} />
+              <Printer size={18} />
             </button>
-          </div>
-        </nav>
+          )}
+        />
 
-        {/* Main Content */}
-        <main className="max-w-2xl mx-auto px-6 py-16">
-          {/* Prayer Header */}
-          <header className="mb-12 text-center space-y-3">
-            <h1 className="text-4xl md:text-5xl font-light tracking-tight">{title}</h1>
+        <main className="sanctus-content content-page narrow-page">
+          <header className="page-heading centered">
+            <p className="eyebrow">Sanctus</p>
+            <h1>{title}</h1>
             {prayer.latin && (
-              <p className="text-lg text-gray-500 dark:text-gray-400 italic">{prayer.latin}</p>
+              <p className="latin-subtitle">{prayer.latin}</p>
             )}
           </header>
 
-          {/* Prayer Text */}
-          <div className="prayer-text text-gray-800 dark:text-gray-200 leading-relaxed space-y-6 max-w-xl mx-auto">
+          <article className="prayer-reading stone-card prayer-text">
             {text.split('\n\n').map((paragraph, index) => (
-              <p key={index} className="text-justify">
+              <p key={index}>
                 {paragraph}
               </p>
             ))}
-          </div>
+          </article>
 
           {/* Back Button */}
           <div className="no-print mt-16 text-center">
             <Link
               href="/prayers"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-gray-200 dark:border-gray-800 hover:bg-stone-100 dark:hover:bg-gray-800 transition-colors"
+              className="secondary-button px-6"
             >
               <ArrowLeft size={18} />
               {ui.backToPrayers}
             </Link>
           </div>
         </main>
+        <BottomNav />
       </div>
 
       {/* Print Footer */}

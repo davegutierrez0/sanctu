@@ -1,15 +1,15 @@
 'use client';
 
-import { ArrowLeft, ChevronLeft, ChevronRight, Printer } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronLeft, ChevronRight, Printer } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import { toLocalISODate } from '@/lib/date';
 import { useLanguage } from '@/components/ThemeProvider';
-import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { ReadingContent } from '@/components/ReadingContent';
 import { cacheReadings, getCachedReadings, DailyReadings, DailyReading } from '@/lib/db';
 import { analytics } from '@/lib/analytics';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
+import { AppHeader } from '@/components/AppHeader';
+import { BottomNav } from '@/components/BottomNav';
 
 interface ReadingsData {
   readings: DailyReading[];
@@ -237,40 +237,27 @@ export default function ReadingsPage() {
         <p>{todayLabel}</p>
       </div>
 
-      <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
-        {/* Navigation */}
-        <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground) 12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
-        <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            <ArrowLeft size={20} />
-            {text.home}
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <LanguageToggleCompact />
+      <div className="sanctus-page">
+        <AppHeader
+          backHref="/"
+          backLabel={text.home}
+          action={(
             <button
               onClick={() => { analytics.printClicked('readings'); window.print(); }}
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
+              className="header-control"
+              aria-label={language === 'es' ? 'Imprimir' : 'Print'}
             >
               <Printer size={18} />
             </button>
-          </div>
-        </div>
-      </nav>
+          )}
+        />
 
-        {/* Main Content */}
-        <main className="max-w-3xl w-full mx-auto px-6 py-12">
-          {/* Header */}
-          <header className="mb-12 text-center space-y-3">
-            <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
+        <main className="sanctus-content content-page">
+          <header className="page-heading centered">
+            <p className="eyebrow">
               {todayLabel}
             </p>
-            <h1 className="text-4xl md:text-5xl font-light tracking-tight">
-              {text.title}
-            </h1>
+            <h1>{text.title}</h1>
             {currentReadings?.season && (
               <p className="text-gray-600 dark:text-gray-400">{currentReadings.season}</p>
             )}
@@ -358,7 +345,7 @@ export default function ReadingsPage() {
               {currentReadings.readings.map((reading, index) => (
                 <article
                   key={index}
-                  className="reading p-8 rounded-2xl bg-stone-100 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-800"
+                className="reading reading-card stone-card"
                 >
                   <header className="mb-6">
                     <div className="text-sm font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-2">
@@ -383,6 +370,7 @@ export default function ReadingsPage() {
             </div>
           )}
         </main>
+        <BottomNav />
       </div>
 
       {/* Print Footer */}

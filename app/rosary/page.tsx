@@ -2,12 +2,12 @@
 
 import { getTodaysMystery, ROSARY_MYSTERIES, getLocalizedMystery, ROSARY_UI, ROSARY_PRAYERS, type MysteryType } from '@/lib/data/rosary';
 import { useLanguage } from '@/components/ThemeProvider';
-import { LanguageToggleCompact } from '@/components/LanguageToggle';
-import { ArrowLeft, Printer, RotateCcw, Calendar } from 'lucide-react';
-import Link from 'next/link';
+import { Printer, RotateCcw, Calendar } from 'lucide-react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { analytics } from '@/lib/analytics';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
+import { AppHeader } from '@/components/AppHeader';
+import { BottomNav } from '@/components/BottomNav';
 
 type RosaryPhase = 'opening' | 'decade' | 'decadeEnd' | 'closing' | 'complete';
 
@@ -302,43 +302,34 @@ export default function RosaryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
-      {/* Navigation */}
-      <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground)_12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
-        <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            <ArrowLeft size={20} />
-            Home
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <LanguageToggleCompact />
+    <div className="sanctus-page rosary-page">
+      <AppHeader
+        backHref="/"
+        backLabel={language === 'es' ? 'Inicio' : 'Home'}
+        action={(
+          <div className="header-actions">
             <button
               onClick={() => { analytics.printClicked('rosary'); window.print(); }}
-              className="p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Print"
+              className="header-control"
+              aria-label={language === 'es' ? 'Imprimir' : 'Print'}
             >
               <Printer size={18} />
             </button>
             <button
               onClick={reset}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
+              className="header-control"
+              aria-label={language === 'es' ? 'Reiniciar' : 'Reset'}
             >
               <RotateCcw size={16} />
-              Reset
             </button>
           </div>
-        </div>
-      </nav>
+        )}
+      />
 
-      {/* Main Content */}
-      <main className="max-w-3xl w-full mx-auto px-6 py-12">
-        {/* Header */}
-        <header className="mb-12 text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-light tracking-tight">{ui.title}</h1>
+      <main className="sanctus-content content-page">
+        <header className="page-heading centered">
+          <p className="eyebrow">Sanctus</p>
+          <h1>{ui.title}</h1>
 
           {/* Mystery Selector */}
           <div className="flex flex-wrap justify-center gap-2">
@@ -390,7 +381,7 @@ export default function RosaryPage() {
 
         {/* Current Mystery (show during decade phase) */}
         {(phase === 'decade' || phase === 'decadeEnd') && (
-          <div className="mb-12 p-8 rounded-2xl bg-stone-100 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-800">
+          <div className="rosary-mystery stone-card">
             <div className={`text-sm font-medium mb-2 ${currentMysterySet.color}`}>
               {currentMysterySet.name}
             </div>
@@ -412,7 +403,7 @@ export default function RosaryPage() {
 
         {/* Prayer Section */}
         {phase !== 'complete' && currentPrayer && (
-          <div className="mb-12">
+          <div className="rosary-prayer stone-card">
             {/* Bead Counter (show during decade phase) */}
             {phase === 'decade' && (
               <div className="flex justify-center gap-2 mb-6 items-center">
@@ -593,6 +584,7 @@ export default function RosaryPage() {
           </div>
         </div>
       </main>
+      <BottomNav />
     </div>
   );
 }

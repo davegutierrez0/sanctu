@@ -1,16 +1,16 @@
 'use client';
 
-import { ArrowLeft, ExternalLink, Printer } from 'lucide-react';
-import Link from 'next/link';
+import { ExternalLink, Printer } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '@/components/ThemeProvider';
-import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { ReadingContent } from '@/components/ReadingContent';
 import { getMassGuide, MassGuideLineType, type MassGuideReadingSlot } from '@/lib/data/mass-guide';
 import { getUI } from '@/lib/data/ui';
 import { toLocalISODate } from '@/lib/date';
 import type { DailyReading } from '@/lib/db';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
+import { AppHeader } from '@/components/AppHeader';
+import { BottomNav } from '@/components/BottomNav';
 
 const LINE_STYLES: Record<MassGuideLineType, { wrapper: string; markerClass: string }> = {
   action: {
@@ -209,42 +209,34 @@ export default function MassGuidePage() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
-      <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground) 12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
-        <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+    <div className="sanctus-page">
+      <AppHeader
+        backHref="/"
+        backLabel={ui.back || 'Back'}
+        action={(
+          <button
+            onClick={() => window.print()}
+            className="header-control"
+            title={language === 'es' ? 'Imprimir' : 'Print'}
+            aria-label={language === 'es' ? 'Imprimir' : 'Print'}
           >
-            <ArrowLeft size={20} />
-            {ui.back || 'Back'}
-          </Link>
+            <Printer size={18} />
+          </button>
+        )}
+      />
 
-          <div className="flex items-center gap-3">
-            <LanguageToggleCompact />
-            <button
-              onClick={() => window.print()}
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
-              title={language === 'es' ? 'Imprimir' : 'Print'}
-            >
-              <Printer size={18} />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-3xl w-full mx-auto px-6 py-10 space-y-8">
-        <header className="text-center space-y-2">
-          <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400 small-caps">{guide.version}</p>
-          <h1 className="text-3xl md:text-4xl font-light tracking-tight">{guide.title}</h1>
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{guide.subtitle}</p>
+      <main className="sanctus-content content-page mass-guide-page">
+        <header className="page-heading centered">
+          <p className="eyebrow">{guide.version}</p>
+          <h1>{guide.title}</h1>
+          <p>{guide.subtitle}</p>
         </header>
 
         <section className="space-y-6">
           {guide.sections.map((section) => (
             <article
               key={section.id}
-              className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-stone-100 dark:bg-gray-900/70 p-6"
+              className="mass-section stone-card"
             >
               <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mb-5">{section.title}</h2>
               <div className="space-y-3">
@@ -260,7 +252,7 @@ export default function MassGuidePage() {
         </section>
 
         {guide.sources.length > 0 && (
-          <section className="rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 bg-white/70 dark:bg-gray-900/40 p-6">
+          <section className="sources-card stone-card">
             <h2 className="text-xl font-medium mb-4">{language === 'es' ? 'Fuentes' : 'Sources'}</h2>
             <ul className="space-y-2 text-sm">
               {guide.sources.map((source) => (
@@ -290,6 +282,7 @@ export default function MassGuidePage() {
           {ui.footer}
         </footer>
       </main>
+      <BottomNav />
     </div>
   );
 }

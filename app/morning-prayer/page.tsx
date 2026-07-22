@@ -1,13 +1,13 @@
 'use client';
 
-import { ArrowLeft, Printer, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
+import { Printer, ExternalLink } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLanguage } from '@/components/ThemeProvider';
-import { LanguageToggleCompact } from '@/components/LanguageToggle';
 import { getUI } from '@/lib/data/ui';
 import { analytics } from '@/lib/analytics';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
+import { AppHeader } from '@/components/AppHeader';
+import { BottomNav } from '@/components/BottomNav';
 
 type SectionType = 'dialogue' | 'antiphon' | 'psalm-header' | 'verses' | 'doxology' | 'rubric' | 'heading' | 'hymn-title' | 'reading-ref' | 'prayer';
 
@@ -211,7 +211,7 @@ export default function MorningPrayerPage() {
     return (
       <article
         key={partIndex}
-        className="p-8 rounded-2xl bg-stone-100 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-800 mb-8"
+        className="prayer-part stone-card"
       >
         <header className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
@@ -247,43 +247,28 @@ export default function MorningPrayerPage() {
         <p>{today}</p>
       </div>
 
-      <div className="min-h-screen bg-stone-50 dark:bg-gray-900">
-        {/* Navigation */}
-        <nav className="no-print sticky top-0 z-50 border-b border-[color:color-mix(in_srgb,var(--foreground) 12%,transparent)] bg-[var(--background)] bg-opacity-90 backdrop-blur-md">
-          <div className="max-w-3xl w-full mx-auto px-6 h-16 flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+      <div className="sanctus-page">
+        <AppHeader
+          backHref="/"
+          backLabel={language === 'es' ? 'Inicio' : 'Home'}
+          action={(
+            <button
+              onClick={() => { analytics.printClicked('morning-prayer'); window.print(); }}
+              className="header-control"
+              aria-label={language === 'es' ? 'Imprimir' : 'Print'}
             >
-              <ArrowLeft size={20} />
-              Home
-            </Link>
+              <Printer size={18} />
+            </button>
+          )}
+        />
 
-            <div className="flex items-center gap-3">
-              <LanguageToggleCompact />
-              <button
-                onClick={() => { analytics.printClicked('morning-prayer'); window.print(); }}
-                className="px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm"
-              >
-                <Printer size={18} />
-              </button>
-            </div>
-          </div>
-        </nav>
-
-        {/* Main Content */}
-        <main className="max-w-3xl w-full mx-auto px-6 py-12">
-          {/* Header */}
-          <header className="mb-12 text-center space-y-3">
-            <p className="text-sm uppercase tracking-wide text-gray-500 dark:text-gray-400">
+        <main className="sanctus-content content-page">
+          <header className="page-heading centered">
+            <p className="eyebrow">
               {today}
             </p>
-            <h1 className="text-4xl md:text-5xl font-light tracking-tight">
-              {ui.morningPrayer}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              {ui.morningPrayerDesc}
-            </p>
+            <h1>{ui.morningPrayer}</h1>
+            <p>{ui.morningPrayerDesc}</p>
           </header>
 
           {/* Loading State */}
@@ -314,6 +299,7 @@ export default function MorningPrayerPage() {
             </div>
           )}
         </main>
+        <BottomNav />
       </div>
 
       {/* Print Footer */}
