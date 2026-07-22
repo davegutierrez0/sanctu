@@ -135,4 +135,3 @@ The root layout no longer constrains every route inside a second max-width wrapp
 - Accounts, cloud synchronization, or community features.
 - A full liturgical-calendar engine independent of the existing readings source.
 - Heavy animation, video, canvas, WebGL, or an animation framework.
-

@@ -114,4 +114,3 @@
 - [ ] Verify service-worker registration and named cache creation, then simulate offline mode and navigate to a cached static prayer route.
 - [ ] Review all changed TSX files against the React best-practices checklist and make only scoped fixes.
 - [ ] Inspect `git diff --check`, `git status --short`, and the final diff before handoff.
-
