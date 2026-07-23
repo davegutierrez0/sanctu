@@ -75,6 +75,17 @@ vercel
 
 - `REDIS_URL` enables the 30-day server-side readings cache.
 - `CRON_SECRET` secures the scheduled readings prefetch route in `vercel.json`.
+- `RESEND_API_KEY` is provisioned when you add the native [Resend Vercel integration](https://vercel.com/marketplace/resend).
+- `FEEDBACK_TO_EMAIL` is the private inbox that receives announcement-banner feedback. Keep it server-only; do not use a `NEXT_PUBLIC_` variable.
+- `FEEDBACK_FROM_EMAIL` is optional until a sending domain is verified in Resend. The default uses Resend’s testing sender.
+
+### Private Feedback Form
+
+The home-page feedback form submits to a Vercel route, which forwards the message through Resend. Visitors never receive the destination email address, and the browser never receives the Resend key. To enable it after deployment:
+
+1. Add [Resend from the Vercel Marketplace](https://vercel.com/marketplace/resend); it creates `RESEND_API_KEY` in the Vercel project.
+2. In Vercel Project Settings → Environment Variables, add `FEEDBACK_TO_EMAIL` with the inbox that should receive feedback.
+3. When ready to send beyond Resend’s test-recipient limits, verify a sending domain in Resend and set `FEEDBACK_FROM_EMAIL`.
 
 ### Custom Domain
 

@@ -37,6 +37,7 @@ export const analytics = {
   printClicked: (page: string) => track('print', { page }),
   cacheCleared: () => track('cache_cleared'),
   coffeeClicked: () => track('coffee_clicked'),
+  feedbackSubmitted: (lang: string) => track('feedback_submitted', { lang }),
 
   // PWA
   pwaInstalled: () => track('pwa_installed'),

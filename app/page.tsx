@@ -6,6 +6,7 @@ import { BookHeart, BookOpen, ChevronRight, Church, Coffee, Heart, RefreshCw } f
 
 import { AppHeader } from '@/components/AppHeader';
 import { BottomNav } from '@/components/BottomNav';
+import { FeedbackAnnouncement } from '@/components/FeedbackAnnouncement';
 import { LiturgicalHero } from '@/components/LiturgicalHero';
 import { PrayerForNow } from '@/components/PrayerForNow';
 import { useLanguage } from '@/components/ThemeProvider';
@@ -95,6 +96,7 @@ export default function HomePage() {
       <AppHeader />
       <main className="sanctus-content home-content">
         <LiturgicalHero />
+        <FeedbackAnnouncement />
         <PrayerForNow />
 
         <section className="home-section reveal-up">
