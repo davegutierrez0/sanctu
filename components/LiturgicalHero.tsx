@@ -8,8 +8,9 @@ import { BookOpen, Church } from 'lucide-react';
 import { useLanguage } from '@/components/ThemeProvider';
 import { cacheReadings, getCachedReadings, type DailyReadings } from '@/lib/db';
 import { toLocalISODate } from '@/lib/date';
+import { getLocalizedLiturgicalTitle, localizeLiturgicalSeason } from '@/lib/liturgical-copy';
 
-type LiturgicalSummary = Pick<DailyReadings, 'liturgicalColor' | 'season' | 'saint'>;
+type LiturgicalSummary = Pick<DailyReadings, 'language' | 'liturgicalColor' | 'season' | 'saint'>;
 
 const COLOR_MAP: Record<string, string> = {
   green: '#54705e',
@@ -46,8 +47,9 @@ export function LiturgicalHero() {
         });
         if (!response.ok) return;
         const fresh = await response.json() as Omit<DailyReadings, 'date' | 'fetchedAt'>;
-        if (isActive) setSummary(fresh);
-        await cacheReadings({ ...fresh, date: isoDate, language, fetchedAt: Date.now() });
+        const localizedFresh = { ...fresh, language: fresh.language ?? language };
+        if (isActive) setSummary(localizedFresh);
+        await cacheReadings({ ...localizedFresh, date: isoDate, fetchedAt: Date.now() });
       } catch {
         // The cached summary, when present, remains visible offline.
       }
@@ -71,7 +73,9 @@ export function LiturgicalHero() {
         readings: "Today's readings",
         mass: 'Mass guide',
       };
-  const title = summary?.saint || summary?.season || text.fallbackTitle;
+  const season = localizeLiturgicalSeason(summary?.season, language);
+  const title = getLocalizedLiturgicalTitle(summary, language, text.fallbackTitle);
+  const hasLocalizedSaint = summary?.language === language && Boolean(summary.saint);
   const color = COLOR_MAP[(summary?.liturgicalColor ?? '').toLowerCase()] ?? '#b98a3e';
 
   return (
@@ -91,7 +95,7 @@ export function LiturgicalHero() {
           <span className="liturgical-color" style={{ backgroundColor: color }} aria-hidden="true" />
           <h1>{title}</h1>
         </div>
-        {summary?.saint && summary.season && <p className="hero-season">{summary.season}</p>}
+        {hasLocalizedSaint && season && <p className="hero-season">{season}</p>}
         <div className="hero-actions">
           <Link href="/readings"><BookOpen aria-hidden="true" size={18} />{text.readings}</Link>
           <Link href="/mass-guide"><Church aria-hidden="true" size={18} />{text.mass}</Link>
