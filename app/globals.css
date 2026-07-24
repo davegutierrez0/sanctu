@@ -405,6 +405,46 @@ h3 {
   gap: 12px;
 }
 
+.feedback-form-heading {
+  display: grid;
+  gap: 10px;
+}
+
+.feedback-form-heading h3 {
+  margin: 0;
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.feedback-form-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+}
+
+.feedback-form-tabs button {
+  min-height: 38px;
+  padding: 0 9px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.feedback-form-tabs button + button {
+  border-left: 1px solid var(--border-soft);
+}
+
+.feedback-form-tabs button.is-active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
 .feedback-form label {
   display: grid;
   gap: 6px;
@@ -414,7 +454,7 @@ h3 {
 }
 
 .feedback-form textarea,
-.feedback-form input:not(.feedback-honeypot) {
+.feedback-form input:not([type='checkbox']) {
   width: 100%;
   color: var(--foreground);
   border: 1px solid var(--border);
@@ -428,18 +468,24 @@ h3 {
   resize: vertical;
 }
 
-.feedback-form input:not(.feedback-honeypot) {
+.feedback-form input:not([type='checkbox']) {
   min-height: 43px;
   padding: 0 12px;
 }
 
-.feedback-honeypot {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
+.feedback-opt-in {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.82rem !important;
+  line-height: 1.35;
+}
+
+.feedback-opt-in input {
+  width: 17px;
+  height: 17px;
+  margin: 1px 0 0;
+  accent-color: var(--accent-strong);
 }
 
 .feedback-form .primary-button {

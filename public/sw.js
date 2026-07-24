@@ -1,7 +1,7 @@
 // Sanctus Service Worker
 // Keeps the liturgical companion usable when the network is unavailable.
 
-const VERSION = 'v6';
+const VERSION = 'v7';
 const STATIC_CACHE = `Sanctus-static-${VERSION}`;
 const DATA_CACHE = `Sanctus-data-${VERSION}`;
 const ASSET_CACHE = `Sanctus-assets-${VERSION}`;

@@ -29,8 +29,8 @@ const prayerIds = [
   'after-communion',
 ];
 
-test('pre-caches every offline app route and prayer detail in version v6', () => {
-  assert.match(source, /const VERSION = ['"]v6['"]/);
+test('pre-caches every offline app route and prayer detail in version v7', () => {
+  assert.match(source, /const VERSION = ['"]v7['"]/);
   for (const route of ['/', '/mass-guide', '/morning-prayer', '/prayers', '/readings', '/rosary', '/offline.html']) {
     assert.ok(source.includes(`'${route}'`), `missing static route ${route}`);
   }
