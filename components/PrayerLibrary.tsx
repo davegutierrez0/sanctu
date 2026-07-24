@@ -8,7 +8,7 @@ import { useLanguage } from '@/components/ThemeProvider';
 import { COMMON_PRAYERS, PRAYER_UI, type Prayer } from '@/lib/data/prayers';
 import { filterPrayers } from '@/lib/prayer-search';
 
-const FAVORITES_KEY = 'sanctus:favorites';
+const FAVORITES_KEY = 'sanctu:favorites';
 const CATEGORY_ORDER: NonNullable<Prayer['category']>[] = [
   'essential',
   'marian',
@@ -37,10 +37,10 @@ function getFavoritesSnapshot(): string {
 
 function subscribeToFavorites(onStoreChange: () => void): () => void {
   window.addEventListener('storage', onStoreChange);
-  window.addEventListener('sanctus:favorites', onStoreChange);
+  window.addEventListener('sanctu:favorites', onStoreChange);
   return () => {
     window.removeEventListener('storage', onStoreChange);
-    window.removeEventListener('sanctus:favorites', onStoreChange);
+    window.removeEventListener('sanctu:favorites', onStoreChange);
   };
 }
 
@@ -75,7 +75,7 @@ export function PrayerLibrary() {
 
     try {
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
-      window.dispatchEvent(new Event('sanctus:favorites'));
+      window.dispatchEvent(new Event('sanctu:favorites'));
     } catch {
       // Browsing still works when private storage is unavailable.
     }

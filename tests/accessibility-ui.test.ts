@@ -99,7 +99,7 @@ test("does not let the initial system preference overwrite the saved theme durin
   assert.match(themeProvider, /if \(!isHydrated\) return;/);
 });
 
-test("announces when links leave Sanctus in a new browser tab", () => {
+test("announces when links leave Sanctu in a new browser tab", () => {
   for (const source of externalLinkSources) {
     assert.match(source, /opens in a new tab/);
     assert.match(source, /se abre en una pestaña nueva/);

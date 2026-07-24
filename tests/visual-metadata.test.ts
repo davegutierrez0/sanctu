@@ -6,7 +6,7 @@ import test from "node:test";
 const projectRoot = process.cwd();
 const globalCss = readFileSync(path.join(projectRoot, "app/globals.css"), "utf8");
 const rootLayout = readFileSync(path.join(projectRoot, "app/layout.tsx"), "utf8");
-const socialCardPath = path.join(projectRoot, "public/social/sanctus-social-card.png");
+const socialCardPath = path.join(projectRoot, "public/social/sanctu-social-card.png");
 
 test("keeps global stone lighting without vertical seams behind prayer content", () => {
   const bodyRule = globalCss.match(/body\s*\{([\s\S]*?)\n\}/)?.[1] ?? "";
@@ -20,7 +20,7 @@ test("publishes a large Open Graph and X social preview", () => {
   assert.match(rootLayout, /openGraph\s*:/);
   assert.match(rootLayout, /twitter\s*:/);
   assert.match(rootLayout, /summary_large_image/);
-  assert.match(rootLayout, /\/social\/sanctus-social-card\.png/);
+  assert.match(rootLayout, /\/social\/sanctu-social-card\.png/);
   assert.ok(existsSync(socialCardPath), "social preview image is missing");
 
   const image = readFileSync(socialCardPath);

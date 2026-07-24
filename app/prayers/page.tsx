@@ -13,12 +13,12 @@ export default function PrayersIndexPage() {
   usePageEngagement('prayers');
 
   return (
-    <div className="sanctus-page">
+    <div className="sanctu-page">
       <AppHeader backHref="/" backLabel={ui.backToHome} />
 
-      <main className="sanctus-content content-page">
+      <main className="sanctu-content content-page">
         <header className="page-heading">
-          <p className="eyebrow">Sanctus</p>
+          <p className="eyebrow">Sanctu</p>
           <h1>{ui.title}</h1>
           <p>{ui.subtitle}</p>
         </header>

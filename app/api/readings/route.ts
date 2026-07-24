@@ -194,7 +194,7 @@ export async function GET(request: NextRequest) {
 
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'SanctusApp/1.0 (Catholic Prayer App; polite-caching)',
+        'User-Agent': 'SanctuApp/1.0 (Catholic Prayer App; polite-caching)',
       },
     });
 

@@ -1,4 +1,4 @@
-# Sanctus - Catholic Prayer Web App
+# Sanctu - Catholic Prayer Web App
 
 A fast, minimal, offline-capable Catholic prayer app with daily Mass readings, interactive Rosary, and essential prayers.
 
@@ -78,7 +78,7 @@ vercel
 
 ### Feedback and updates form
 
-The home-page announcement offers two explicit paths: a mailing-list signup for Sanctus and Catholic tech updates, or feedback. Feedback never subscribes a visitor unless they choose the opt-in checkbox. Both paths submit to a [Formspree](https://formspree.io) form endpoint; the recipient email stays configured in Formspree and is never present in this repository or the app.
+The home-page announcement offers two explicit paths: a mailing-list signup for Sanctu and Catholic tech updates, or feedback. Feedback never subscribes a visitor unless they choose the opt-in checkbox. Both paths submit to a [Formspree](https://formspree.io) form endpoint; the recipient email stays configured in Formspree and is never present in this repository or the app.
 
 Form submissions are available in the Formspree dashboard, which can be used to export or connect the early mailing list. No Vercel environment variables or sending domain are needed.
 
@@ -86,7 +86,7 @@ Form submissions are available in the Formspree dashboard, which can be used to 
 
 In Vercel dashboard:
 - Settings → Domains → Add
-- Recommended: `sanctus.app`, `praytoday.app`, or similar
+- Recommended: `sanctu.app`, `praytoday.app`, or similar
 
 ## API Strategy (Be Gentle on USCCB)
 

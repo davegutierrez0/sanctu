@@ -44,9 +44,9 @@ export function AppHeader({ backHref, backLabel, action }: AppHeaderProps) {
             <span>{backLabel ?? (language === 'es' ? 'Volver' : 'Back')}</span>
           </Link>
         ) : (
-          <Link href="/" className="brand-lockup" aria-label="Sanctus home">
+          <Link href="/" className="brand-lockup" aria-label="Sanctu home">
             <span className="brand-mark" aria-hidden="true">✦</span>
-            <span>Sanctus</span>
+            <span>Sanctu</span>
           </Link>
         )}
 

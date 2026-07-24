@@ -1,4 +1,4 @@
-# Deployment Guide for Sanctus
+# Deployment Guide for Sanctu
 
 ## Quick Deploy to Vercel (Recommended)
 
@@ -30,10 +30,10 @@ The CLI will:
 # 1. Initialize git (if not already)
 git init
 git add .
-git commit -m "Initial commit: Sanctus Catholic prayer app"
+git commit -m "Initial commit: Sanctu Catholic prayer app"
 
 # 2. Create GitHub repo and push
-gh repo create sanctus --public --source=. --push
+gh repo create sanctu --public --source=. --push
 # OR manually:
 # - Create repo on GitHub
 # - git remote add origin <your-repo-url>
@@ -51,17 +51,17 @@ Edit these files to use your actual link:
 - [app/page.tsx](app/page.tsx) - Line 70
 - [README.md](README.md) - Line 99
 
-Replace `https://buymeacoffee.com/sanctusapp` with your link.
+Replace `https://buymeacoffee.com/sanctuapp` with your link.
 
 ### 2. Add Custom Domain (Optional)
 
 In Vercel dashboard:
 1. Go to Settings → Domains
-2. Add your domain (e.g., `sanctus.app`)
+2. Add your domain (e.g., `sanctu.app`)
 3. Follow DNS configuration steps
 
 **Domain Suggestions:**
-- sanctus.app
+- sanctu.app
 - praytoday.app
 - dailycatholic.app
 - rosaryguide.app

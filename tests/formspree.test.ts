@@ -16,9 +16,9 @@ test('creates an explicit mailing-list signup with a subscriber name and email',
   assert.deepEqual(result, {
     firstName: 'Maria',
     email: 'maria@example.com',
-    intent: 'Subscribe for Sanctus and Catholic tech updates',
+    intent: 'Subscribe for Sanctu and Catholic tech updates',
     language: 'en',
-    _subject: 'New Sanctus subscriber: Maria',
+    _subject: 'New Sanctu subscriber: Maria',
   });
 });
 
@@ -35,9 +35,9 @@ test('keeps feedback separate from subscriptions unless the visitor opts in', ()
   assert.deepEqual(result, {
     email: 'reader@example.com',
     message: 'A downloadable daily Mass guide would help me pray offline.',
-    intent: 'Feedback for Sanctus',
+    intent: 'Feedback for Sanctu',
     language: 'es',
-    _subject: 'New Sanctus feedback',
+    _subject: 'New Sanctu feedback',
   });
 });
 

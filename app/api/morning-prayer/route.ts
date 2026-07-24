@@ -333,7 +333,7 @@ export async function GET() {
     // Fetch the RSS feed
     const response = await fetch(LAUDS_FEED_URL, {
       headers: {
-        'User-Agent': 'SanctusApp/1.0 (Catholic Prayer App; polite-caching)',
+        'User-Agent': 'SanctuApp/1.0 (Catholic Prayer App; polite-caching)',
       },
     });
 

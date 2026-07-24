@@ -6,9 +6,9 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 import "./print.css";
 
-const title = "Sanctus — A Catholic Liturgical Companion";
+const title = "Sanctu — A Catholic Liturgical Companion";
 const description = "The Liturgy of the Hours, daily Mass readings, a bilingual Mass guide, Rosary, and Catholic prayers in a fast offline companion.";
-const socialCard = "/social/sanctus-social-card.png";
+const socialCard = "/social/sanctu-social-card.png";
 const productionUrl = process.env.NEXT_PUBLIC_SITE_URL
   ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   openGraph: {
     type: "website",
-    siteName: "Sanctus",
+    siteName: "Sanctu",
     locale: "en_US",
     title,
     description,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
         url: socialCard,
         width: 1200,
         height: 630,
-        alt: "Sanctus, a Catholic liturgical companion, beside a Gothic stained-glass window",
+        alt: "Sanctu, a Catholic liturgical companion, beside a Gothic stained-glass window",
       },
     ],
   },
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Sanctus",
+    title: "Sanctu",
   },
   icons: {
     icon: "/icon-192.png",

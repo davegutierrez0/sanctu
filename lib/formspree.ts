@@ -25,9 +25,9 @@ export function createFormspreeSubmission(input: SubmissionInput): FormspreeSubm
     return {
       firstName,
       email,
-      intent: 'Subscribe for Sanctus and Catholic tech updates',
+      intent: 'Subscribe for Sanctu and Catholic tech updates',
       language: input.language,
-      _subject: `New Sanctus subscriber: ${firstName}`,
+      _subject: `New Sanctu subscriber: ${firstName}`,
     };
   }
 
@@ -38,9 +38,9 @@ export function createFormspreeSubmission(input: SubmissionInput): FormspreeSubm
     ...(firstName ? { firstName } : {}),
     ...(email ? { email } : {}),
     message,
-    intent: input.subscribe ? 'Feedback for Sanctus and Catholic tech updates' : 'Feedback for Sanctus',
+    intent: input.subscribe ? 'Feedback for Sanctu and Catholic tech updates' : 'Feedback for Sanctu',
     ...(input.subscribe ? { subscribe: 'yes' } : {}),
     language: input.language,
-    _subject: input.subscribe ? `New Sanctus feedback and subscriber: ${firstName}` : 'New Sanctus feedback',
+    _subject: input.subscribe ? `New Sanctu feedback and subscriber: ${firstName}` : 'New Sanctu feedback',
   };
 }

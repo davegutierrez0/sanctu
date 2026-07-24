@@ -302,7 +302,7 @@ export default function RosaryPage() {
   };
 
   return (
-    <div className="sanctus-page rosary-page">
+    <div className="sanctu-page rosary-page">
       <AppHeader
         backHref="/"
         backLabel={language === 'es' ? 'Inicio' : 'Home'}
@@ -328,9 +328,9 @@ export default function RosaryPage() {
         )}
       />
 
-      <main className="sanctus-content content-page">
+      <main className="sanctu-content content-page">
         <header className="page-heading centered">
-          <p className="eyebrow">Sanctus</p>
+          <p className="eyebrow">Sanctu</p>
           <h1>{ui.title}</h1>
 
           {/* Mystery Selector */}
