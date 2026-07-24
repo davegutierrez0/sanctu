@@ -6,10 +6,44 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 import "./print.css";
 
+const title = "Sanctus — A Catholic Liturgical Companion";
+const description = "The Liturgy of the Hours, daily Mass readings, a bilingual Mass guide, Rosary, and Catholic prayers in a fast offline companion.";
+const socialCard = "/social/sanctus-social-card.png";
+const productionUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: "Sanctus — A Catholic Liturgical Companion",
-  description: "The Liturgy of the Hours, daily Mass readings, a bilingual Mass guide, Rosary, and Catholic prayers in a fast offline companion.",
+  metadataBase: new URL(productionUrl),
+  title,
+  description,
+  alternates: {
+    canonical: "/",
+  },
   manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    siteName: "Sanctus",
+    locale: "en_US",
+    title,
+    description,
+    url: "/",
+    images: [
+      {
+        url: socialCard,
+        width: 1200,
+        height: 630,
+        alt: "Sanctus, a Catholic liturgical companion, beside a Gothic stained-glass window",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [socialCard],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
