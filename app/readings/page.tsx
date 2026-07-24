@@ -348,7 +348,7 @@ export default function ReadingsPage() {
                 className="reading reading-card stone-card"
                 >
                   <header className="mb-6">
-                    <div className="text-sm font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-2">
+                    <div className="reading-label">
                       {reading.label}
                     </div>
                     <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">

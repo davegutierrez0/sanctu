@@ -48,7 +48,7 @@
   --accent-strong: #edc67e;
   --accent-soft: #493b27;
   --accent-contrast: #241a0b;
-  --sapphire: #5b97c2;
+  --sapphire: #66a2cc;
   --ruby: #d67880;
   --ruby-action: #a94454;
   --verdigris: #75a99b;
@@ -899,9 +899,13 @@ h3 {
   padding: 25px 22px;
 }
 
-.reading-card .text-purple-600,
-.reading-card .dark\:text-purple-400 {
+.reading-label {
+  margin-bottom: 8px;
   color: var(--sapphire);
+  font-size: 0.875rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .mass-guide-page > .space-y-6,
@@ -963,6 +967,247 @@ h3 {
 .prayer-part {
   margin-bottom: 18px;
   padding: 24px 21px;
+}
+
+.morning-prayer-page {
+  max-width: 700px;
+}
+
+.office-parts {
+  display: grid;
+  gap: 18px;
+}
+
+.office-part {
+  overflow: hidden;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+.office-part-header {
+  position: relative;
+  padding: 22px 22px 18px 52px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.office-part-header::before {
+  position: absolute;
+  top: 27px;
+  left: 23px;
+  width: 14px;
+  height: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 72%, black);
+  background: linear-gradient(135deg, var(--sapphire) 0 47%, var(--amber) 47% 53%, var(--ruby) 53% 100%);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, white 18%, transparent);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.office-part-header h2 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(1.45rem, 6vw, 1.85rem);
+  font-weight: 500;
+  line-height: 1.14;
+}
+
+.office-body {
+  padding: 22px;
+  color: var(--foreground);
+}
+
+.office-body > :first-child {
+  margin-top: 0;
+}
+
+.office-dialogue {
+  display: flex;
+  margin: 0.85rem 0;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.office-dialogue.is-response {
+  margin-left: clamp(1rem, 5vw, 1.75rem);
+  font-weight: 650;
+}
+
+.office-dialogue p,
+.office-antiphon p,
+.office-doxology p,
+.office-prayer p {
+  margin: 0;
+}
+
+.office-marker {
+  flex: 0 0 auto;
+  color: var(--accent-strong);
+  font-family: var(--sans);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+}
+
+.office-antiphon {
+  display: grid;
+  margin: 1.35rem 0;
+  padding: 13px 14px;
+  align-items: start;
+  gap: 10px;
+  color: var(--foreground);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border-soft));
+  border-left: 4px solid var(--accent-strong);
+  border-radius: 0 10px 10px 0;
+  background: color-mix(in srgb, var(--accent-soft) 66%, var(--surface-strong));
+  grid-template-columns: auto 1fr;
+}
+
+.office-antiphon p {
+  font-weight: 650;
+  font-style: italic;
+}
+
+.office-psalm-heading {
+  margin: 2rem 0 0.8rem;
+  padding-bottom: 8px;
+  color: var(--sapphire);
+  border-bottom: 1px solid color-mix(in srgb, var(--sapphire) 34%, var(--border-soft));
+  font-size: 1.14rem;
+  font-weight: 650;
+}
+
+.office-verses {
+  display: grid;
+  margin: 0.85rem 0;
+  gap: 0.52rem;
+}
+
+.office-verses p {
+  margin: 0;
+}
+
+.office-doxology {
+  margin: 1.55rem 0;
+  padding: 14px 2px;
+  color: var(--muted);
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  font-style: italic;
+}
+
+.office-rubric {
+  margin: 0.7rem 0;
+  color: var(--ruby);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.office-section-heading {
+  margin: 2.25rem 0 1rem;
+  padding-bottom: 9px;
+  color: var(--accent-strong);
+  border-bottom: 2px solid color-mix(in srgb, var(--accent) 42%, var(--border-soft));
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.office-hymn-title {
+  margin: 0 0 1rem;
+  color: var(--foreground);
+  font-size: 1.12rem;
+  font-weight: 650;
+  font-style: italic;
+}
+
+.office-prayer {
+  margin: 1.15rem 0;
+  padding: 12px 14px;
+  color: var(--foreground);
+  border-left: 3px solid var(--verdigris);
+  background: color-mix(in srgb, var(--surface-soft) 76%, transparent);
+  font-style: italic;
+}
+
+.office-reference {
+  margin: 0 0 0.65rem;
+  color: var(--sapphire);
+  font-weight: 650;
+}
+
+.office-paragraph {
+  margin: 0.75rem 0;
+}
+
+.office-part-footer {
+  margin: 0 22px;
+  padding: 12px 0 14px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.office-source-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-strong);
+  font-family: var(--sans);
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.office-source-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.office-loading,
+.office-error {
+  padding: 30px 22px;
+  text-align: center;
+}
+
+.office-loading {
+  color: var(--muted);
+}
+
+.office-loading-mark {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  border: 4px solid var(--border-soft);
+  border-top-color: var(--accent-strong);
+  border-radius: 50%;
+}
+
+.office-loading p,
+.office-error p {
+  margin: 14px 0 0;
+}
+
+.office-error {
+  color: var(--foreground);
+  border-color: color-mix(in srgb, var(--ruby) 58%, var(--border));
+  background: color-mix(in srgb, var(--ruby) 9%, var(--surface-strong));
+}
+
+.office-retry-button {
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 8px 18px;
+  color: #fff9ed;
+  border: 1px solid color-mix(in srgb, var(--ruby-action) 82%, black);
+  border-radius: 10px;
+  background: var(--ruby-action);
+  font-weight: 750;
+}
+
+.office-retry-button:hover {
+  background: color-mix(in srgb, var(--ruby-action) 88%, black);
 }
 
 .rosary-mystery {

@@ -100,22 +100,20 @@ export default function MorningPrayerPage() {
         return (
           <div
             key={index}
-            className={`flex gap-3 ${section.isResponse ? 'ml-6' : ''}`}
+            className={section.isResponse ? 'office-dialogue is-response' : 'office-dialogue'}
           >
             {section.isResponse && (
-              <span className="text-purple-600 dark:text-purple-400 font-bold flex-shrink-0">℟.</span>
+              <span className="office-marker" aria-hidden="true">℟.</span>
             )}
-            <p className={`${section.isResponse ? 'font-semibold text-gray-900 dark:text-gray-100' : ''}`}>
-              {section.content}
-            </p>
+            <p>{section.content}</p>
           </div>
         );
 
       case 'antiphon':
         return (
-          <div key={index} className="flex gap-3 my-4 py-3 px-4 bg-purple-50 dark:bg-purple-950/30 rounded-lg border-l-4 border-purple-500">
-            <span className="text-purple-600 dark:text-purple-400 font-bold flex-shrink-0">Ant.</span>
-            <p className="font-semibold text-gray-900 dark:text-gray-100 italic">
+          <div key={index} className="office-antiphon">
+            <span className="office-marker" aria-hidden="true">Ant.</span>
+            <p>
               {section.content}
             </p>
           </div>
@@ -125,7 +123,7 @@ export default function MorningPrayerPage() {
         return (
           <h3
             key={index}
-            className="font-semibold text-lg mt-8 mb-3 text-purple-700 dark:text-purple-300 border-b border-purple-200 dark:border-purple-800 pb-2"
+            className="office-psalm-heading"
           >
             {section.content}
           </h3>
@@ -135,9 +133,9 @@ export default function MorningPrayerPage() {
         // Group verse lines - pairs of lines that belong together
         const lines = section.content.split('\n').filter(l => l.trim());
         return (
-          <div key={index} className="space-y-2 my-3">
+          <div key={index} className="office-verses">
             {lines.map((line, lineIdx) => (
-              <p key={lineIdx} className="leading-relaxed">
+              <p key={lineIdx}>
                 {line}
               </p>
             ))}
@@ -146,8 +144,8 @@ export default function MorningPrayerPage() {
 
       case 'doxology':
         return (
-          <div key={index} className="my-6 py-4 border-t border-b border-gray-200 dark:border-gray-700">
-            <p className="text-gray-700 dark:text-gray-300 italic leading-relaxed">
+          <div key={index} className="office-doxology">
+            <p>
               {section.content.split('\n').map((line, i) => (
                 <span key={i}>
                   {line}
@@ -160,7 +158,7 @@ export default function MorningPrayerPage() {
 
       case 'rubric':
         return (
-          <p key={index} className="text-sm text-red-600 dark:text-red-400 italic my-2">
+          <p key={index} className="office-rubric">
             {section.content}
           </p>
         );
@@ -169,7 +167,7 @@ export default function MorningPrayerPage() {
         return (
           <h3
             key={index}
-            className="font-bold text-sm uppercase tracking-wider mt-10 mb-4 text-purple-600 dark:text-purple-400 border-b-2 border-purple-200 dark:border-purple-800 pb-2"
+            className="office-section-heading"
           >
             {section.content}
           </h3>
@@ -177,15 +175,15 @@ export default function MorningPrayerPage() {
 
       case 'hymn-title':
         return (
-          <p key={index} className="font-semibold text-lg italic mb-4 text-gray-800 dark:text-gray-200">
+          <p key={index} className="office-hymn-title">
             {section.content}
           </p>
         );
 
       case 'prayer':
         return (
-          <div key={index} className="my-4 pl-4 border-l-2 border-gray-300 dark:border-gray-600 italic">
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          <div key={index} className="office-prayer">
+            <p>
               {section.content}
             </p>
           </div>
@@ -193,14 +191,14 @@ export default function MorningPrayerPage() {
 
       case 'reading-ref':
         return (
-          <p key={index} className="font-medium text-purple-700 dark:text-purple-300 mb-2">
+          <p key={index} className="office-reference">
             {section.content}
           </p>
         );
 
       default:
         return (
-          <p key={index} className="my-2">
+          <p key={index} className="office-paragraph">
             {section.content}
           </p>
         );
@@ -211,26 +209,26 @@ export default function MorningPrayerPage() {
     return (
       <article
         key={partIndex}
-        className="prayer-part stone-card"
+        className="prayer-part stone-card office-part reveal-up"
       >
-        <header className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+        <header className="office-part-header">
+          <h2>
             {part.title}
           </h2>
         </header>
-        <div className="prayer-text text-gray-800 dark:text-gray-200 leading-relaxed">
+        <div className="prayer-text office-body">
           {part.sections.map((section, idx) => renderSection(section, idx))}
         </div>
 
         {part.link && (
-          <footer className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <footer className="office-part-footer">
             <a
               href={part.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400 hover:underline"
+              className="office-source-link"
             >
-              <ExternalLink size={14} />
+              <ExternalLink aria-hidden="true" size={15} />
               {language === 'es' ? 'Ver en Divine Office' : 'View on Divine Office'}
               <span className="sr-only">
                 {language === 'es' ? ' (se abre en una pestaña nueva)' : ' (opens in a new tab)'}
@@ -256,6 +254,7 @@ export default function MorningPrayerPage() {
           backLabel={language === 'es' ? 'Inicio' : 'Home'}
           action={(
             <button
+              type="button"
               onClick={() => { analytics.printClicked('morning-prayer'); window.print(); }}
               className="header-control"
               aria-label={language === 'es' ? 'Imprimir' : 'Print'}
@@ -265,7 +264,7 @@ export default function MorningPrayerPage() {
           )}
         />
 
-        <main className="sanctus-content content-page">
+        <main className="sanctus-content content-page morning-prayer-page">
           <header className="page-heading centered">
             <p className="eyebrow">
               {today}
@@ -276,19 +275,20 @@ export default function MorningPrayerPage() {
 
           {/* Loading State */}
           {loading && (
-            <div className="text-center py-12">
-              <div className="inline-block w-8 h-8 border-4 border-gray-300 dark:border-gray-700 border-t-gray-900 dark:border-t-gray-100 rounded-full animate-spin" />
-              <p className="mt-4 text-gray-600 dark:text-gray-400">{ui.loading}</p>
+            <div className="office-loading" role="status" aria-live="polite">
+              <div className="office-loading-mark animate-spin" aria-hidden="true" />
+              <p>{ui.loading}</p>
             </div>
           )}
 
           {/* Error State */}
           {error && (
-            <div className="p-6 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-center">
-              <p className="text-red-800 dark:text-red-200">{error}</p>
+            <div className="office-error stone-card" role="alert">
+              <p>{error}</p>
               <button
+                type="button"
                 onClick={handleRetry}
-                className="mt-4 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors"
+                className="office-retry-button"
               >
                 {ui.tryAgain}
               </button>
@@ -297,7 +297,7 @@ export default function MorningPrayerPage() {
 
           {/* Prayer Content */}
           {data && data.parts && !loading && (
-            <div>
+            <div className="office-parts">
               {data.parts.map((part, idx) => renderPart(part, idx))}
             </div>
           )}
