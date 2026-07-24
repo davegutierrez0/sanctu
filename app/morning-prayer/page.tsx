@@ -247,7 +247,7 @@ export default function MorningPrayerPage() {
         <p>{today}</p>
       </div>
 
-      <div className="sanctus-page">
+      <div className="sanctu-page">
         <AppHeader
           backHref="/"
           backLabel={language === 'es' ? 'Inicio' : 'Home'}
@@ -262,7 +262,7 @@ export default function MorningPrayerPage() {
           )}
         />
 
-        <main className="sanctus-content content-page">
+        <main className="sanctu-content content-page">
           <header className="page-heading centered">
             <p className="eyebrow">
               {today}
@@ -304,7 +304,7 @@ export default function MorningPrayerPage() {
 
       {/* Print Footer */}
       <div className="print-footer" data-date={today} style={{ display: 'none' }}>
-        Printed from Sanctus App - {today}
+        Printed from Sanctu App - {today}
       </div>
     </>
   );

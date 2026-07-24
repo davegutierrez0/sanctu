@@ -2,7 +2,7 @@
 
 ## Objective
 
-Transform Sanctus from a set of useful Catholic utilities into a cohesive, mobile-first liturgical companion. The redesigned PWA should immediately orient the faithful to the Church's day, suggest an appropriate prayer for the user's local time, make Mass participation and traditional prayers easy to reach, and remain useful when the network is unavailable.
+Transform Sanctu from a set of useful Catholic utilities into a cohesive, mobile-first liturgical companion. The redesigned PWA should immediately orient the faithful to the Church's day, suggest an appropriate prayer for the user's local time, make Mass participation and traditional prayers easy to reach, and remain useful when the network is unavailable.
 
 ## Product priorities
 
@@ -55,9 +55,9 @@ A pure local-time function selects one of five options:
 | 16:00–20:59 | Evening Prayer (Vespers) |
 | 21:00–23:59 | Night Prayer (Compline) |
 
-The selector allows any Hour to be chosen without changing the default algorithm. Morning Prayer opens the existing in-app cached experience. The other Hours open the corresponding DivineOffice.org page in a new tab and are labeled as requiring a connection. Each option also provides an offline alternative already stored in Sanctus: readings, Morning Offering, Angelus, Daily Examen, or Act of Contrition.
+The selector allows any Hour to be chosen without changing the default algorithm. Morning Prayer opens the existing in-app cached experience. The other Hours open the corresponding DivineOffice.org page in a new tab and are labeled as requiring a connection. Each option also provides an offline alternative already stored in Sanctu: readings, Morning Offering, Angelus, Daily Examen, or Act of Contrition.
 
-Sanctus does not copy additional full Liturgy of the Hours texts into the repository. Those translations and the DivineOffice.org presentation carry explicit copyright notices; direct links preserve attribution and avoid presenting a partial devotion as the official Hour.
+Sanctu does not copy additional full Liturgy of the Hours texts into the repository. Those translations and the DivineOffice.org presentation carry explicit copyright notices; direct links preserve attribution and avoid presenting a partial devotion as the official Hour.
 
 ### Today at Mass
 

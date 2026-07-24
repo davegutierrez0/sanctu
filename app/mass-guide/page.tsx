@@ -210,7 +210,7 @@ export default function MassGuidePage() {
   };
 
   return (
-    <div className="sanctus-page">
+    <div className="sanctu-page">
       <AppHeader
         backHref="/"
         backLabel={ui.back || 'Back'}
@@ -226,7 +226,7 @@ export default function MassGuidePage() {
         )}
       />
 
-      <main className="sanctus-content content-page mass-guide-page">
+      <main className="sanctu-content content-page mass-guide-page">
         <header className="page-heading centered">
           <p className="eyebrow">{guide.version}</p>
           <h1>{guide.title}</h1>

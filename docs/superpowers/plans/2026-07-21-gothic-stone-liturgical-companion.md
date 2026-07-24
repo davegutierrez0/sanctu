@@ -37,7 +37,7 @@
 - [ ] Implement `filterPrayers(prayers, language, query, category)` as a pure function with normalized whitespace and lowercase matching.
 - [ ] Run `npm test` and confirm search and rhythm tests pass.
 - [ ] Extend `Prayer['category']` with `mass`; add the eight approved bilingual prayers; add localized category, search, favorites, empty-state, and favorite-button labels.
-- [ ] Implement `PrayerLibrary` with a native search input, category chips, links, and `localStorage` favorites under `sanctus:favorites`; favorites render first and buttons expose `aria-pressed`.
+- [ ] Implement `PrayerLibrary` with a native search input, category chips, links, and `localStorage` favorites under `sanctu:favorites`; favorites render first and buttons expose `aria-pressed`.
 - [ ] Replace the page-local category rendering in `app/prayers/page.tsx` with `PrayerLibrary`.
 
 ### Task 3: Original visual asset and Gothic Stone tokens

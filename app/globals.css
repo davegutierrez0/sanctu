@@ -111,12 +111,12 @@ h3 {
   background: var(--accent-strong);
 }
 
-.sanctus-page {
+.sanctu-page {
   min-height: 100vh;
   padding-bottom: calc(82px + env(safe-area-inset-bottom));
 }
 
-.sanctus-content {
+.sanctu-content {
   width: min(100% - 28px, 920px);
   margin-inline: auto;
   padding: 22px 0 64px;
@@ -988,7 +988,7 @@ h3 {
 }
 
 @media (min-width: 640px) {
-  .sanctus-content {
+  .sanctu-content {
     width: min(100% - 48px, 920px);
     padding-top: 32px;
   }
@@ -1036,7 +1036,7 @@ h3 {
 }
 
 @media (min-width: 980px) {
-  .sanctus-page {
+  .sanctu-page {
     padding-bottom: 36px;
   }
 

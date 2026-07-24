@@ -1,4 +1,4 @@
-# Sanctus - Catholic Prayer Web App
+# Sanctu - Catholic Prayer Web App
 
 A fast, minimal, offline-capable Catholic prayer app with daily Mass readings, interactive Rosary, and essential prayers.
 
@@ -91,7 +91,7 @@ The home-page feedback form submits to a Vercel route, which forwards the messag
 
 In Vercel dashboard:
 - Settings → Domains → Add
-- Recommended: `sanctus.app`, `praytoday.app`, or similar
+- Recommended: `sanctu.app`, `praytoday.app`, or similar
 
 ## API Strategy (Be Gentle on USCCB)
 

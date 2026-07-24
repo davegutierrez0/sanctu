@@ -30,7 +30,7 @@ export function validateFeedback(value: unknown): FeedbackPayload | undefined {
 
 export function formatFeedbackEmail(feedback: FeedbackPayload): string {
   return [
-    'New Sanctus feedback',
+    'New Sanctu feedback',
     `Language: ${feedback.language}`,
     `Reply address: ${feedback.email ?? 'Not provided'}`,
     '',

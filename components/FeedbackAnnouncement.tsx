@@ -8,12 +8,12 @@ import { analytics } from '@/lib/analytics';
 
 const COPY = {
   en: {
-    eyebrow: 'A note from Sanctus',
+    eyebrow: 'A note from Sanctu',
     title: 'All new design.',
-    description: 'Please send us your feedback and consider donating to help keep Sanctus free.',
+    description: 'Please send us your feedback and consider donating to help keep Sanctu free.',
     feedback: 'Send feedback',
     support: 'Buy me a coffee',
-    prompt: 'What would make Sanctus more helpful for your prayer life?',
+    prompt: 'What would make Sanctu more helpful for your prayer life?',
     contact: 'Email for a reply (optional)',
     submit: 'Send feedback',
     sending: 'Sending…',
@@ -22,12 +22,12 @@ const COPY = {
     notConfigured: 'Feedback will be available soon. Thank you for your patience.',
   },
   es: {
-    eyebrow: 'Una nota de Sanctus',
+    eyebrow: 'Una nota de Sanctu',
     title: 'Diseño completamente nuevo.',
-    description: 'Envíanos tus comentarios y considera donar para ayudar a mantener Sanctus gratuito.',
+    description: 'Envíanos tus comentarios y considera donar para ayudar a mantener Sanctu gratuito.',
     feedback: 'Enviar comentarios',
     support: 'Invítame un café',
-    prompt: '¿Qué haría que Sanctus fuera más útil para tu vida de oración?',
+    prompt: '¿Qué haría que Sanctu fuera más útil para tu vida de oración?',
     contact: 'Correo para responder (opcional)',
     submit: 'Enviar comentarios',
     sending: 'Enviando…',

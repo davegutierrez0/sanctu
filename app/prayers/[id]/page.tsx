@@ -51,7 +51,7 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
         <p>{today}</p>
       </div>
 
-      <div className="sanctus-page">
+      <div className="sanctu-page">
         <AppHeader
           backHref="/prayers"
           backLabel={ui.backToPrayers}
@@ -66,9 +66,9 @@ export default function PrayerPage({ params }: { params: Promise<{ id: string }>
           )}
         />
 
-        <main className="sanctus-content content-page narrow-page">
+        <main className="sanctu-content content-page narrow-page">
           <header className="page-heading centered">
-            <p className="eyebrow">Sanctus</p>
+            <p className="eyebrow">Sanctu</p>
             <h1>{title}</h1>
             {prayer.latin && (
               <p className="latin-subtitle">{prayer.latin}</p>

@@ -34,7 +34,7 @@ const READINGS_UI = {
     errorFallback: 'Unable to load readings for this day. Please try again later.',
     tryAgain: 'Try Again',
     empty: 'No readings available for this day.',
-    printFooter: 'Printed from Sanctus App',
+    printFooter: 'Printed from Sanctu App',
   },
   es: {
     title: 'Lecturas de la Misa',
@@ -49,7 +49,7 @@ const READINGS_UI = {
     errorFallback: 'No se pudieron cargar las lecturas de este día. Inténtalo de nuevo más tarde.',
     tryAgain: 'Intentar de nuevo',
     empty: 'No hay lecturas disponibles para este día.',
-    printFooter: 'Impreso desde Sanctus App',
+    printFooter: 'Impreso desde Sanctu App',
   },
 } as const;
 
@@ -237,7 +237,7 @@ export default function ReadingsPage() {
         <p>{todayLabel}</p>
       </div>
 
-      <div className="sanctus-page">
+      <div className="sanctu-page">
         <AppHeader
           backHref="/"
           backLabel={text.home}
@@ -252,7 +252,7 @@ export default function ReadingsPage() {
           )}
         />
 
-        <main className="sanctus-content content-page">
+        <main className="sanctu-content content-page">
           <header className="page-heading centered">
             <p className="eyebrow">
               {todayLabel}

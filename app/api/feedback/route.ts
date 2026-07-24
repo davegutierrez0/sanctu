@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: process.env.FEEDBACK_FROM_EMAIL ?? 'Sanctus feedback <onboarding@resend.dev>',
+      from: process.env.FEEDBACK_FROM_EMAIL ?? 'Sanctu feedback <onboarding@resend.dev>',
       to: [recipient],
       ...(payload.email ? { reply_to: payload.email } : {}),
-      subject: `Sanctus feedback (${payload.language.toUpperCase()})`,
+      subject: `Sanctu feedback (${payload.language.toUpperCase()})`,
       text: formatFeedbackEmail(payload),
     }),
   }).catch(() => undefined);

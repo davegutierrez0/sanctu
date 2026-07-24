@@ -7,13 +7,13 @@ import "./globals.css";
 import "./print.css";
 
 export const metadata: Metadata = {
-  title: "Sanctus — A Catholic Liturgical Companion",
+  title: "Sanctu — A Catholic Liturgical Companion",
   description: "The Liturgy of the Hours, daily Mass readings, a bilingual Mass guide, Rosary, and Catholic prayers in a fast offline companion.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Sanctus",
+    title: "Sanctu",
   },
   icons: {
     icon: "/icon-192.png",

@@ -92,9 +92,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="sanctus-page home-page">
+    <div className="sanctu-page home-page">
       <AppHeader />
-      <main className="sanctus-content home-content">
+      <main className="sanctu-content home-content">
         <LiturgicalHero />
         <FeedbackAnnouncement />
         <PrayerForNow />
