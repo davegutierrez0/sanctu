@@ -17,17 +17,21 @@ export function AppHeader({ backHref, backLabel, action }: AppHeaderProps) {
   const { language, setLanguage } = useLanguage();
   const { theme, setTheme } = useTheme();
 
+  const nextTheme = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
+
   const cycleTheme = () => {
-    const nextTheme = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
     setTheme(nextTheme);
     if (nextTheme !== 'system') analytics.themeToggled(nextTheme);
   };
 
-  const themeLabel = {
-    system: language === 'es' ? 'Tema del sistema' : 'System theme',
-    light: language === 'es' ? 'Tema claro' : 'Light theme',
-    dark: language === 'es' ? 'Tema oscuro' : 'Dark theme',
-  }[theme];
+  const themeNames = language === 'es'
+    ? { system: 'del sistema', light: 'claro', dark: 'oscuro' }
+    : { system: 'system', light: 'light', dark: 'dark' };
+  const currentThemeLabel = themeNames[theme];
+  const nextThemeLabel = themeNames[nextTheme];
+  const themeLabel = language === 'es'
+    ? `Tema actual: ${currentThemeLabel}. Cambiar al tema ${nextThemeLabel}.`
+    : `Theme: ${currentThemeLabel}. Switch to ${nextThemeLabel} theme.`;
 
   const ThemeIcon = theme === 'system' ? Monitor : theme === 'light' ? Sun : Moon;
 
@@ -62,6 +66,7 @@ export function AppHeader({ backHref, backLabel, action }: AppHeaderProps) {
             onClick={cycleTheme}
             aria-label={themeLabel}
             title={themeLabel}
+            data-theme-toggle
           >
             <ThemeIcon aria-hidden="true" size={18} />
           </button>

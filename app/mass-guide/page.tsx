@@ -276,6 +276,9 @@ export default function MassGuidePage() {
                     >
                       <ExternalLink size={14} />
                       {language === 'en' ? source.en : source.es}
+                      <span className="sr-only">
+                        {language === 'es' ? ' (se abre en una pestaña nueva)' : ' (opens in a new tab)'}
+                      </span>
                     </a>
                   ) : (
                     <span className="text-gray-700 dark:text-gray-300">

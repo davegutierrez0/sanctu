@@ -232,6 +232,9 @@ export default function MorningPrayerPage() {
             >
               <ExternalLink size={14} />
               {language === 'es' ? 'Ver en Divine Office' : 'View on Divine Office'}
+              <span className="sr-only">
+                {language === 'es' ? ' (se abre en una pestaña nueva)' : ' (opens in a new tab)'}
+              </span>
             </a>
           </footer>
         )}

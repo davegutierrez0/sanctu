@@ -309,6 +309,7 @@ export default function RosaryPage() {
         action={(
           <div className="header-actions">
             <button
+              type="button"
               onClick={() => { analytics.printClicked('rosary'); window.print(); }}
               className="header-control"
               aria-label={language === 'es' ? 'Imprimir' : 'Print'}
@@ -316,6 +317,7 @@ export default function RosaryPage() {
               <Printer size={18} />
             </button>
             <button
+              type="button"
               onClick={reset}
               className="header-control"
               aria-label={language === 'es' ? 'Reiniciar' : 'Reset'}
@@ -332,26 +334,29 @@ export default function RosaryPage() {
           <h1>{ui.title}</h1>
 
           {/* Mystery Selector */}
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="rosary-mystery-selector" role="group" aria-label={ui.selectMystery}>
             {Object.entries(localizedMysterySets).map(([key, mysterySet]) => {
               const isToday = key === todaysMysteryType;
+              const isSelected = mysteryType === key;
               return (
                 <button
                   key={key}
+                  type="button"
                   onClick={() => {
                     setMysteryType(key as MysteryType);
                     analytics.mysteryChanged(key);
                     reset();
                   }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all relative ${
-                    mysteryType === key
-                      ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-black'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
+                  className={isSelected ? 'rosary-mystery-option is-selected' : 'rosary-mystery-option'}
+                  aria-pressed={mysteryType === key}
                 >
                   {mysterySet.name}
                   {isToday && (
-                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-rose-500 rounded-full" title={ui.todaysMystery}>
+                    <span
+                      className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-rose-500 rounded-full"
+                      title={ui.todaysMystery}
+                      aria-hidden="true"
+                    >
                       <Calendar size={10} className="text-white" />
                     </span>
                   )}
@@ -359,21 +364,28 @@ export default function RosaryPage() {
               );
             })}
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            <Calendar size={12} className="inline mr-1" />
+          <p className="rosary-today">
+            <Calendar aria-hidden="true" size={13} />
             {ui.todaysMystery}: {localizedMysterySets[todaysMysteryType].name}
           </p>
         </header>
 
         {/* Progress */}
         <div className="mb-12">
-          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <div className="rosary-progress-label">
             <span>{getPhaseLabel()}</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+          <div
+            className="rosary-progress-track"
+            role="progressbar"
+            aria-label={`${ui.progress}: ${getPhaseLabel()}`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress)}
+          >
             <div
-              className="h-full bg-rose-600 dark:bg-rose-400 transition-all duration-300"
+              className="rosary-progress-fill"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -474,8 +486,9 @@ export default function RosaryPage() {
                   {currentPrayer.combinedPrayers.map((p) => (
                     <div key={p.key} className="space-y-2">
                       <button
+                        type="button"
                         onClick={() => togglePrayerExpanded(p.key)}
-                        className="inline-flex items-center gap-2 text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                        className="rosary-disclosure inline-flex items-center gap-2 text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                         aria-expanded={isPrayerExpanded(p.key)}
                       >
                         {isPrayerExpanded(p.key) ? '−' : '+'} {p.prayer.title}...
@@ -494,8 +507,9 @@ export default function RosaryPage() {
               ) : 'prayer' in currentPrayer && currentPrayer.prayer ? (
                 <div className="space-y-2">
                   <button
+                    type="button"
                     onClick={() => togglePrayerExpanded(currentPrayer.key)}
-                    className="inline-flex items-center gap-2 text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+                    className="rosary-disclosure inline-flex items-center gap-2 text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                     aria-expanded={isPrayerExpanded(currentPrayer.key)}
                   >
                     {isPrayerExpanded(currentPrayer.key) ? '−' : '+'} {currentPrayer.prayer.title}...
@@ -530,8 +544,9 @@ export default function RosaryPage() {
             {/* Next Button */}
             <div className="text-center">
               <button
+                type="button"
                 onClick={nextStep}
-                className="px-12 py-4 rounded-xl bg-rose-600 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-600 text-white font-medium text-lg shadow-lg hover:shadow-xl transition-all"
+                className="rosary-primary-button"
               >
                 {getButtonText()}
               </button>
@@ -546,6 +561,7 @@ export default function RosaryPage() {
               {ui.rosaryComplete}
             </p>
             <button
+              type="button"
               onClick={reset}
               className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-black font-medium transition-colors"
             >
@@ -556,23 +572,25 @@ export default function RosaryPage() {
 
         {/* All Mysteries List */}
         <div className="mt-16 pt-12 border-t border-gray-200 dark:border-gray-800">
-          <h3 className="text-2xl font-light mb-6 tracking-tight">{ui.allMysteries}</h3>
+          <h2 className="text-2xl font-light mb-6 tracking-tight">{ui.allMysteries}</h2>
           <div className="grid gap-4">
             {currentMysterySet.mysteries.map((mystery) => {
               const isActive = (phase === 'decade' || phase === 'decadeEnd') && currentDecade === mystery.number - 1;
               return (
                 <button
                   key={mystery.number}
+                  type="button"
                   onClick={() => skipToDecade(mystery.number - 1)}
+                  aria-pressed={isActive}
                   className={`p-6 rounded-xl border transition-colors text-left ${
                     isActive
                       ? 'border-rose-600 dark:border-rose-400 bg-rose-50 dark:bg-rose-950/20'
                       : 'border-gray-200 dark:border-gray-800 hover:border-rose-300 dark:hover:border-rose-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/10'
                   }`}
                 >
-                  <h4 className="font-medium mb-1">
+                  <h3 className="font-medium mb-1">
                     {mystery.number}. {mystery.title}
-                  </h4>
+                  </h3>
                   {mystery.scripture && (
                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
                       {mystery.scripture}

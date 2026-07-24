@@ -159,6 +159,9 @@ export default function HomePage() {
           >
             <Coffee aria-hidden="true" size={16} />
             {text.support}
+            <span className="sr-only">
+              {language === 'es' ? ' (se abre en una pestaña nueva)' : ' (opens in a new tab)'}
+            </span>
           </a>
           <details>
             <summary>{text.settings}</summary>

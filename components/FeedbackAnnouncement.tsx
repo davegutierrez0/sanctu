@@ -145,6 +145,9 @@ export function FeedbackAnnouncement() {
         >
           <Coffee aria-hidden="true" size={17} />
           {text.support}
+          <span className="sr-only">
+            {language === 'es' ? ' (se abre en una pestaña nueva)' : ' (opens in a new tab)'}
+          </span>
         </a>
       </div>
       {isOpen && (
@@ -152,10 +155,20 @@ export function FeedbackAnnouncement() {
           <div className="feedback-form-heading">
             <h3>{mode === 'subscribe' ? text.signupTitle : text.feedbackTitle}</h3>
             <div className="feedback-form-tabs" aria-label="Contact preference">
-              <button type="button" className={mode === 'subscribe' ? 'is-active' : ''} onClick={() => openForm('subscribe')}>
+              <button
+                type="button"
+                className={mode === 'subscribe' ? 'is-active' : ''}
+                onClick={() => openForm('subscribe')}
+                aria-pressed={mode === 'subscribe'}
+              >
                 {text.subscribe}
               </button>
-              <button type="button" className={mode === 'feedback' ? 'is-active' : ''} onClick={() => openForm('feedback')}>
+              <button
+                type="button"
+                className={mode === 'feedback' ? 'is-active' : ''}
+                onClick={() => openForm('feedback')}
+                aria-pressed={mode === 'feedback'}
+              >
                 {text.feedback}
               </button>
             </div>

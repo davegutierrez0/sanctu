@@ -57,18 +57,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('system');
   const [language, setLanguageState] = useState<Language>('en');
   const [isDark, setIsDark] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    setThemeState(getStoredTheme());
-    setLanguageState(getStoredLanguage());
+    const storedTheme = getStoredTheme();
+    const storedLanguage = getStoredLanguage();
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    setThemeState(storedTheme);
+    setLanguageState(storedLanguage);
+    setIsDark(storedTheme === 'dark' || (storedTheme === 'system' && prefersDark));
+    setIsHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!isHydrated) return;
     document.documentElement.lang = language;
-  }, [language]);
+  }, [isHydrated, language]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!isHydrated) return;
     const root = document.documentElement;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -85,7 +93,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       mediaQuery.addEventListener('change', applyTheme);
       return () => mediaQuery.removeEventListener('change', applyTheme);
     }
-  }, [theme]);
+  }, [isHydrated, theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

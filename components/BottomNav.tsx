@@ -35,7 +35,12 @@ export function BottomNav() {
     <nav className="bottom-nav no-print" aria-label={language === 'es' ? 'Navegación principal' : 'Main navigation'}>
       <div className="bottom-nav-inner">
         {items.map(({ href, label, icon: Icon, active }) => (
-          <Link key={href} href={href} className={active ? 'bottom-nav-item is-active' : 'bottom-nav-item'}>
+          <Link
+            key={href}
+            href={href}
+            className={active ? 'bottom-nav-item is-active' : 'bottom-nav-item'}
+            aria-current={active ? 'page' : undefined}
+          >
             <Icon aria-hidden="true" size={20} strokeWidth={active ? 2.25 : 1.75} />
             <span>{label}</span>
           </Link>

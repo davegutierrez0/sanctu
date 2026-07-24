@@ -61,6 +61,9 @@ export function PrayerForNow() {
     >
       {text.pray}
       <ArrowUpRight aria-hidden="true" size={17} />
+      <span className="sr-only">
+        {language === 'es' ? ' (se abre en una pestaña nueva)' : ' (opens in a new tab)'}
+      </span>
     </a>
   ) : (
     <Link className="primary-button" href={prayerHour.officialHref}>
