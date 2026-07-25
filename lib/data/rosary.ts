@@ -9,7 +9,10 @@ export type MysteryType = 'joyful' | 'sorrowful' | 'glorious' | 'luminous';
 export interface Mystery {
   number: number;
   title: { en: string; es: string };
-  scripture?: string;
+  scripture: {
+    reference: { en: string; es: string };
+    text: { en: string; es: string };
+  };
   meditation: { en: string; es: string };
 }
 
@@ -31,7 +34,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 1,
         title: { en: 'The Annunciation', es: 'La Anunciación' },
-        scripture: 'Luke 1:26-38',
+        scripture: {
+          reference: { en: 'Luke 1:26–38', es: 'Lucas 1:26–38' },
+          text: {
+            en: 'Mary said, “Behold, I am the handmaid of the Lord. Let it be done to me according to your word.”',
+            es: 'María dijo: «He aquí la sierva del Señor; hágase en mí según tu palabra».',
+          },
+        },
         meditation: {
           en: 'The angel Gabriel announces to Mary that she will be the Mother of God.',
           es: 'El ángel Gabriel anuncia a María que será la Madre de Dios.',
@@ -40,7 +49,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 2,
         title: { en: 'The Visitation', es: 'La Visitación' },
-        scripture: 'Luke 1:39-56',
+        scripture: {
+          reference: { en: 'Luke 1:39–56', es: 'Lucas 1:39–56' },
+          text: {
+            en: '“Blessed are you among women, and blessed is the fruit of your womb. How does this happen to me, that the mother of my Lord should come to me?”',
+            es: '«Bendita tú entre las mujeres y bendito el fruto de tu vientre. ¿Quién soy yo para que la madre de mi Señor venga a visitarme?»',
+          },
+        },
         meditation: {
           en: 'Mary visits her cousin Elizabeth, who proclaims her blessed.',
           es: 'María visita a su prima Isabel, quien la proclama bendita.',
@@ -49,7 +64,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 3,
         title: { en: 'The Nativity', es: 'El Nacimiento de Jesús' },
-        scripture: 'Luke 2:1-20',
+        scripture: {
+          reference: { en: 'Luke 2:1–20', es: 'Lucas 2:1–20' },
+          text: {
+            en: 'She gave birth to her firstborn son, wrapped him in swaddling clothes, and laid him in a manger, because there was no room for them.',
+            es: 'Dio a luz a su hijo primogénito, lo envolvió en pañales y lo acostó en un pesebre, porque no había lugar para ellos.',
+          },
+        },
         meditation: {
           en: 'Jesus is born in Bethlehem.',
           es: 'Jesús nace en Belén.',
@@ -58,7 +79,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 4,
         title: { en: 'The Presentation', es: 'La Presentación en el Templo' },
-        scripture: 'Luke 2:22-38',
+        scripture: {
+          reference: { en: 'Luke 2:22–38', es: 'Lucas 2:22–38' },
+          text: {
+            en: '“My eyes have seen your salvation, which you prepared in sight of all the peoples: a light for revelation to the nations, and glory for your people Israel.”',
+            es: '«Mis ojos han visto tu salvación, la que preparaste ante todos los pueblos: luz para alumbrar a las naciones y gloria de tu pueblo Israel».',
+          },
+        },
         meditation: {
           en: 'Mary and Joseph present Jesus in the Temple.',
           es: 'María y José presentan a Jesús en el Templo.',
@@ -67,7 +94,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 5,
         title: { en: 'Finding in the Temple', es: 'El Niño Jesús Perdido y Hallado en el Templo' },
-        scripture: 'Luke 2:41-52',
+        scripture: {
+          reference: { en: 'Luke 2:41–52', es: 'Lucas 2:41–52' },
+          text: {
+            en: '“Why were you looking for me? Did you not know that I must be in my Father’s house?”',
+            es: '«¿Por qué me buscaban? ¿No sabían que debo estar en la casa de mi Padre?»',
+          },
+        },
         meditation: {
           en: 'Mary and Joseph find the young Jesus teaching in the Temple.',
           es: 'María y José encuentran al niño Jesús enseñando en el Templo.',
@@ -84,7 +117,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 1,
         title: { en: 'The Baptism in the Jordan', es: 'El Bautismo de Jesús en el Jordán' },
-        scripture: 'Matthew 3:13-17',
+        scripture: {
+          reference: { en: 'Matthew 3:13–17', es: 'Mateo 3:13–17' },
+          text: {
+            en: 'A voice came from the heavens, saying, “This is my beloved Son, with whom I am well pleased.”',
+            es: 'Una voz vino del cielo y dijo: «Este es mi Hijo amado, en quien me complazco».',
+          },
+        },
         meditation: {
           en: 'Jesus is baptized by John and the Father proclaims Him His beloved Son.',
           es: 'Jesús es bautizado por Juan y el Padre lo proclama su Hijo amado.',
@@ -93,7 +132,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 2,
         title: { en: 'The Wedding at Cana', es: 'Las Bodas de Caná' },
-        scripture: 'John 2:1-11',
+        scripture: {
+          reference: { en: 'John 2:1–11', es: 'Juan 2:1–11' },
+          text: {
+            en: 'His mother said to the servers, “Do whatever he tells you.”',
+            es: 'Su madre dijo a los que servían: «Hagan lo que él les diga».',
+          },
+        },
         meditation: {
           en: "At Mary's request, Jesus performs His first miracle.",
           es: 'A petición de María, Jesús realiza su primer milagro.',
@@ -102,7 +147,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 3,
         title: { en: 'Proclamation of the Kingdom', es: 'El Anuncio del Reino de Dios' },
-        scripture: 'Mark 1:14-15',
+        scripture: {
+          reference: { en: 'Mark 1:14–15', es: 'Marcos 1:14–15' },
+          text: {
+            en: '“The time is fulfilled, and the kingdom of God is at hand. Repent, and believe in the Gospel.”',
+            es: '«El tiempo se ha cumplido y el Reino de Dios está cerca. Conviértanse y crean en el Evangelio».',
+          },
+        },
         meditation: {
           en: 'Jesus proclaims the Gospel and calls us to conversion.',
           es: 'Jesús proclama el Evangelio y nos llama a la conversión.',
@@ -111,7 +162,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 4,
         title: { en: 'The Transfiguration', es: 'La Transfiguración' },
-        scripture: 'Matthew 17:1-8',
+        scripture: {
+          reference: { en: 'Matthew 17:1–8', es: 'Mateo 17:1–8' },
+          text: {
+            en: '“This is my beloved Son, with whom I am well pleased; listen to him.”',
+            es: '«Este es mi Hijo amado, en quien me complazco; escúchenlo».',
+          },
+        },
         meditation: {
           en: 'Jesus is transfigured in glory before Peter, James, and John.',
           es: 'Jesús se transfigura en gloria ante Pedro, Santiago y Juan.',
@@ -120,7 +177,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 5,
         title: { en: 'Institution of the Eucharist', es: 'La Institución de la Eucaristía' },
-        scripture: 'Matthew 26:26-28',
+        scripture: {
+          reference: { en: 'Matthew 26:26–28', es: 'Mateo 26:26–28' },
+          text: {
+            en: '“Take and eat; this is my body.” Then he took a cup and said, “Drink from it, all of you, for this is my blood of the covenant.”',
+            es: '«Tomen y coman; esto es mi cuerpo». Luego tomó una copa y dijo: «Beban todos de ella, porque esta es mi sangre de la alianza».',
+          },
+        },
         meditation: {
           en: 'Jesus gives us His Body and Blood at the Last Supper.',
           es: 'Jesús nos da su Cuerpo y Sangre en la Última Cena.',
@@ -137,7 +200,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 1,
         title: { en: 'The Agony in the Garden', es: 'La Oración en el Huerto' },
-        scripture: 'Matthew 26:36-46',
+        scripture: {
+          reference: { en: 'Matthew 26:36–46', es: 'Mateo 26:36–46' },
+          text: {
+            en: '“My Father, if it is possible, let this cup pass from me; yet, not as I will, but as you will.”',
+            es: '«Padre mío, si es posible, que pase de mí este cáliz; pero no se haga como yo quiero, sino como quieres tú».',
+          },
+        },
         meditation: {
           en: 'Jesus prays in anguish in the Garden of Gethsemane.',
           es: 'Jesús ora con angustia en el Huerto de Getsemaní.',
@@ -146,7 +215,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 2,
         title: { en: 'The Scourging at the Pillar', es: 'La Flagelación' },
-        scripture: 'Matthew 27:26',
+        scripture: {
+          reference: { en: 'Matthew 27:26', es: 'Mateo 27:26' },
+          text: {
+            en: 'Then he released Barabbas to them, but after he had Jesus scourged, he handed him over to be crucified.',
+            es: 'Entonces les soltó a Barrabás; y a Jesús, después de azotarlo, lo entregó para que fuera crucificado.',
+          },
+        },
         meditation: {
           en: 'Jesus is brutally scourged by the Roman soldiers.',
           es: 'Jesús es cruelmente azotado por los soldados romanos.',
@@ -155,7 +230,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 3,
         title: { en: 'The Crowning with Thorns', es: 'La Coronación de Espinas' },
-        scripture: 'Matthew 27:27-31',
+        scripture: {
+          reference: { en: 'Matthew 27:27–31', es: 'Mateo 27:27–31' },
+          text: {
+            en: 'Weaving a crown out of thorns, they placed it on his head. Kneeling before him, they mocked him: “Hail, King of the Jews!”',
+            es: 'Trenzaron una corona de espinas y se la pusieron en la cabeza. Doblando la rodilla ante él, se burlaban: «¡Salve, rey de los judíos!»',
+          },
+        },
         meditation: {
           en: 'Jesus is mocked and crowned with thorns.',
           es: 'Jesús es burlado y coronado con espinas.',
@@ -164,7 +245,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 4,
         title: { en: 'The Carrying of the Cross', es: 'Jesús Carga con la Cruz' },
-        scripture: 'Matthew 27:32',
+        scripture: {
+          reference: { en: 'John 19:16–17', es: 'Juan 19:16–17' },
+          text: {
+            en: 'Carrying the cross himself, Jesus went out to what is called the Place of the Skull, in Hebrew, Golgotha.',
+            es: 'Jesús, cargando con su cruz, salió hacia el lugar llamado de la Calavera, que en hebreo se dice Gólgota.',
+          },
+        },
         meditation: {
           en: 'Jesus carries His cross to Calvary.',
           es: 'Jesús carga su cruz hacia el Calvario.',
@@ -173,7 +260,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 5,
         title: { en: 'The Crucifixion', es: 'La Crucifixión' },
-        scripture: 'Matthew 27:33-56',
+        scripture: {
+          reference: { en: 'Luke 23:33–46', es: 'Lucas 23:33–46' },
+          text: {
+            en: 'Jesus cried out in a loud voice, “Father, into your hands I commend my spirit”; and when he had said this, he breathed his last.',
+            es: 'Jesús clamó con voz fuerte: «Padre, en tus manos encomiendo mi espíritu». Y, dicho esto, expiró.',
+          },
+        },
         meditation: {
           en: 'Jesus dies on the cross for our salvation.',
           es: 'Jesús muere en la cruz por nuestra salvación.',
@@ -190,7 +283,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 1,
         title: { en: 'The Resurrection', es: 'La Resurrección' },
-        scripture: 'Matthew 28:1-10',
+        scripture: {
+          reference: { en: 'Matthew 28:1–10', es: 'Mateo 28:1–10' },
+          text: {
+            en: '“Do not be afraid! I know that you are seeking Jesus the crucified. He is not here, for he has been raised just as he said.”',
+            es: '«No teman. Sé que buscan a Jesús, el crucificado. No está aquí: ha resucitado, como había dicho».',
+          },
+        },
         meditation: {
           en: 'Jesus rises from the dead in glory.',
           es: 'Jesús resucita de entre los muertos con gloria.',
@@ -199,7 +298,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 2,
         title: { en: 'The Ascension', es: 'La Ascensión' },
-        scripture: 'Acts 1:6-11',
+        scripture: {
+          reference: { en: 'Acts 1:6–11', es: 'Hechos 1:6–11' },
+          text: {
+            en: 'When he had said this, as they were looking on, he was lifted up, and a cloud took him from their sight.',
+            es: 'Dicho esto, mientras ellos lo miraban, fue elevado, y una nube lo ocultó de sus ojos.',
+          },
+        },
         meditation: {
           en: 'Jesus ascends into Heaven.',
           es: 'Jesús asciende al Cielo.',
@@ -208,7 +313,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 3,
         title: { en: 'The Descent of the Holy Spirit', es: 'La Venida del Espíritu Santo' },
-        scripture: 'Acts 2:1-4',
+        scripture: {
+          reference: { en: 'Acts 2:1–4', es: 'Hechos 2:1–4' },
+          text: {
+            en: 'They were all filled with the Holy Spirit and began to speak in different tongues, as the Spirit enabled them to proclaim.',
+            es: 'Todos quedaron llenos del Espíritu Santo y comenzaron a hablar en otras lenguas, según el Espíritu les concedía expresarse.',
+          },
+        },
         meditation: {
           en: 'The Holy Spirit descends upon the Apostles at Pentecost.',
           es: 'El Espíritu Santo desciende sobre los Apóstoles en Pentecostés.',
@@ -217,7 +328,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 4,
         title: { en: 'The Assumption', es: 'La Asunción de María' },
-        scripture: 'Revelation 12:1',
+        scripture: {
+          reference: { en: 'Revelation 12:1', es: 'Apocalipsis 12:1' },
+          text: {
+            en: 'A great sign appeared in the sky: a woman clothed with the sun, with the moon under her feet.',
+            es: 'Apareció en el cielo una gran señal: una mujer vestida del sol, con la luna bajo sus pies.',
+          },
+        },
         meditation: {
           en: 'Mary is assumed body and soul into Heaven.',
           es: 'María es asunta al Cielo en cuerpo y alma.',
@@ -226,7 +343,13 @@ export const ROSARY_MYSTERIES: Record<MysteryType, MysterySet> = {
       {
         number: 5,
         title: { en: 'The Coronation of Mary', es: 'La Coronación de María' },
-        scripture: 'Revelation 12:1',
+        scripture: {
+          reference: { en: 'Revelation 12:1', es: 'Apocalipsis 12:1' },
+          text: {
+            en: 'A great sign appeared in the sky: a woman clothed with the sun, and on her head a crown of twelve stars.',
+            es: 'Apareció en el cielo una gran señal: una mujer vestida del sol, y sobre su cabeza una corona de doce estrellas.',
+          },
+        },
         meditation: {
           en: 'Mary is crowned Queen of Heaven and Earth.',
           es: 'María es coronada Reina del Cielo y de la Tierra.',
@@ -274,6 +397,10 @@ export function getLocalizedMystery(mysterySet: MysterySet, lang: Language) {
     mysteries: mysterySet.mysteries.map((m) => ({
       ...m,
       title: m.title[lang],
+      scripture: {
+        reference: m.scripture.reference[lang],
+        text: m.scripture.text[lang],
+      },
       meditation: m.meditation[lang],
     })),
   };
@@ -406,6 +533,12 @@ export const ROSARY_UI = {
     allMysteries: 'All Mysteries',
     optional: '(optional)',
     pray: 'Pray:',
+    readScripture: 'Read Scripture',
+    scriptureReflection: 'A passage for meditation',
+    resumeTitle: 'Continue your Rosary?',
+    resumeAt: 'Saved at',
+    resume: 'Resume',
+    startOver: 'Start over',
   },
   es: {
     title: 'El Santo Rosario',
@@ -436,5 +569,11 @@ export const ROSARY_UI = {
     allMysteries: 'Todos los Misterios',
     optional: '(opcional)',
     pray: 'Reza:',
+    readScripture: 'Leer la Escritura',
+    scriptureReflection: 'Un pasaje para meditar',
+    resumeTitle: '¿Continuar tu Rosario?',
+    resumeAt: 'Guardado en',
+    resume: 'Continuar',
+    startOver: 'Empezar de nuevo',
   },
 };

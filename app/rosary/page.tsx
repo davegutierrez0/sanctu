@@ -2,12 +2,19 @@
 
 import { getTodaysMystery, ROSARY_MYSTERIES, getLocalizedMystery, ROSARY_UI, ROSARY_PRAYERS, type MysteryType } from '@/lib/data/rosary';
 import { useLanguage } from '@/components/ThemeProvider';
-import { Printer, RotateCcw, Calendar } from 'lucide-react';
+import { BookOpen, Calendar, ChevronDown, Play, Printer, RotateCcw } from 'lucide-react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { analytics } from '@/lib/analytics';
 import { usePageEngagement } from '@/hooks/usePageEngagement';
 import { AppHeader } from '@/components/AppHeader';
 import { BottomNav } from '@/components/BottomNav';
+import {
+  createRosaryProgress,
+  describeRosaryProgress,
+  parseRosaryProgress,
+  ROSARY_PROGRESS_STORAGE_KEY,
+  type RosaryProgress,
+} from '@/lib/rosary-progress';
 
 type RosaryPhase = 'opening' | 'decade' | 'decadeEnd' | 'closing' | 'complete';
 
@@ -74,6 +81,9 @@ export default function RosaryPage() {
   // User preferences
   const [showFatimaPrayer, setShowFatimaPrayer] = useState(true);
   const [expandedPrayers, setExpandedPrayers] = useState<Record<string, boolean>>({});
+  const [savedProgress, setSavedProgress] = useState<RosaryProgress | null>(null);
+  const [storageHydrated, setStorageHydrated] = useState(false);
+  const [sessionActive, setSessionActive] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,6 +92,16 @@ export default function RosaryPage() {
       if (cancelled) return;
       setShowFatimaPrayer(getStoredShowFatimaPrayer());
       setExpandedPrayers(getStoredExpandedPrayers());
+      try {
+        setSavedProgress(
+          parseRosaryProgress(
+            window.localStorage.getItem(ROSARY_PROGRESS_STORAGE_KEY),
+          ),
+        );
+      } catch {
+        setSavedProgress(null);
+      }
+      setStorageHydrated(true);
     });
 
     return () => {
@@ -90,22 +110,57 @@ export default function RosaryPage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!storageHydrated || typeof window === 'undefined') return;
     try {
       window.localStorage.setItem('rosary:showFatimaPrayer', String(showFatimaPrayer));
     } catch {
       return;
     }
-  }, [showFatimaPrayer]);
+  }, [showFatimaPrayer, storageHydrated]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!storageHydrated || typeof window === 'undefined') return;
     try {
       window.localStorage.setItem('rosary:expandedPrayers', JSON.stringify(expandedPrayers));
     } catch {
       return;
     }
-  }, [expandedPrayers]);
+  }, [expandedPrayers, storageHydrated]);
+
+  useEffect(() => {
+    if (!storageHydrated || !sessionActive || typeof window === 'undefined') return;
+
+    try {
+      if (phase === 'complete') {
+        window.localStorage.removeItem(ROSARY_PROGRESS_STORAGE_KEY);
+        return;
+      }
+
+      const checkpoint = createRosaryProgress({
+        mysteryType,
+        phase,
+        openingStep,
+        currentDecade,
+        currentBead,
+        decadeEndStep,
+        closingStep,
+      });
+
+      window.localStorage.setItem(ROSARY_PROGRESS_STORAGE_KEY, JSON.stringify(checkpoint));
+    } catch {
+      return;
+    }
+  }, [
+    closingStep,
+    currentBead,
+    currentDecade,
+    decadeEndStep,
+    mysteryType,
+    openingStep,
+    phase,
+    sessionActive,
+    storageHydrated,
+  ]);
 
   const localizedMysterySets = useMemo(
     () =>
@@ -118,6 +173,9 @@ export default function RosaryPage() {
 
   const currentMysterySet = localizedMysterySets[mysteryType];
   const currentMystery = currentMysterySet.mysteries[currentDecade];
+  const savedMysterySet = savedProgress
+    ? localizedMysterySets[savedProgress.mysteryType]
+    : null;
 
   // Calculate progress
   const calculateProgress = useCallback(() => {
@@ -151,6 +209,13 @@ export default function RosaryPage() {
 
   const reset = () => {
     analytics.rosaryReset();
+    setSessionActive(false);
+    setSavedProgress(null);
+    try {
+      window.localStorage.removeItem(ROSARY_PROGRESS_STORAGE_KEY);
+    } catch {
+      // The Rosary remains usable when browser storage is unavailable.
+    }
     setPhase('opening');
     setOpeningStep(0);
     setCurrentDecade(0);
@@ -160,13 +225,19 @@ export default function RosaryPage() {
   };
 
   const skipToDecade = (decadeIndex: number) => {
+    setSavedProgress(null);
+    setSessionActive(true);
     setPhase('decade');
     setCurrentDecade(decadeIndex);
     setCurrentBead(0);
     setDecadeEndStep(0);
+    setClosingStep(0);
   };
 
   const nextStep = () => {
+    setSavedProgress(null);
+    setSessionActive(true);
+
     if (phase === 'opening') {
       if (openingStep < OPENING_STEPS.length - 1) {
         setOpeningStep(openingStep + 1);
@@ -205,6 +276,20 @@ export default function RosaryPage() {
         setPhase('complete');
       }
     }
+  };
+
+  const resumeRosary = () => {
+    if (!savedProgress) return;
+
+    setMysteryType(savedProgress.mysteryType);
+    setPhase(savedProgress.phase);
+    setOpeningStep(savedProgress.openingStep);
+    setCurrentDecade(savedProgress.currentDecade);
+    setCurrentBead(savedProgress.currentBead);
+    setDecadeEndStep(savedProgress.decadeEndStep);
+    setClosingStep(savedProgress.closingStep);
+    setSavedProgress(null);
+    setSessionActive(true);
   };
 
   // Check if a prayer should be expanded by default
@@ -365,6 +450,32 @@ export default function RosaryPage() {
           </p>
         </header>
 
+        {savedProgress && savedMysterySet && (
+          <section className="rosary-resume stone-card" aria-labelledby="rosary-resume-title">
+            <div className="rosary-resume-heading">
+              <span className="rosary-resume-icon" aria-hidden="true">
+                <Play size={17} fill="currentColor" />
+              </span>
+              <div>
+                <p className="eyebrow">{ui.resumeTitle}</p>
+                <h2 id="rosary-resume-title">{savedMysterySet.name}</h2>
+              </div>
+            </div>
+            <p className="rosary-resume-position">
+              {ui.resumeAt}: {describeRosaryProgress(savedProgress, language)}
+            </p>
+            <div className="rosary-resume-actions">
+              <button type="button" className="primary-button" onClick={resumeRosary}>
+                <Play size={15} fill="currentColor" />
+                {ui.resume}
+              </button>
+              <button type="button" className="secondary-button" onClick={reset}>
+                {ui.startOver}
+              </button>
+            </div>
+          </section>
+        )}
+
         {/* Progress */}
         <div className="mb-12">
           <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
@@ -388,16 +499,27 @@ export default function RosaryPage() {
             <h2 className="text-3xl font-light mb-3">
               {currentMystery.number}. {currentMystery.title}
             </h2>
-            {currentMystery.scripture && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 italic">
-                {currentMystery.scripture}
-              </p>
-            )}
             {currentMystery.meditation && (
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 {currentMystery.meditation}
               </p>
             )}
+            <details key={`${mysteryType}-${currentDecade}`} className="rosary-scripture">
+              <summary>
+                <span className="rosary-scripture-label">
+                  <BookOpen size={17} />
+                  {ui.readScripture}
+                </span>
+                <span className="rosary-scripture-reference">
+                  {currentMystery.scripture.reference}
+                </span>
+                <ChevronDown className="rosary-scripture-chevron" size={17} />
+              </summary>
+              <div className="rosary-scripture-text">
+                <p>{ui.scriptureReflection}</p>
+                <blockquote>{currentMystery.scripture.text}</blockquote>
+              </div>
+            </details>
           </div>
         )}
 
@@ -575,7 +697,7 @@ export default function RosaryPage() {
                   </h4>
                   {mystery.scripture && (
                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                      {mystery.scripture}
+                      {mystery.scripture.reference}
                     </p>
                   )}
                 </button>
