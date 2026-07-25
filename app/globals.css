@@ -1022,7 +1022,7 @@ h3 {
   background: color-mix(in srgb, var(--surface-strong) 70%, transparent);
 }
 
-.rosary-scripture-text p {
+.rosary-scripture-intro {
   margin: 0 0 7px;
   color: var(--muted);
   font-size: 0.7rem;
@@ -1036,6 +1036,52 @@ h3 {
   font-family: var(--serif);
   font-size: 1.06rem;
   line-height: 1.72;
+}
+
+.rosary-scripture-verse {
+  margin: 0 0 0.72em;
+  color: var(--ink);
+}
+
+.rosary-scripture-verse:last-child {
+  margin-bottom: 0;
+}
+
+.rosary-scripture-verse-number {
+  display: inline-block;
+  min-width: 1.65em;
+  margin-right: 0.25em;
+  color: var(--accent-strong);
+  font-family: var(--sans);
+  font-size: 0.66em;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: 0.35em;
+}
+
+.rosary-scripture-source {
+  margin-top: 17px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.rosary-scripture-source p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.rosary-scripture-source p + p {
+  margin-top: 4px;
+}
+
+.rosary-scripture-source a {
+  color: var(--accent-strong);
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-strong) 35%, transparent);
+  text-underline-offset: 2px;
 }
 
 .rosary-prayer {

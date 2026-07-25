@@ -1,7 +1,7 @@
 // Sanctu Service Worker
 // Keeps the liturgical companion usable when the network is unavailable.
 
-const VERSION = 'v6';
+const VERSION = 'v10';
 const STATIC_CACHE = `Sanctu-static-${VERSION}`;
 const DATA_CACHE = `Sanctu-data-${VERSION}`;
 const ASSET_CACHE = `Sanctu-assets-${VERSION}`;

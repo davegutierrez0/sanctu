@@ -516,8 +516,34 @@ export default function RosaryPage() {
                 <ChevronDown className="rosary-scripture-chevron" size={17} />
               </summary>
               <div className="rosary-scripture-text">
-                <p>{ui.scriptureReflection}</p>
-                <blockquote>{currentMystery.scripture.text}</blockquote>
+                <p className="rosary-scripture-intro">{ui.scriptureReflection}</p>
+                <blockquote cite={currentMystery.scripture.source.url}>
+                  {currentMystery.scripture.verses.map((verse) => (
+                    <p className="rosary-scripture-verse" key={verse.number}>
+                      <sup
+                        className="rosary-scripture-verse-number"
+                        aria-label={`${ui.verse} ${verse.number}`}
+                      >
+                        {verse.number}
+                      </sup>
+                      {verse.text}
+                    </p>
+                  ))}
+                </blockquote>
+                <footer className="rosary-scripture-source">
+                  <p>
+                    {ui.scriptureTranslation}:{' '}
+                    <a
+                      href={currentMystery.scripture.source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {currentMystery.scripture.source.name}
+                    </a>{' '}
+                    ({currentMystery.scripture.source.abbreviation}) · {ui.publicDomain}
+                  </p>
+                  <p>{currentMystery.scripture.source.note}</p>
+                </footer>
               </div>
             </details>
           </div>

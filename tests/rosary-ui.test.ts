@@ -10,6 +10,10 @@ const readProjectFile = (path: string) =>
 test('provides bilingual copy for Scripture and saved Rosary actions', () => {
   assert.equal(ROSARY_UI.en.readScripture, 'Read Scripture');
   assert.equal(ROSARY_UI.es.readScripture, 'Leer la Escritura');
+  assert.equal(ROSARY_UI.en.scriptureTranslation, 'Translation');
+  assert.equal(ROSARY_UI.es.scriptureTranslation, 'Traducción');
+  assert.equal(ROSARY_UI.en.publicDomain, 'Public domain');
+  assert.equal(ROSARY_UI.es.publicDomain, 'Dominio público');
   assert.equal(ROSARY_UI.en.resumeTitle, 'Continue your Rosary?');
   assert.equal(ROSARY_UI.es.resumeTitle, '¿Continuar tu Rosario?');
   assert.equal(ROSARY_UI.en.resume, 'Resume');
@@ -29,6 +33,10 @@ test('wires validated progress storage and a native Scripture disclosure into th
     /<details key={`\$\{mysteryType\}-\$\{currentDecade\}`} className="rosary-scripture">/,
   );
   assert.match(source, /describeRosaryProgress/);
+  assert.match(source, /currentMystery\.scripture\.verses\.map/);
+  assert.match(source, /className="rosary-scripture-verse-number"/);
+  assert.match(source, /currentMystery\.scripture\.source\.url/);
+  assert.match(source, /currentMystery\.scripture\.source\.note/);
 
   const preferenceHydrationGuards = source.match(
     /if \(!storageHydrated \|\| typeof window === 'undefined'\) return;/g,
